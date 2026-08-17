@@ -1,0 +1,2577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>claimsforce – Clickable Design Prototype (Document Review)</title>
+<style>
+  :root {
+    --orange: #E8734C;
+    --border: #E5E3DC;
+    --text-primary: #2C2C2A;
+    --text-secondary: #6B6A65;
+    --bg-header: #FAF9F6;
+    --bg-page: #FFFFFF;
+
+    --blue-bg: #E6F1FB;
+    --blue-text: #042C53;
+    --blue-line: #378ADD;
+
+    --purple-bg: #EEEDFE;
+    --purple-text: #26215C;
+    --purple-line: #7F77DD;
+
+    --coral-bg: #FAECE7;
+    --coral-text: #4A1B0C;
+    --coral-line: #D85A30;
+
+    --green-bg: #EAF3DE;
+    --green-text: #27500A;
+    --amber-bg: #FAEEDA;
+    --amber-text: #633806;
+    --red-bg: #FCEBEB;
+    --red-text: #791F1F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #F5F4F0;
+    margin: 0;
+    padding: 32px;
+    color: var(--text-primary);
+  }
+
+  .stepper {
+    max-width: 1500px;
+    margin: 0 auto 16px;
+    display: flex;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+  }
+
+  .stepper span {
+    padding: 5px 12px;
+    border-radius: 20px;
+    background: var(--bg-page);
+    border: 1px solid var(--border);
+  }
+
+  .stepper span.current {
+    background: var(--text-primary);
+    color: #fff;
+    font-weight: 600;
+    border-color: var(--text-primary);
+  }
+
+  .screen { display: none; }
+  .screen.visible { display: block; }
+
+  .app {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--bg-page);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  #screen-2 .app, #screen-3 .app, #screen-4 .app, #screen-7 .app, #screen-8 .app { max-width: 1500px; }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+
+  .logo {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--orange);
+    flex-shrink: 0;
+  }
+
+  .topbar .active { font-weight: 600; }
+  .topbar span { color: var(--text-primary); }
+
+  /* ---------- Screen 1: Claims List ---------- */
+
+  .content { padding: 24px; }
+
+  #screen-1 h1 { font-size: 22px; font-weight: 600; margin: 0 0 16px; }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .pill-toggle {
+    display: inline-flex;
+    background: var(--bg-header);
+    border-radius: 20px;
+    padding: 3px;
+    font-size: 13px;
+  }
+
+  .pill-toggle span { padding: 6px 16px; border-radius: 20px; color: var(--text-secondary); }
+  .pill-toggle span.active { background: var(--text-primary); color: #fff; font-weight: 500; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; table-layout: fixed; }
+
+  colgroup col.col-schaden   { width: 12%; }
+  colgroup col.col-produkt   { width: 13%; }
+  colgroup col.col-typ       { width: 6%; }
+  colgroup col.col-eingang   { width: 10%; }
+  colgroup col.col-vn        { width: 12%; }
+  colgroup col.col-reserve   { width: 9%; }
+  colgroup col.col-ort       { width: 13%; }
+  colgroup col.col-gefahr    { width: 12%; }
+  colgroup col.col-zuweisung { width: 13%; }
+
+  thead th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+  }
+
+  thead th .sub { display: block; font-weight: 400; color: var(--text-secondary); font-size: 11.5px; margin-top: 2px; }
+  thead th.produkt-header { color: var(--orange); }
+
+  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:hover { background: var(--bg-header); }
+  tbody tr:hover td.new-column-cell { background: rgba(232, 115, 76, 0.08); }
+
+  tr.claim-clickable { cursor: pointer; }
+  tr.claim-clickable:hover { background: #FBF2EE; }
+  tr.claim-clickable td:first-child { position: relative; }
+  tr.claim-clickable:hover .open-hint { opacity: 1; }
+  .open-hint {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 11px;
+    color: var(--orange);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+
+  .claim-id { font-weight: 600; }
+  .sub-text { color: var(--text-secondary); font-size: 12px; margin-top: 2px; }
+
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .badge-belegpruefung { background: var(--blue-bg); color: var(--blue-text); }
+  .badge-desktop       { background: var(--purple-bg); color: var(--purple-text); }
+  .badge-aussen        { background: var(--coral-bg); color: var(--coral-text); }
+
+  tr[data-produkt="belegpruefung"] { border-left: 4px solid var(--blue-line); }
+  tr[data-produkt="desktop"]       { border-left: 4px solid var(--purple-line); }
+  tr[data-produkt="aussen"]        { border-left: 4px solid var(--coral-line); }
+
+  .type-icon {
+    width: 26px; height: 26px; border-radius: 6px; background: var(--bg-header);
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+  }
+
+  .zuweisung-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 10px; margin-top: 3px; }
+  .tag-intern { background: #E6F1FB; color: #042C53; }
+  .tag-extern { background: #FAEEDA; color: #412402; }
+
+  .legend { display: flex; gap: 20px; margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
+  .legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  .topbar span.nav-link { cursor: pointer; }
+  .topbar span.nav-link:hover { text-decoration: underline; }
+
+  /* ---------- Screen 2: Tasks ---------- */
+
+  .filter-icon { color: var(--text-secondary); font-size: 18px; margin-left: 4px; }
+
+  .stat-cards { display: flex; gap: 14px; margin-bottom: 22px; }
+  .stat-card {
+    flex: 1;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+  }
+  .stat-card.active { border: 2px solid var(--orange); }
+  .stat-card .stat-number { font-size: 26px; font-weight: 600; line-height: 1.1; }
+  .stat-card .stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+  .task-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .task-table thead th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+    white-space: nowrap;
+  }
+  .task-table .col-check { width: 30px; }
+  .task-table tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .task-table tbody tr:hover { background: var(--bg-header); }
+
+  .task-claimnumber { color: var(--blue-line); font-weight: 500; cursor: pointer; }
+  .task-claimnumber:hover { text-decoration: underline; }
+  .task-regulator { font-weight: 600; margin-top: 2px; }
+
+  .task-duefällig { display: inline-flex; align-items: center; gap: 6px; }
+  .task-duefällig .clock { font-size: 13px; }
+  .task-duefällig.overdue .clock { color: var(--red-text); }
+  .task-duefällig.ontrack .clock { color: var(--green-text); }
+  .task-duefällig a { color: var(--blue-line); text-decoration: underline; cursor: pointer; }
+
+  .task-aufgabe-sub { color: var(--text-secondary); font-size: 12.5px; margin-top: 2px; }
+
+  .task-action-btn {
+    font-size: 12.5px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: var(--bg-header);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+  .task-action-btn:hover { border-color: var(--orange); color: var(--orange); }
+  .task-row-menu { color: var(--text-secondary); margin-left: 10px; cursor: default; }
+
+  /* ---------- Screens 3 & 4: shared shell (icon rail, main) ---------- */
+
+  .body-layout { display: flex; }
+
+  .icon-rail {
+    width: 60px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 6px;
+  }
+
+  .rail-item {
+    width: 60px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    position: relative;
+    cursor: default;
+  }
+
+  .rail-item svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .rail-item.active { color: var(--text-primary); background: var(--bg-header); border-left: 3px solid var(--orange); }
+  .rail-item.clickable { cursor: pointer; }
+  .rail-item:hover:not(.active) { color: var(--text-primary); background: var(--bg-header); }
+
+  .rail-item .tooltip {
+    position: absolute;
+    left: 66px;
+    background: var(--text-primary);
+    color: #fff;
+    font-size: 11.5px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 5;
+  }
+  .rail-item:hover .tooltip { opacity: 1; }
+
+  .rail-badge {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: var(--red-text, #791F1F);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 0 0 2px #fff;
+  }
+
+  .main { flex: 1; padding: 20px 28px 28px; min-width: 0; }
+  .main h1 { font-size: 22px; font-weight: 600; margin: 0 0 20px; }
+
+  .breadcrumb {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .breadcrumb .sep { color: var(--border); }
+  .breadcrumb .current { color: var(--text-primary); font-weight: 500; }
+  .breadcrumb .crumb-link { cursor: pointer; }
+  .breadcrumb .crumb-link:hover { color: var(--orange); text-decoration: underline; }
+
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .section-head h2 { font-size: 15px; font-weight: 600; margin: 0; }
+  .count-tag { color: var(--text-secondary); font-weight: 400; font-size: 13px; }
+
+  .btn {
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    background: var(--bg-header);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    cursor: default;
+  }
+  .btn-primary { background: var(--orange); border-color: var(--orange); color: #fff; font-weight: 600; cursor: pointer; }
+
+  .placeholder-box {
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0;
+    margin-bottom: 24px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .placeholder-box .icon { font-size: 34px; margin-bottom: 14px; }
+
+  /* ---------- Screen 3: Claim File / Assessment ---------- */
+
+  .sidepanel { width: 420px; border-left: 1px solid var(--border); padding: 20px 24px; }
+
+  .tabs { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; font-size: 14px; }
+  .tabs .left { display: flex; gap: 20px; }
+  .tabs .tab-active { font-weight: 600; border-bottom: 2px solid var(--text-primary); padding-bottom: 6px; }
+  .tabs .tab { color: var(--text-secondary); padding-bottom: 6px; }
+
+  .alert {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--red-bg); color: var(--red-text);
+    padding: 10px 14px; border-radius: 8px; font-size: 13.5px; margin-bottom: 20px;
+  }
+
+  h3.small-head { font-size: 14px; font-weight: 600; margin: 0 0 10px; }
+
+  .assignee { background: var(--bg-header); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; font-weight: 600; margin-bottom: 18px; }
+
+  .badge-row { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+
+  .product-badge {
+    display: inline-block; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 20px;
+    background: var(--blue-bg); color: var(--blue-text);
+  }
+
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; font-size: 13.5px; margin-bottom: 22px; }
+  .field-grid .val { font-weight: 600; margin-bottom: 2px; }
+  .field-grid .lbl { color: var(--text-secondary); font-size: 12px; }
+
+  .contact { border-top: 1px solid var(--border); padding-top: 16px; font-size: 13.5px; }
+  .contact-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+
+  /* ---------- Screen 4: Document Review ---------- */
+
+  .page-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+  .page-head h1 { font-size: 22px; font-weight: 600; margin: 0; }
+
+  .claim-tag {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px; background: var(--blue-bg); color: var(--blue-text);
+    margin-left: 10px; vertical-align: middle;
+  }
+
+  .columns { display: flex; gap: 24px; align-items: flex-start; }
+  .col-list { flex: 1.4; min-width: 0; }
+  .col-upload { flex: 1; min-width: 340px; }
+
+  .beleg-list { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+
+  .beleg-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .beleg-row:last-child { border-bottom: none; }
+  .beleg-row:hover { background: #FBF2EE; }
+  .beleg-row:hover .beleg-open-hint { opacity: 1; }
+  .beleg-open-hint { font-size: 11px; color: var(--orange); font-weight: 600; opacity: 0; transition: opacity .15s; margin-left: 4px; }
+
+  .beleg-icon {
+    width: 34px; height: 34px; border-radius: 8px; background: var(--bg-header);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--text-secondary);
+  }
+  .beleg-icon svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  .beleg-main { flex: 1; min-width: 0; }
+  .beleg-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .beleg-meta { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .beleg-amount { font-size: 13.5px; font-weight: 600; width: 90px; text-align: right; flex-shrink: 0; }
+  .beleg-date { font-size: 12.5px; color: var(--text-secondary); width: 84px; flex-shrink: 0; }
+
+  .status {
+    display: inline-block; font-size: 11.5px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap; width: 78px; text-align: center; flex-shrink: 0;
+  }
+  .status-ok { background: var(--green-bg); color: var(--green-text); }
+  .status-open { background: var(--amber-bg); color: var(--amber-text); }
+  .status-rejected { background: var(--red-bg); color: var(--red-text); }
+
+  .row-menu { color: var(--text-secondary); font-size: 16px; padding: 0 4px; flex-shrink: 0; }
+
+  .beleg-list-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 16px;
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  .beleg-list-head .h-icon { width: 34px; flex-shrink: 0; }
+  .beleg-list-head .h-main { flex: 1; min-width: 0; }
+  .beleg-list-head .h-amount { width: 90px; text-align: right; flex-shrink: 0; }
+  .beleg-list-head .h-date { width: 84px; flex-shrink: 0; }
+  .beleg-list-head .h-origin { width: 104px; flex-shrink: 0; }
+  .beleg-list-head .h-status { width: 78px; flex-shrink: 0; }
+  .beleg-list-head .h-menu { width: 16px; flex-shrink: 0; }
+
+  .origin-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    width: 104px;
+    text-align: center;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .origin-source   { background: var(--bg-header); color: var(--text-secondary); }
+  .origin-precheck { background: var(--blue-bg); color: var(--blue-text); }
+
+  .dropzone {
+    border: 1.5px dashed var(--blue-line);
+    background: var(--blue-bg);
+    border-radius: 12px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 14px;
+    transition: background .15s, border-color .15s;
+  }
+  .dropzone.dragover { background: #D3E7F9; border-color: var(--orange); }
+
+  .dropzone .dz-icon {
+    width: 46px; height: 46px; border-radius: 50%; background: #fff;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: var(--blue-line);
+  }
+  .dropzone .dz-icon svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .dropzone .dz-title { font-size: 14px; font-weight: 600; color: var(--blue-text); margin-bottom: 4px; }
+  .dropzone .dz-sub { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 16px; }
+
+  .upload-caption { font-size: 12px; color: var(--text-secondary); line-height: 1.6; padding: 0 2px; }
+  .upload-caption b { color: var(--text-primary); }
+
+  .upload-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 11.5px;
+    margin: 4px 0 12px;
+  }
+  .upload-divider::before, .upload-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .upload-divider span { padding: 0 10px; }
+
+  .btn-secondary-wide {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .btn-secondary-wide svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .btn-secondary-wide:hover { border-color: var(--orange); color: var(--orange); }
+
+  .disclaimer-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--amber-bg);
+    color: var(--amber-text);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin-bottom: 18px;
+  }
+  .disclaimer-banner svg {
+    width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px;
+    stroke: var(--amber-text); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .disclaimer-banner b { font-weight: 600; }
+
+  /* ---------- Screen 5: Document Detail / Orientation ---------- */
+
+  .detail-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .detail-head h1 { font-size: 20px; font-weight: 600; margin: 0; word-break: break-all; }
+  .detail-meta { color: var(--text-secondary); font-size: 12.5px; margin-top: 2px; }
+
+  .detail-columns { display: flex; gap: 20px; align-items: stretch; }
+
+  .preview-panel {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(44,44,42,0.05);
+  }
+
+  .preview-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-header);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .preview-panel-head svg { width: 16px; height: 16px; stroke: var(--text-secondary); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .preview-panel-head .tools { display: flex; gap: 12px; color: var(--text-secondary); font-size: 14px; margin-left: auto; }
+
+  .preview-body {
+    flex: 1;
+    padding: 22px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background: repeating-linear-gradient(135deg, #FAFAF8 0px, #FAFAF8 12px, #F5F4F0 12px, #F5F4F0 24px);
+  }
+
+  .scan-sheet {
+    width: 100%;
+    max-width: 260px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 14px rgba(44,44,42,0.10);
+    padding: 20px 16px;
+    font-size: 10px;
+    color: #B4B2A9;
+  }
+  .scan-sheet .scan-line { height: 6px; background: #ECEAE3; border-radius: 2px; margin-bottom: 8px; }
+  .scan-sheet .scan-line.short { width: 55%; }
+  .scan-sheet .scan-line.tiny { height: 5px; margin-bottom: 5px; }
+  .scan-sheet .scan-block { height: 40px; background: #F2F1EC; border-radius: 2px; margin: 14px 0; }
+  .scan-sheet .scan-logo { width: 34px; height: 34px; border-radius: 6px; background: var(--coral-bg); margin-bottom: 14px; }
+
+  .digital-card { width: 100%; font-size: 13px; background: #fff; }
+
+  .digital-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .digital-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .digital-row:last-of-type { border-bottom: none; }
+  .digital-row .lbl { color: var(--text-secondary); }
+  .digital-row .val { font-weight: 600; }
+
+  .digital-table { width: 100%; margin-top: 16px; font-size: 12.5px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .digital-table .trow { display: flex; justify-content: space-between; padding: 5px 0; color: var(--text-secondary); }
+  .digital-table .trow span:first-child { color: var(--text-primary); }
+  .digital-table .ttotal { display: flex; justify-content: space-between; padding-top: 8px; margin-top: 6px; border-top: 1px solid var(--border); font-weight: 600; }
+  .digital-table .ttotal.grand { background: var(--coral-bg); color: var(--coral-text); margin: 10px -14px -2px; padding: 10px 14px; border-top: none; border-radius: 0 0 8px 8px; }
+
+  .actions-panel { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 14px; }
+
+  .actions-panel-label { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+  .actions-panel-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+
+  .action-card {
+    position: relative;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    padding-left: 22px;
+    cursor: pointer;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(44,44,42,0.05);
+    transition: box-shadow .15s, border-color .15s, transform .1s;
+  }
+  .action-card::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 5px;
+    border-radius: 14px 0 0 14px;
+    background: var(--card-accent, var(--orange));
+  }
+  .action-card:hover {
+    border-color: var(--card-accent, var(--orange));
+    box-shadow: 0 8px 20px rgba(44,44,42,0.10);
+    transform: translateY(-1px);
+  }
+
+  .action-card-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+
+  .action-icon {
+    width: 48px; height: 48px; border-radius: 12px; background: var(--card-accent-bg, var(--bg-header));
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--card-accent, var(--text-primary));
+  }
+  .action-icon svg { width: 23px; height: 23px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  .action-num {
+    position: absolute;
+    top: 14px; right: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted, var(--text-secondary));
+  }
+
+  .action-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .action-sub { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+
+  .action-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--card-accent, var(--orange));
+  }
+  .action-cta .arrow { transition: transform .15s; }
+  .action-card:hover .action-cta .arrow { transform: translateX(3px); }
+
+  .card-edit    { --card-accent: #D85A30; --card-accent-bg: var(--coral-bg); }
+  .card-lv      { --card-accent: #185FA5; --card-accent-bg: var(--blue-bg); }
+  .card-price   { --card-accent: #0F6E56; --card-accent-bg: #E1F5EE; }
+
+  .orientation-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--bg-header);
+    border-radius: 10px;
+    padding: 12px 14px;
+    line-height: 1.5;
+  }
+  .orientation-note svg { width: 15px; height: 15px; flex-shrink: 0; margin-top: 1px; stroke: var(--text-secondary); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- Screen 6: Manual Editing ---------- */
+
+  .edit-infobar {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    background: var(--bg-header);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .edit-infobar .info-item .lbl { font-size: 11px; color: var(--text-secondary); margin-bottom: 2px; }
+  .edit-infobar .info-item .val { font-size: 13.5px; font-weight: 600; }
+  .edit-infobar .view-original {
+    margin-left: auto;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--blue-line);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .edit-infobar .view-original svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  .positions-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .positions-label .count-tag { font-weight: 400; color: var(--text-secondary); font-size: 12.5px; }
+
+  .position-list {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .position-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .position-item:last-child { border-bottom: none; }
+  .position-item.is-adjusted { background: #FFFDF8; }
+
+  .pr-row { display: flex; align-items: flex-end; gap: 12px; }
+
+  .pr-num {
+    width: 20px; height: 20px; border-radius: 5px; background: var(--bg-header);
+    display: flex; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 600;
+    color: var(--text-secondary); flex-shrink: 0; margin-bottom: 6px;
+  }
+
+  .pr-name-block { flex: 1; min-width: 130px; margin-bottom: 6px; }
+  .pr-name { font-size: 13.5px; font-weight: 600; }
+  .pr-name-meta { font-size: 11px; color: var(--text-secondary); margin-top: 1px; }
+
+  .pr-field { width: 64px; flex-shrink: 0; }
+  .pr-field.price { width: 100px; }
+  .pr-field label { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 3px; }
+  .pr-field input {
+    width: 100%; height: 34px; font-size: 13px; padding: 0 8px; text-align: right;
+    border: 1px solid var(--border); border-radius: 7px; background: #fff; color: var(--text-primary);
+  }
+  .pr-field input:disabled { background: var(--bg-header); color: var(--text-secondary); }
+  .pr-field input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 2px rgba(232,115,76,0.15); }
+
+  .pr-total-block { width: 96px; flex-shrink: 0; text-align: right; }
+  .pr-total-block .pr-total-label { display: block; font-size: 10px; color: var(--text-secondary); margin-bottom: 3px; }
+  .pr-total { font-size: 14px; font-weight: 600; line-height: 34px; }
+  .pr-total.diff { color: var(--orange); }
+
+  .pr-status-block { display: flex; align-items: center; gap: 8px; flex-shrink: 0; margin-bottom: 6px; }
+
+  .position-pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; flex-shrink: 0; }
+  .position-pill.ok { background: var(--green-bg); color: var(--green-text); }
+  .position-pill.adjusted { background: var(--amber-bg); color: var(--amber-text); }
+
+  .review-toggle {
+    width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer;
+    color: var(--text-secondary);
+  }
+  .review-toggle svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .review-toggle.reviewed { background: var(--green-text); border-color: var(--green-text); color: #fff; }
+
+  .pr-original-note {
+    font-size: 11.5px; color: var(--text-secondary); margin: 8px 0 0; line-height: 1.4;
+  }
+  .pr-original-note .strike { text-decoration: line-through; }
+
+  .pr-comment { margin-top: 8px; }
+  .pr-comment label { display: block; font-size: 10.5px; color: var(--text-secondary); margin-bottom: 3px; }
+  .pr-comment input {
+    width: 100%; height: 32px; font-size: 12.5px; padding: 0 10px;
+    border: 1px solid var(--border); border-radius: 7px; background: #fff; color: var(--text-primary);
+  }
+  .pr-comment input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 2px rgba(232,115,76,0.15); }
+
+  .summary-card {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-top: 8px;
+    background: var(--bg-header);
+  }
+  .summary-grid { display: flex; gap: 40px; margin-bottom: 16px; flex-wrap: wrap; }
+  .summary-col-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--text-secondary); margin-bottom: 8px; }
+  .summary-row { display: flex; justify-content: space-between; gap: 24px; font-size: 13px; padding: 4px 0; min-width: 220px; }
+  .summary-row .lbl { color: var(--text-secondary); }
+  .summary-row .val { font-weight: 600; }
+  .summary-row.grand .val { color: var(--orange); font-size: 15px; }
+
+  .summary-comment { margin-bottom: 16px; }
+  .summary-comment label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+  .summary-comment textarea {
+    width: 100%; min-height: 64px; font-size: 13px; padding: 10px 12px; resize: vertical;
+    border: 1px solid var(--border); border-radius: 8px; font-family: inherit; color: var(--text-primary);
+  }
+  .summary-comment textarea:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 2px rgba(232,115,76,0.15); }
+
+  .summary-actions { display: flex; justify-content: flex-end; gap: 10px; }
+  .btn-lg { padding: 10px 20px; font-size: 13.5px; }
+
+  .preview-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--orange);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 11px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(232,115,76,0.35);
+    transition: transform .12s, box-shadow .12s;
+  }
+  .preview-cta-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .preview-cta-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(232,115,76,0.45); }
+
+  .preview-cta-bottom {
+    width: 100%;
+    justify-content: center;
+    padding: 16px 20px;
+    font-size: 14.5px;
+    margin: 28px 0 8px;
+  }
+
+  .finish-heading { font-size: 15px; font-weight: 600; margin: 28px 0 2px; }
+  .finish-sub { font-size: 12.5px; color: var(--text-secondary); margin-bottom: 14px; }
+  .finish-grid { display: flex; gap: 16px; margin-bottom: 24px; }
+  .finish-grid .action-card { flex: 1; padding-left: 22px; }
+
+  .card-finish  { --card-accent: #3B6D11; --card-accent-bg: var(--green-bg); }
+  .card-attach  { --card-accent: #185FA5; --card-accent-bg: var(--blue-bg); }
+  .card-message { --card-accent: #534AB7; --card-accent-bg: var(--purple-bg); }
+
+  /* ---------- Screen 7 (NEW): Check against schedule of services ---------- */
+
+  .lv-summary-tag { display: flex; gap: 10px; flex-wrap: wrap; }
+  .lv-summary-tag .chip {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .lv-summary-tag .chip .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .lv-summary-tag .chip.green  { background: var(--green-bg); color: var(--green-text); }
+  .lv-summary-tag .chip.green .dot  { background: var(--green-text); }
+  .lv-summary-tag .chip.orange { background: var(--amber-bg); color: var(--amber-text); }
+  .lv-summary-tag .chip.orange .dot { background: var(--amber-text); }
+  .lv-summary-tag .chip.red    { background: var(--red-bg); color: var(--red-text); }
+  .lv-summary-tag .chip.red .dot    { background: var(--red-text); }
+
+  .lv-check-list { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+  .lv-check-item { padding: 16px 18px; border-bottom: 1px solid var(--border); }
+  .lv-check-item:last-child { border-bottom: none; }
+
+  .lv-check-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .lv-check-name { font-size: 13.5px; font-weight: 600; flex: 1; }
+  .lv-check-beleg-total { font-size: 12px; color: var(--text-secondary); }
+
+  .lv-compare-grid { display: grid; grid-template-columns: 1fr 22px 1fr 170px 1.1fr; gap: 18px; align-items: stretch; }
+
+  .lv-col { padding: 0; display: flex; flex-direction: column; }
+  .lv-col-label {
+    font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
+    color: var(--text-primary); margin-bottom: 8px;
+  }
+  .lv-col-ref { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px; }
+
+  /* Numbers block (Quantity/Unit/Unit Price + Total) is always bottom-aligned,
+     regardless of whether a reference text appears above it. */
+  .lv-col-numbers { margin-top: auto; }
+
+  .lv-fields { display: flex; gap: 16px; margin-bottom: 10px; }
+  .lv-field-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: var(--text-secondary); margin-bottom: 3px; }
+  .lv-field-value { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .lv-field-value.muted { color: var(--text-secondary); font-weight: 500; }
+
+  .lv-col-total { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .03em; }
+  .lv-col-total b { display: block; font-size: 19px; font-weight: 700; text-transform: none; letter-spacing: normal; color: var(--text-primary); margin-top: 3px; }
+  .lv-col-total.muted b { color: var(--text-secondary); }
+
+  .lv-compare-arrow {
+    display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 6px; font-size: 16px; color: var(--border);
+  }
+
+  .ampel-col, .lv-col.lv-missing {
+    border-left: 1px solid var(--border); padding-left: 18px;
+    display: flex; flex-direction: column;
+  }
+
+  .lv-missing-input {
+    width: 100%; min-height: 74px; font-size: 12.5px; padding: 9px 11px; resize: vertical;
+    border: 1px solid var(--border); border-radius: 8px; font-family: inherit; color: var(--text-primary); background: #fff;
+  }
+  .lv-missing-input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 2px rgba(232,115,76,0.15); }
+  .lv-missing-input::placeholder { color: var(--text-secondary); }
+  .ampel-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700;
+    padding: 5px 12px; border-radius: 20px; margin-bottom: 10px; width: fit-content;
+  }
+  .ampel-badge .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .ampel-badge.ampel-green  { background: var(--green-bg); color: var(--green-text); }
+  .ampel-badge.ampel-green .dot  { background: var(--green-text); }
+  .ampel-badge.ampel-orange { background: var(--amber-bg); color: var(--amber-text); }
+  .ampel-badge.ampel-orange .dot { background: var(--amber-text); }
+  .ampel-badge.ampel-red    { background: var(--red-bg); color: var(--red-text); }
+  .ampel-badge.ampel-red .dot    { background: var(--red-text); }
+  .ampel-note { font-size: 11.5px; color: var(--text-secondary); line-height: 1.5; }
+
+  .lv-summary-actions { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .lv-summary-actions .lv-summary-text { font-size: 13px; color: var(--text-secondary); max-width: 560px; line-height: 1.5; }
+  .lv-summary-actions .btns { display: flex; gap: 10px; flex-shrink: 0; }
+
+  /* ---------- Screen 8: Review report preview ---------- */
+
+  .report-doc-wrap { max-width: 660px; margin: 4px auto 0; }
+
+  .report-cover {
+    background: linear-gradient(135deg, #F0956F 0%, var(--orange) 55%, #A8431B 100%);
+    border-radius: 16px 16px 0 0;
+    padding: 34px 32px 64px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .report-cover::after {
+    content: "";
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+  }
+
+  .report-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 42px; position: relative; z-index: 1; }
+  .report-logo-badge {
+    width: 30px; height: 30px; border-radius: 8px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .report-logo-badge .dot { width: 15px; height: 15px; border-radius: 4px; background: var(--orange); }
+  .report-logo-row .wordmark { font-weight: 700; font-size: 15px; }
+
+  .report-cover-title { font-size: 32px; font-weight: 700; line-height: 1.15; position: relative; z-index: 1; }
+
+  .report-cover-card {
+    background: #fff;
+    color: var(--text-primary);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+    padding: 20px 26px;
+    margin: -40px 20px 0;
+    position: relative;
+    z-index: 2;
+  }
+  .report-cover-card .rc-row { display: flex; gap: 32px; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .report-cover-card .rc-row:last-child { border-bottom: none; }
+  .report-cover-card .rc-lbl { font-size: 11px; color: var(--text-secondary); margin-bottom: 2px; }
+  .report-cover-card .rc-val { font-size: 13.5px; font-weight: 600; }
+
+  .report-page { background: #fff; border: 1px solid var(--border); border-top: none; border-radius: 0 0 16px 16px; margin-top: 26px; box-shadow: 0 4px 16px rgba(44,44,42,0.06); overflow: hidden; }
+
+  .report-header { display: flex; align-items: center; justify-content: space-between; background: #fff; }
+  .report-header .ribbon {
+    background: var(--orange); color: #fff; font-weight: 700; font-size: 14px;
+    padding: 14px 46px 14px 22px;
+    clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+  }
+  .report-header .header-right { padding: 14px 22px; font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+  .report-header .header-right b { color: var(--text-primary); }
+  .report-header .mini-logo { width: 20px; height: 20px; border-radius: 5px; background: var(--orange); display: inline-flex; align-items: center; justify-content: center; }
+  .report-header .mini-logo span { width: 9px; height: 9px; border-radius: 2px; background: #fff; }
+
+  .report-meta-row { display: flex; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .report-meta-row .meta-item {
+    flex: 1; padding: 14px 22px; border-right: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 10px; background: var(--bg-header);
+  }
+  .report-meta-row .meta-item:last-child { border-right: none; }
+  .report-meta-row .meta-item svg { width: 17px; height: 17px; stroke: var(--text-secondary); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; flex-shrink: 0; }
+  .report-meta-row .mi-val { font-weight: 600; font-size: 13px; }
+  .report-meta-row .mi-lbl { font-size: 11.5px; color: var(--text-secondary); }
+
+  .report-parties { display: flex; border-bottom: 1px solid var(--border); padding: 16px 22px; gap: 26px; }
+  .report-parties .party { flex: 1; }
+  .report-parties .p-title { font-size: 11.5px; font-weight: 700; margin-bottom: 6px; }
+  .report-parties .p-line { font-size: 12.5px; margin-bottom: 2px; color: var(--text-secondary); }
+  .report-parties .p-line b { font-weight: 600; color: var(--text-primary); }
+
+  .report-result-banner { text-align: center; padding: 18px 20px; border-bottom: 1px solid var(--border); }
+  .report-result-banner .rr-label { font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .03em; }
+  .report-result-banner .rr-text { font-size: 16px; font-weight: 700; }
+
+  .report-section-label {
+    background: var(--bg-header); font-size: 11.5px; font-weight: 700;
+    padding: 8px 22px; border-bottom: 1px solid var(--border); border-top: 1px solid var(--border);
+  }
+
+  .report-beleg-meta { display: flex; padding: 14px 22px; gap: 26px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+  .report-beleg-meta .rb-lbl { font-size: 11px; color: var(--text-secondary); margin-bottom: 2px; }
+  .report-beleg-meta .rb-val { font-weight: 600; }
+
+  .report-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .report-table th { text-align: right; padding: 10px 22px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+  .report-table th:first-child { text-align: left; }
+  .report-table td { padding: 9px 22px; border-bottom: 1px solid var(--border); text-align: right; }
+  .report-table td:first-child { text-align: left; color: var(--text-secondary); }
+  .report-table tr.recommend td { padding-top: 12px; font-weight: 700; border-bottom: 1px solid var(--border); }
+
+  .report-triple { display: flex; border-bottom: 1px solid var(--border); }
+  .report-triple .rt-col { flex: 1; padding: 14px 22px; border-right: 1px solid var(--border); }
+  .report-triple .rt-col:last-child { border-right: none; }
+  .report-triple .rt-title { font-size: 11.5px; font-weight: 700; margin-bottom: 8px; }
+  .report-quality-row { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; padding: 4px 0; }
+  .report-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .report-dot.green { background: var(--green-text); }
+  .report-dot.amber { background: var(--amber-text); }
+  .report-dot.red { background: var(--red-text); }
+
+  .report-notes { padding: 16px 22px; font-size: 12.5px; line-height: 1.65; }
+  .report-notes p { margin: 0 0 8px; }
+
+  .report-footer { padding: 14px 22px; font-size: 11px; color: var(--text-secondary); display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<div class="stepper">
+  <span id="step-1" class="current">1 · Claims List</span>
+  <span id="step-2">2 · Tasks</span>
+  <span id="step-3">3 · Claim File (Assessment)</span>
+  <span id="step-4">4 · Document Review</span>
+  <span id="step-5">5 · Document Detail</span>
+  <span id="step-6">6 · Manual Editing</span>
+  <span id="step-7">7 · Schedule-of-Services Check</span>
+  <span id="step-8">8 · Review Report Preview</span>
+</div>
+
+<!-- ===================== SCREEN 1: CLAIMS LIST ===================== -->
+<div class="screen visible" id="screen-1">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="active">Claims</span>
+    <span>User Management</span>
+    <span class="nav-link" onclick="goTo(2)">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="content">
+    <div class="toolbar">
+      <h1>Claims List</h1>
+      <div class="pill-toggle">
+        <span>Active</span>
+        <span class="active">All</span>
+      </div>
+    </div>
+
+    <table>
+      <colgroup>
+        <col class="col-schaden">
+        <col class="col-produkt">
+        <col class="col-typ">
+        <col class="col-eingang">
+        <col class="col-vn">
+        <col class="col-reserve">
+        <col class="col-ort">
+        <col class="col-gefahr">
+        <col class="col-zuweisung">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Claim Number</th>
+          <th class="produkt-header">Product</th>
+          <th>Type</th>
+          <th>Received<span class="sub">Date of Loss</span></th>
+          <th>Policyholder</th>
+          <th>Initial Reserve</th>
+          <th>Loss Location</th>
+          <th>Peril<span class="sub">Line of Business</span></th>
+          <th>Assignment</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr data-produkt="belegpruefung" class="claim-clickable" onclick="goTo(3)">
+          <td class="claim-id">Test_Claim_17<span class="open-hint">open →</span></td>
+          <td class="new-column-cell"><span class="badge badge-belegpruefung">Document Review</span></td>
+          <td><div class="type-icon">📄</div></td>
+          <td>16.06.2026<div class="sub-text">19.05.2025</div></td>
+          <td>Ida Steller</td>
+          <td>10.000 €</td>
+          <td>28195 Bremen<div class="sub-text">Domhof 26</div></td>
+          <td>Water Damage<div class="sub-text"><b>Property</b> Building</div></td>
+          <td>Becker, Thomas<br><span class="zuweisung-tag tag-intern">Internal</span></td>
+        </tr>
+
+        <tr data-produkt="desktop">
+          <td class="claim-id">Test_10</td>
+          <td class="new-column-cell"><span class="badge badge-desktop">Desktop</span></td>
+          <td><div class="type-icon">🏠</div></td>
+          <td>11.06.2026<div class="sub-text">02.06.2026</div></td>
+          <td>Malte Möller</td>
+          <td>580 €</td>
+          <td>76131 Karlsruhe<div class="sub-text">Emmy-Noether-...</div></td>
+          <td>Vandalism<div class="sub-text"><b>Property</b> Transport</div></td>
+          <td>claimsforce<br><span class="zuweisung-tag tag-extern">External</span></td>
+        </tr>
+
+        <tr data-produkt="aussen">
+          <td class="claim-id">Test_Claim_16</td>
+          <td class="new-column-cell"><span class="badge badge-aussen">Field Adjustment</span></td>
+          <td><div class="type-icon">📄</div></td>
+          <td>11.06.2026<div class="sub-text">11.06.2026</div></td>
+          <td>Kathrin Hof...</td>
+          <td></td>
+          <td>60433 Frankfurt<div class="sub-text">Lichtenbergstra...</div></td>
+          <td>Liability - Pet Owner...<div class="sub-text"><b>Liability</b> Pet Owner Liab...</div></td>
+          <td><i>Not assigned</i></td>
+        </tr>
+
+        <tr data-produkt="belegpruefung">
+          <td class="claim-id">Test_Claim_15</td>
+          <td class="new-column-cell"><span class="badge badge-belegpruefung">Document Review</span></td>
+          <td><div class="type-icon">📄</div></td>
+          <td>11.06.2026<div class="sub-text">04.06.2026</div></td>
+          <td>Melissa Schä...</td>
+          <td></td>
+          <td>34123 Kassel<div class="sub-text">Leipziger Straße...</div></td>
+          <td>Theft<div class="sub-text"><b>Property</b> Household Contents</div></td>
+          <td>Herrmann, Marie-Lou...<br><span class="zuweisung-tag tag-intern">Internal</span></td>
+        </tr>
+
+        <tr data-produkt="desktop">
+          <td class="claim-id">Test_9</td>
+          <td class="new-column-cell"><span class="badge badge-desktop">Desktop</span></td>
+          <td><div class="type-icon">🏠</div></td>
+          <td>11.06.2026<div class="sub-text">08.06.2026</div></td>
+          <td>Anna Schnei...</td>
+          <td>1.000 €</td>
+          <td>56068 Koblenz<div class="sub-text">Jesuitenplatz 2</div></td>
+          <td>Attempted b...<div class="sub-text"><b>Property</b> Household Contents</div></td>
+          <td>claimsforce<br><span class="zuweisung-tag tag-extern">External</span></td>
+        </tr>
+
+        <tr data-produkt="aussen">
+          <td class="claim-id">Test_Claim_12</td>
+          <td class="new-column-cell"><span class="badge badge-aussen">Field Adjustment</span></td>
+          <td><div class="type-icon">🏠</div></td>
+          <td>11.06.2026<div class="sub-text">11.06.2026</div></td>
+          <td>Jule Hansen</td>
+          <td>20.000 €</td>
+          <td>22525 Hamburg<div class="sub-text">Kieler Straße 171</div></td>
+          <td>Accident of th...<div class="sub-text"><b>Property</b> Transport</div></td>
+          <td>Becker, Thomas<br><span class="zuweisung-tag tag-intern">Internal</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <div class="legend">
+      <span><span class="dot" style="background:#378ADD;"></span>Document Review</span>
+      <span><span class="dot" style="background:#7F77DD;"></span>Desktop</span>
+      <span><span class="dot" style="background:#D85A30;"></span>Field Adjustment</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN 2: TASKS ===================== -->
+<div class="screen" id="screen-2">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="nav-link" onclick="goTo(1)">Claims</span>
+    <span>User Management</span>
+    <span class="active">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="content">
+    <div class="toolbar">
+      <h1>Tasks</h1>
+      <span class="filter-icon">▽</span>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card active"><div class="stat-number">16</div><div class="stat-label">All</div></div>
+      <div class="stat-card"><div class="stat-number">14</div><div class="stat-label">Overdue</div></div>
+      <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">Due Today</div></div>
+      <div class="stat-card"><div class="stat-number">2</div><div class="stat-label">On Time</div></div>
+      <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">No Deadline</div></div>
+      <div class="stat-card"><div class="stat-number">0</div><div class="stat-label">SLA Extensions</div></div>
+    </div>
+
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th class="col-check"><input type="checkbox"></th>
+          <th>Claim Number<div class="sub">Assigned Adjuster</div></th>
+          <th>Created ▾</th>
+          <th>Due ▾</th>
+          <th>Task</th>
+          <th>Responsible</th>
+          <th>Back-Office Staff</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div class="task-claimnumber" onclick="goTo(4)">Test_Claim_17</div>
+            <div class="task-regulator">Becker, Thomas</div>
+          </td>
+          <td>2 days ago</td>
+          <td>
+            <span class="task-duefällig ontrack"><span class="clock">⏱</span><a onclick="goTo(4)">in 3 days</a></span>
+          </td>
+          <td>
+            Review documents
+            <div class="task-aufgabe-sub">(2 new documents received)</div>
+          </td>
+          <td>Becker, Thomas</td>
+          <td></td>
+          <td><button class="task-action-btn" onclick="goTo(4)">Review</button><span class="task-row-menu">⋮</span></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div class="task-claimnumber">Test_Claim_3</div>
+            <div class="task-regulator">Becker, Thomas</div>
+          </td>
+          <td>1 month ago</td>
+          <td>
+            <span class="task-duefällig overdue"><span class="clock">⏱</span><a>1 month ago</a></span>
+          </td>
+          <td>Establish first contact</td>
+          <td>Becker, Thomas</td>
+          <td></td>
+          <td><button class="task-action-btn">Review</button><span class="task-row-menu">⋮</span></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div class="task-claimnumber">Test_Claim_1</div>
+            <div class="task-regulator">Herrmann, Marie-Louise</div>
+          </td>
+          <td>1 month ago</td>
+          <td>
+            <span class="task-duefällig overdue"><span class="clock">⏱</span><a>1 month ago</a></span>
+          </td>
+          <td>
+            Schedule inspection appointment
+            <div class="task-aufgabe-sub">(Waiting on adjuster)</div>
+          </td>
+          <td>Herrmann, Marie-Louise</td>
+          <td></td>
+          <td><button class="task-action-btn">Review</button><span class="task-row-menu">⋮</span></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div class="task-claimnumber">Test_Claim_4</div>
+            <div class="task-regulator">Herrmann, Marie-Louise</div>
+          </td>
+          <td>1 month ago</td>
+          <td>
+            <span class="task-duefällig overdue"><span class="clock">⏱</span><a>1 month ago</a></span>
+          </td>
+          <td>
+            Send report
+            <div class="task-aufgabe-sub">(Waiting on adjuster)</div>
+          </td>
+          <td>Herrmann, Marie-Louise</td>
+          <td></td>
+          <td><button class="task-action-btn">Review</button><span class="task-row-menu">⋮</span></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div class="task-claimnumber">Test_Claim_6</div>
+          </td>
+          <td>1 month ago</td>
+          <td>
+            <span class="task-duefällig overdue"><span class="clock">⏱</span><a>1 month ago</a></span>
+          </td>
+          <td>Establish first contact</td>
+          <td>Back Office</td>
+          <td></td>
+          <td><button class="task-action-btn">Review</button><span class="task-row-menu">⋮</span></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div class="task-claimnumber">Test_Claim_10</div>
+            <div class="task-regulator">Becker, Thomas</div>
+          </td>
+          <td>1 month ago</td>
+          <td>
+            <span class="task-duefällig overdue"><span class="clock">⏱</span><a>1 month ago</a></span>
+          </td>
+          <td>
+            Accept claim
+            <div class="task-aufgabe-sub">(Waiting on adjuster)</div>
+          </td>
+          <td>Becker, Thomas</td>
+          <td></td>
+          <td><button class="task-action-btn">Review</button><span class="task-row-menu">⋮</span></td>
+        </tr>
+
+        <tr>
+          <td><input type="checkbox"></td>
+          <td>
+            <div class="task-claimnumber">Test_Claim_7</div>
+          </td>
+          <td>1 month ago</td>
+          <td>
+            <span class="task-duefällig overdue"><span class="clock">⏱</span><a>1 month ago</a></span>
+          </td>
+          <td>Establish first contact</td>
+          <td>Back Office</td>
+          <td></td>
+          <td><button class="task-action-btn">Review</button><span class="task-row-menu">⋮</span></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN 3: CLAIM FILE / ASSESSMENT ===================== -->
+<div class="screen" id="screen-3">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="active">Claims</span>
+    <span>User Management</span>
+    <span class="nav-link" onclick="goTo(2)">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="body-layout">
+    <div class="icon-rail">
+      <div class="rail-item active">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8.5" y1="10" x2="15.5" y2="10"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/><line x1="8.5" y1="17" x2="13" y2="17"/></svg>
+        <span class="tooltip">Assessment</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M6.5 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 15.9 8.05 4.5 4.5 0 0 1 17.5 17"/><path d="M9 16l3-3 3 3"/><line x1="12" y1="13" x2="12" y2="20"/></svg>
+        <span class="tooltip">Recordings / Upload</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><line x1="8.5" y1="8" x2="10" y2="8"/><line x1="13.5" y1="8" x2="15" y2="8"/><line x1="8.5" y1="11.5" x2="10" y2="11.5"/><line x1="13.5" y1="11.5" x2="15" y2="11.5"/><line x1="8.5" y1="15" x2="10" y2="15"/><line x1="13.5" y1="15" x2="15" y2="15"/><line x1="10.5" y1="21" x2="13.5" y2="21"/></svg>
+        <span class="tooltip">Building / Property</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="M4.5 7l7.5 6 7.5-6"/></svg>
+        <span class="tooltip">Communication</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+        <span class="tooltip">Documents</span>
+      </div>
+      <div class="rail-item clickable" onclick="goTo(4)">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/><line x1="8.5" y1="15" x2="13" y2="15"/></svg>
+        <span class="tooltip">Document Review</span>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb">
+        <span class="crumb-link" onclick="goTo(1)">Claims</span>
+        <span class="sep">›</span>
+        <span class="current">Test_Claim_17</span>
+      </div>
+
+      <h1>Test_Claim_17 | Assessment</h1>
+
+      <div class="section-head">
+        <h2>Recordings</h2>
+        <button class="btn">Add ▾</button>
+      </div>
+      <div class="placeholder-box">
+        <div class="icon">📂</div>
+        As soon as an adjuster accepts the claim, a recording is automatically added
+      </div>
+
+      <div class="section-head">
+        <h2>Forms</h2>
+        <button class="btn">Add ▾</button>
+      </div>
+      <div class="placeholder-box">
+        <div class="icon">📄</div>
+        Added forms are displayed here
+      </div>
+    </div>
+
+    <div class="sidepanel">
+      <div class="tabs">
+        <div class="left">
+          <span class="tab-active">Details</span>
+          <span class="tab">Notes</span>
+          <span class="tab">History</span>
+        </div>
+        <span>ⓘ ⌄</span>
+      </div>
+
+      <div class="alert">
+        <span>⏱ Accept claim – 3 weeks ago</span>
+        <span>✏️ 🗑️</span>
+      </div>
+
+      <h3 class="small-head">Current Assignment</h3>
+      <div class="assignee">👤 Becker, Thomas</div>
+
+      <div class="badge-row">
+        <span class="product-badge">Document Review</span>
+        <div>
+          <div style="font-weight:600;">claimsforce</div>
+          <div style="color:var(--text-secondary); font-size:12px;">Test_Claim_17</div>
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <div><div class="val">Water Damage</div><div class="lbl">Property Private · Building · Pipe Burst</div></div>
+        <div><div class="val">-</div><div class="lbl">Terms</div></div>
+        <div><div class="val">10.000,00 €</div><div class="lbl">Initial Reserve</div></div>
+        <div><div class="val">850,00 €</div><div class="lbl">Deductible</div></div>
+        <div><div class="val">100.000,00 €</div><div class="lbl">Sum Insured</div></div>
+        <div><div class="val">16.06.2026</div><div class="lbl">Date Created</div></div>
+        <div><div class="val">20.05.2026</div><div class="lbl">Date of Loss</div></div>
+        <div><div class="val">Same as loss location</div><div class="lbl">Inspection Location</div></div>
+        <div><div class="val">Domshof 26, 28195 Bremen</div><div class="lbl">Loss Location</div></div>
+      </div>
+
+      <div class="contact">
+        <div style="color:var(--text-secondary); margin-bottom:8px;">Policyholder - Ida Steller</div>
+        <div class="contact-row">@ ida.steller@maill.com</div>
+        <div class="contact-row">📞 +4940123456</div>
+        <div class="contact-row">📍 Domshof 26, 28195 Bremen <span style="margin-left:auto; color:var(--blue-line);">Open map</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN 4: DOCUMENT REVIEW ===================== -->
+<div class="screen" id="screen-4">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="active">Claims</span>
+    <span>User Management</span>
+    <span class="nav-link" onclick="goTo(2)">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="body-layout">
+    <div class="icon-rail">
+      <div class="rail-item clickable" onclick="goTo(3)">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8.5" y1="10" x2="15.5" y2="10"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/><line x1="8.5" y1="17" x2="13" y2="17"/></svg>
+        <span class="tooltip">Assessment</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M6.5 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 15.9 8.05 4.5 4.5 0 0 1 17.5 17"/><path d="M9 16l3-3 3 3"/><line x1="12" y1="13" x2="12" y2="20"/></svg>
+        <span class="tooltip">Recordings / Upload</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><line x1="8.5" y1="8" x2="10" y2="8"/><line x1="13.5" y1="8" x2="15" y2="8"/><line x1="8.5" y1="11.5" x2="10" y2="11.5"/><line x1="13.5" y1="11.5" x2="15" y2="11.5"/><line x1="8.5" y1="15" x2="10" y2="15"/><line x1="13.5" y1="15" x2="15" y2="15"/><line x1="10.5" y1="21" x2="13.5" y2="21"/></svg>
+        <span class="tooltip">Building / Property</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="M4.5 7l7.5 6 7.5-6"/></svg>
+        <span class="tooltip">Communication</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+        <span class="tooltip">Documents</span>
+      </div>
+      <div class="rail-item active">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/><line x1="8.5" y1="15" x2="13" y2="15"/></svg>
+        <span class="rail-badge">2</span>
+        <span class="tooltip">Document Review · 2 new documents</span>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb">
+        <span class="crumb-link" onclick="goTo(1)">Claims</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(3)">Test_Claim_17</span>
+        <span class="sep">›</span>
+        <span class="current">Document Review</span>
+      </div>
+
+      <div class="page-head">
+        <h1>Test_Claim_17 | Document Review<span class="claim-tag">🧾 Document Review</span></h1>
+      </div>
+
+      <div class="disclaimer-banner">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="13"/><circle cx="12" cy="16.2" r="0.6" fill="currentColor" stroke="none"/></svg>
+        <span><b>Note:</b> Documents (invoices, quotes, cost estimates, etc.) do not appear automatically in this list. They must be actively uploaded from the DMS or another source – see "Add document" on the right.</span>
+      </div>
+
+      <div class="columns">
+        <div class="col-list">
+          <div class="section-head">
+            <h2>Documents <span class="count-tag">(6)</span></h2>
+            <button class="btn">Sort ▾</button>
+          </div>
+
+          <div class="beleg-list">
+
+            <div class="beleg-list-head">
+              <span class="h-icon"></span>
+              <span class="h-main">Document</span>
+              <span class="h-amount">Amount</span>
+              <span class="h-date">Date</span>
+              <span class="h-origin">Origin</span>
+              <span class="h-status">Status</span>
+              <span class="h-menu"></span>
+            </div>
+
+            <div class="beleg-row" onclick="goTo(5)">
+              <div class="beleg-icon"><svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/></svg></div>
+              <div class="beleg-main">
+                <div class="beleg-name">Handwerkerrechnung_Sanitaer.pdf</div>
+                <div class="beleg-meta">Invoice · Pipe Burst Repair</div>
+              </div>
+              <div class="beleg-amount">3.240,00 €</div>
+              <div class="beleg-date">16.06.2026</div>
+              <span class="origin-badge origin-source">Original</span>
+              <span class="status status-ok">Reviewed</span>
+              <span class="row-menu">⋮</span>
+            </div>
+
+            <div class="beleg-row" onclick="goTo(5)">
+              <div class="beleg-icon"><svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/></svg></div>
+              <div class="beleg-main">
+                <div class="beleg-name">Kostenvoranschlag_Bodenbelag.pdf</div>
+                <div class="beleg-meta">Cost Estimate · Drying</div>
+              </div>
+              <div class="beleg-amount">1.890,00 €</div>
+              <div class="beleg-date">17.06.2026</div>
+              <span class="origin-badge origin-precheck">PX Pre-Check</span>
+              <span class="status status-open">Open</span>
+              <span class="row-menu">⋮</span>
+            </div>
+
+            <div class="beleg-row" onclick="goTo(5)">
+              <div class="beleg-icon"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1.5"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="10.5" x2="16" y2="10.5"/></svg></div>
+              <div class="beleg-main">
+                <div class="beleg-name">Kassenbon_Trockengeraet.jpg</div>
+                <div class="beleg-meta">Receipt · Rental Equipment</div>
+              </div>
+              <div class="beleg-amount">210,00 €</div>
+              <div class="beleg-date">18.06.2026</div>
+              <span class="origin-badge origin-source">Original</span>
+              <span class="status status-ok">Reviewed</span>
+              <span class="row-menu">⋮</span>
+            </div>
+
+            <div class="beleg-row" onclick="goTo(5)">
+              <div class="beleg-icon"><svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/></svg></div>
+              <div class="beleg-main">
+                <div class="beleg-name">Rechnung_Malerarbeiten.pdf</div>
+                <div class="beleg-meta">Invoice · Repair</div>
+              </div>
+              <div class="beleg-amount">980,00 €</div>
+              <div class="beleg-date">19.06.2026</div>
+              <span class="origin-badge origin-precheck">PX Pre-Check</span>
+              <span class="status status-rejected">Rejected</span>
+              <span class="row-menu">⋮</span>
+            </div>
+
+            <div class="beleg-row" onclick="goTo(5)">
+              <div class="beleg-icon"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1.5"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="10.5" x2="16" y2="10.5"/></svg></div>
+              <div class="beleg-main">
+                <div class="beleg-name">Foto_Schadenbereich_02.png</div>
+                <div class="beleg-meta">Evidence Photo · Building Damage</div>
+              </div>
+              <div class="beleg-amount">–</div>
+              <div class="beleg-date">19.06.2026</div>
+              <span class="origin-badge origin-source">Original</span>
+              <span class="status status-open">Open</span>
+              <span class="row-menu">⋮</span>
+            </div>
+
+            <div class="beleg-row" onclick="goTo(5)">
+              <div class="beleg-icon"><svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/></svg></div>
+              <div class="beleg-main">
+                <div class="beleg-name">Rechnung_Container_Entsorgung.pdf</div>
+                <div class="beleg-meta">Invoice · Disposal</div>
+              </div>
+              <div class="beleg-amount">450,00 €</div>
+              <div class="beleg-date">21.06.2026</div>
+              <span class="origin-badge origin-precheck">PX Pre-Check</span>
+              <span class="status status-ok">Reviewed</span>
+              <span class="row-menu">⋮</span>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="col-upload">
+          <div class="section-head">
+            <h2>Add document</h2>
+          </div>
+
+          <div class="dropzone" id="dropzone">
+            <div class="dz-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 16V6"/><path d="M8 10l4-4 4 4"/><path d="M5 17v1.5A1.5 1.5 0 0 0 6.5 20h11a1.5 1.5 0 0 0 1.5-1.5V17"/></svg>
+            </div>
+            <div class="dz-title">Drag documents here</div>
+            <div class="dz-sub">PDF, JPG, or PNG · multiple selection possible</div>
+            <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">Select file</button>
+            <input type="file" id="file-input" multiple style="display:none">
+          </div>
+
+          <div class="upload-divider"><span>or</span></div>
+
+          <button class="btn btn-secondary-wide">
+            <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8.5" y1="10" x2="15.5" y2="10"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/></svg>
+            Upload from claim
+          </button>
+          <div class="upload-caption" style="margin-bottom:14px;">Import documents already stored in the claim file (e.g., from Recordings or Documents) as a document.</div>
+
+          <div class="upload-caption">
+            <b>Supported formats:</b> PDF, JPG, PNG · max. 25 MB per file.<br>
+            Uploaded documents automatically appear in the list on the left and receive the status "Open" until they have been reviewed.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN 5: DOCUMENT DETAIL / ORIENTATION ===================== -->
+<div class="screen" id="screen-5">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="active">Claims</span>
+    <span>User Management</span>
+    <span class="nav-link" onclick="goTo(2)">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="body-layout">
+    <div class="icon-rail">
+      <div class="rail-item clickable" onclick="goTo(3)">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8.5" y1="10" x2="15.5" y2="10"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/><line x1="8.5" y1="17" x2="13" y2="17"/></svg>
+        <span class="tooltip">Assessment</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M6.5 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 15.9 8.05 4.5 4.5 0 0 1 17.5 17"/><path d="M9 16l3-3 3 3"/><line x1="12" y1="13" x2="12" y2="20"/></svg>
+        <span class="tooltip">Recordings / Upload</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><line x1="8.5" y1="8" x2="10" y2="8"/><line x1="13.5" y1="8" x2="15" y2="8"/><line x1="8.5" y1="11.5" x2="10" y2="11.5"/><line x1="13.5" y1="11.5" x2="15" y2="11.5"/><line x1="8.5" y1="15" x2="10" y2="15"/><line x1="13.5" y1="15" x2="15" y2="15"/><line x1="10.5" y1="21" x2="13.5" y2="21"/></svg>
+        <span class="tooltip">Building / Property</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="M4.5 7l7.5 6 7.5-6"/></svg>
+        <span class="tooltip">Communication</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+        <span class="tooltip">Documents</span>
+      </div>
+      <div class="rail-item active">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/><line x1="8.5" y1="15" x2="13" y2="15"/></svg>
+        <span class="tooltip">Document Review</span>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb">
+        <span class="crumb-link" onclick="goTo(1)">Claims</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(3)">Test_Claim_17</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(4)">Document Review</span>
+        <span class="sep">›</span>
+        <span class="current">Handwerkerrechnung_Sanitaer.pdf</span>
+      </div>
+
+      <div class="detail-head">
+        <div>
+          <h1>Handwerkerrechnung_Sanitaer.pdf</h1>
+          <div class="detail-meta">Invoice · Pipe Burst Repair · uploaded on 16.06.2026 · 3.240,00 €</div>
+        </div>
+        <span class="status status-ok" style="width:auto; padding:4px 14px; margin-left:auto;">Reviewed</span>
+      </div>
+
+      <div class="detail-columns">
+
+        <div class="preview-panel">
+          <div class="preview-panel-head">
+            <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+            <span>Original</span>
+            <span class="tools">🔍 ⤓</span>
+          </div>
+          <div class="preview-body">
+            <div class="scan-sheet">
+              <div class="scan-logo"></div>
+              <div class="scan-line" style="width:70%;"></div>
+              <div class="scan-line short"></div>
+              <div class="scan-block"></div>
+              <div class="scan-line tiny"></div>
+              <div class="scan-line tiny short"></div>
+              <div class="scan-line tiny"></div>
+              <div class="scan-line tiny" style="width:40%;"></div>
+              <div class="scan-block" style="height:60px;"></div>
+              <div class="scan-line tiny"></div>
+              <div class="scan-line tiny short"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-panel">
+          <div class="preview-panel-head">
+            <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+            <span>Digitized</span>
+            <span class="tools">⤓</span>
+          </div>
+          <div class="preview-body">
+            <div class="digital-card">
+              <div class="digital-section-label">Document Data</div>
+              <div class="digital-row"><span class="lbl">Issuer</span><span class="val">Sanitär Schmidt GmbH</span></div>
+              <div class="digital-row"><span class="lbl">Invoice Number</span><span class="val">RE-2026-4471</span></div>
+              <div class="digital-row"><span class="lbl">Invoice Date</span><span class="val">15.06.2026</span></div>
+              <div class="digital-row"><span class="lbl">Service Date</span><span class="val">10.–14.06.2026</span></div>
+
+              <div class="digital-table">
+                <div class="digital-section-label">Line Items</div>
+                <div class="trow"><span>Pipe Burst Repair, Material</span><span>1.450,00 €</span></div>
+                <div class="trow"><span>Labor (18 hrs.)</span><span>1.260,00 €</span></div>
+                <div class="trow"><span>Travel / Flat Fee</span><span>120,00 €</span></div>
+                <div class="ttotal"><span>Net Amount</span><span>2.723,53 €</span></div>
+                <div class="trow"><span>VAT 19%</span><span>516,47 €</span></div>
+                <div class="ttotal grand"><span>Gross Amount</span><span>3.240,00 €</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-panel">
+          <div class="actions-panel-label">Select next action</div>
+          <div class="actions-panel-sub">The document will not be changed until an action is selected.</div>
+
+          <div class="action-card card-edit" onclick="goTo(6)">
+            <span class="action-num">1</span>
+            <div class="action-card-top">
+              <div class="action-icon"><svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4-10 10z"/><path d="M13 6l4 4"/></svg></div>
+              <div>
+                <div class="action-title">Manual Editing</div>
+                <div class="action-sub">Manually adjust the document's line items, amounts, and fields</div>
+              </div>
+            </div>
+            <span class="action-cta">Open <span class="arrow">›</span></span>
+          </div>
+
+          <div class="action-card card-lv" onclick="goTo(7)">
+            <span class="action-num">2</span>
+            <div class="action-card-top">
+              <div class="action-icon"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/></svg></div>
+              <div>
+                <div class="action-title">Check Against Schedule of Services</div>
+                <div class="action-sub">Automatically match line items against stored services</div>
+              </div>
+            </div>
+            <span class="action-cta">Start check <span class="arrow">›</span></span>
+          </div>
+
+          <div class="action-card card-price">
+            <span class="action-num">3</span>
+            <div class="action-card-top">
+              <div class="action-icon"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6"/><path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></svg></div>
+              <div>
+                <div class="action-title">Check Against Price Database</div>
+                <div class="action-sub">Compare unit prices against standard market reference values</div>
+              </div>
+            </div>
+            <span class="action-cta">Start check <span class="arrow">›</span></span>
+          </div>
+
+          <div class="orientation-note">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.7" r="0.6" fill="currentColor" stroke="none"/></svg>
+            <span>This screen is for orientation within the document only. Editing and review take place only after one of the three actions is selected.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN 6: MANUAL EDITING ===================== -->
+<div class="screen" id="screen-6">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="active">Claims</span>
+    <span>User Management</span>
+    <span class="nav-link" onclick="goTo(2)">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="body-layout">
+    <div class="icon-rail">
+      <div class="rail-item clickable" onclick="goTo(3)">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8.5" y1="10" x2="15.5" y2="10"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/><line x1="8.5" y1="17" x2="13" y2="17"/></svg>
+        <span class="tooltip">Assessment</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M6.5 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 15.9 8.05 4.5 4.5 0 0 1 17.5 17"/><path d="M9 16l3-3 3 3"/><line x1="12" y1="13" x2="12" y2="20"/></svg>
+        <span class="tooltip">Recordings / Upload</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><line x1="8.5" y1="8" x2="10" y2="8"/><line x1="13.5" y1="8" x2="15" y2="8"/><line x1="8.5" y1="11.5" x2="10" y2="11.5"/><line x1="13.5" y1="11.5" x2="15" y2="11.5"/><line x1="8.5" y1="15" x2="10" y2="15"/><line x1="13.5" y1="15" x2="15" y2="15"/><line x1="10.5" y1="21" x2="13.5" y2="21"/></svg>
+        <span class="tooltip">Building / Property</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="M4.5 7l7.5 6 7.5-6"/></svg>
+        <span class="tooltip">Communication</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+        <span class="tooltip">Documents</span>
+      </div>
+      <div class="rail-item active clickable" onclick="goTo(4)">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/><line x1="8.5" y1="15" x2="13" y2="15"/></svg>
+        <span class="tooltip">Document Review</span>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb">
+        <span class="crumb-link" onclick="goTo(1)">Claims</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(3)">Test_Claim_17</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(4)">Document Review</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(5)">Handwerkerrechnung_Sanitaer.pdf</span>
+        <span class="sep">›</span>
+        <span class="current">Manual Editing</span>
+      </div>
+
+      <div class="page-head">
+        <h1>Manual Editing</h1>
+        <button class="preview-cta-btn" onclick="goTo(8)">
+          <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          View review report preview
+        </button>
+      </div>
+
+      <div class="edit-infobar">
+        <div class="info-item"><div class="lbl">Issuer</div><div class="val">Sanitär Schmidt GmbH</div></div>
+        <div class="info-item"><div class="lbl">Invoice Number</div><div class="val">RE-2026-4471</div></div>
+        <div class="info-item"><div class="lbl">Invoice Date</div><div class="val">15.06.2026</div></div>
+        <div class="info-item"><div class="lbl">Origin</div><div class="val">Original</div></div>
+        <span class="view-original" onclick="goTo(5)">
+          <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+          View original
+        </span>
+      </div>
+
+      <div class="positions-label">
+        <span>Line Items <span class="count-tag">(3)</span></span>
+        <span class="count-tag">1 adjusted · 2 unchanged</span>
+      </div>
+
+      <div class="position-list">
+
+        <div class="position-item">
+          <div class="pr-row">
+            <span class="pr-num">1</span>
+            <div class="pr-name-block"><div class="pr-name">Pipe Burst Repair, Material</div></div>
+            <div class="pr-field"><label>Quantity</label><input type="text" value="1"></div>
+            <div class="pr-field"><label>Unit</label><input type="text" value="Pausch." disabled></div>
+            <div class="pr-field price"><label>Unit Price</label><input type="text" value="1.450,00 €"></div>
+            <div class="pr-total-block"><span class="pr-total-label">Total</span><span class="pr-total">1.450,00 €</span></div>
+            <div class="pr-status-block">
+              <span class="position-pill ok">OK</span>
+              <span class="review-toggle reviewed" title="Marked as reviewed"><svg viewBox="0 0 24 24"><path d="M4 12l5 5 11-11"/></svg></span>
+            </div>
+          </div>
+          <div class="pr-comment">
+            <label>Comment (optional)</label>
+            <input type="text" placeholder="Free-text comment on this line item …">
+          </div>
+        </div>
+
+        <div class="position-item is-adjusted">
+          <div class="pr-row">
+            <span class="pr-num">2</span>
+            <div class="pr-name-block"><div class="pr-name">Labor</div></div>
+            <div class="pr-field"><label>Quantity</label><input type="text" value="15"></div>
+            <div class="pr-field"><label>Unit</label><input type="text" value="hrs." disabled></div>
+            <div class="pr-field price"><label>Unit Price</label><input type="text" value="70,00 €"></div>
+            <div class="pr-total-block"><span class="pr-total-label">Total</span><span class="pr-total diff">1.050,00 €</span></div>
+            <div class="pr-status-block">
+              <span class="position-pill adjusted">Adjusted</span>
+              <span class="review-toggle reviewed" title="Marked as reviewed"><svg viewBox="0 0 24 24"><path d="M4 12l5 5 11-11"/></svg></span>
+            </div>
+          </div>
+          <div class="pr-original-note">Original: 18 hrs. × 70,00 € = <span class="strike">1.260,00 €</span></div>
+          <div class="pr-comment">
+            <label>Comment (optional)</label>
+            <input type="text" value="Standard time per schedule of services: 15 hrs. Reduced from 18 to 15.">
+          </div>
+        </div>
+
+        <div class="position-item">
+          <div class="pr-row">
+            <span class="pr-num">3</span>
+            <div class="pr-name-block"><div class="pr-name">Travel / Flat Fee</div></div>
+            <div class="pr-field"><label>Quantity</label><input type="text" value="1"></div>
+            <div class="pr-field"><label>Unit</label><input type="text" value="Pausch." disabled></div>
+            <div class="pr-field price"><label>Unit Price</label><input type="text" value="120,00 €"></div>
+            <div class="pr-total-block"><span class="pr-total-label">Total</span><span class="pr-total">120,00 €</span></div>
+            <div class="pr-status-block">
+              <span class="position-pill ok">OK</span>
+              <span class="review-toggle" title="Not yet reviewed"><svg viewBox="0 0 24 24"><path d="M4 12l5 5 11-11"/></svg></span>
+            </div>
+          </div>
+          <div class="pr-comment">
+            <label>Comment (optional)</label>
+            <input type="text" placeholder="Free-text comment on this line item …">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-grid">
+          <div>
+            <div class="summary-col-label">Original</div>
+            <div class="summary-row"><span class="lbl">Net Amount</span><span class="val">2.723,53 €</span></div>
+            <div class="summary-row"><span class="lbl">VAT 19%</span><span class="val">516,47 €</span></div>
+            <div class="summary-row grand"><span class="lbl">Gross Amount</span><span class="val">3.240,00 €</span></div>
+          </div>
+          <div>
+            <div class="summary-col-label">Corrected</div>
+            <div class="summary-row"><span class="lbl">Net Amount</span><span class="val">2.211,34 €</span></div>
+            <div class="summary-row"><span class="lbl">VAT 19%</span><span class="val">420,16 €</span></div>
+            <div class="summary-row grand"><span class="lbl">Gross Amount</span><span class="val">2.631,50 €</span></div>
+          </div>
+        </div>
+
+        <div class="summary-comment">
+          <label>Overall comment on the document</label>
+          <textarea placeholder="General note on the settlement, shown in the review report for LVM and the contractor …">Line item 2 reduced to standard time per schedule of services; remaining line items confirmed.</textarea>
+        </div>
+
+        <div class="summary-actions">
+          <button class="btn btn-lg" onclick="goTo(5)">Cancel</button>
+          <button class="btn btn-lg">Save as draft</button>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; margin: 24px 0 8px;">
+        <button class="preview-cta-btn" onclick="goTo(8)">
+          <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          View review report preview
+        </button>
+      </div>
+
+      <div class="finish-heading">Finalize document</div>
+      <div class="finish-sub">Choose how to proceed with the reviewed document.</div>
+
+      <div class="finish-grid">
+        <div class="action-card card-finish">
+          <div class="action-card-top">
+            <div class="action-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5.5-6"/></svg></div>
+            <div>
+              <div class="action-title">Finalize</div>
+              <div class="action-sub">The document will be finalized and automatically sent to PX.</div>
+            </div>
+          </div>
+          <span class="action-cta">Finalize <span class="arrow">›</span></span>
+        </div>
+
+        <div class="action-card card-attach">
+          <div class="action-card-top">
+            <div class="action-icon"><svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><line x1="12" y1="10" x2="12" y2="15"/><line x1="9.5" y1="12.5" x2="14.5" y2="12.5"/></svg></div>
+            <div>
+              <div class="action-title">Attach to report</div>
+              <div class="action-sub">Attach the original document and reviewed digital version to the review report.</div>
+            </div>
+          </div>
+          <span class="action-cta">Attach <span class="arrow">›</span></span>
+        </div>
+
+        <div class="action-card card-message">
+          <div class="action-card-top">
+            <div class="action-icon"><svg viewBox="0 0 24 24"><path d="M4 6l8 6 8-6"/><rect x="4" y="6" width="16" height="12" rx="1.5"/></svg></div>
+            <div>
+              <div class="action-title">Send as message</div>
+              <div class="action-sub">Send the document along with the review result as a message.</div>
+            </div>
+          </div>
+          <span class="action-cta">Send <span class="arrow">›</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN 7 (NEW): CHECK AGAINST SCHEDULE OF SERVICES ===================== -->
+<div class="screen" id="screen-7">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="active">Claims</span>
+    <span>User Management</span>
+    <span class="nav-link" onclick="goTo(2)">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="body-layout">
+    <div class="icon-rail">
+      <div class="rail-item clickable" onclick="goTo(3)">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8.5" y1="10" x2="15.5" y2="10"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/><line x1="8.5" y1="17" x2="13" y2="17"/></svg>
+        <span class="tooltip">Assessment</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M6.5 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 15.9 8.05 4.5 4.5 0 0 1 17.5 17"/><path d="M9 16l3-3 3 3"/><line x1="12" y1="13" x2="12" y2="20"/></svg>
+        <span class="tooltip">Recordings / Upload</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><line x1="8.5" y1="8" x2="10" y2="8"/><line x1="13.5" y1="8" x2="15" y2="8"/><line x1="8.5" y1="11.5" x2="10" y2="11.5"/><line x1="13.5" y1="11.5" x2="15" y2="11.5"/><line x1="8.5" y1="15" x2="10" y2="15"/><line x1="13.5" y1="15" x2="15" y2="15"/><line x1="10.5" y1="21" x2="13.5" y2="21"/></svg>
+        <span class="tooltip">Building / Property</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="M4.5 7l7.5 6 7.5-6"/></svg>
+        <span class="tooltip">Communication</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+        <span class="tooltip">Documents</span>
+      </div>
+      <div class="rail-item active clickable" onclick="goTo(4)">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/><line x1="8.5" y1="15" x2="13" y2="15"/></svg>
+        <span class="tooltip">Document Review</span>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb">
+        <span class="crumb-link" onclick="goTo(1)">Claims</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(3)">Test_Claim_17</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(4)">Document Review</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(5)">Handwerkerrechnung_Sanitaer.pdf</span>
+        <span class="sep">›</span>
+        <span class="current">Check Against Schedule of Services</span>
+      </div>
+
+      <div class="page-head">
+        <h1>Check Against Schedule of Services</h1>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button class="btn btn-lg" onclick="goTo(5)">‹ Back to document</button>
+          <button class="btn btn-lg" style="display:inline-flex; align-items:center; gap:6px;">
+            <svg viewBox="0 0 24 24" style="width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round;"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></svg>
+            Re-run check
+          </button>
+          <button class="preview-cta-btn" onclick="goTo(8)">
+            <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            View review report preview
+          </button>
+        </div>
+      </div>
+
+      <div class="edit-infobar">
+        <div class="info-item"><div class="lbl">Issuer</div><div class="val">Sanitär Schmidt GmbH</div></div>
+        <div class="info-item"><div class="lbl">Invoice Number</div><div class="val">RE-2026-4471</div></div>
+        <div class="info-item"><div class="lbl">Invoice Date</div><div class="val">15.06.2026</div></div>
+        <div class="info-item"><div class="lbl">Schedule of Services</div><div class="val">PolygonVatro (Framework Agreement)</div></div>
+        <span class="view-original" onclick="goTo(5)">
+          <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+          View original
+        </span>
+      </div>
+
+      <div class="positions-label">
+        <span>Line Items <span class="count-tag">(3)</span></span>
+        <div class="lv-summary-tag">
+          <span class="chip green"><span class="dot"></span>1 plausible</span>
+          <span class="chip orange"><span class="dot"></span>1 missing information</span>
+          <span class="chip red"><span class="dot"></span>1 flagged</span>
+        </div>
+      </div>
+
+      <div class="lv-check-list">
+
+        <div class="lv-check-item">
+          <div class="lv-check-head">
+            <span class="pr-num">1</span>
+            <span class="lv-check-name">Pipe Burst Repair, Material</span>
+          </div>
+          <div class="lv-compare-grid">
+            <div class="lv-col lv-original">
+              <div class="lv-col-label">Original (Document)</div>
+              <div class="lv-col-numbers">
+                <div class="lv-fields">
+                  <div><div class="lv-field-label">Quantity</div><div class="lv-field-value">1</div></div>
+                  <div><div class="lv-field-label">Unit</div><div class="lv-field-value">Pausch.</div></div>
+                  <div><div class="lv-field-label">Unit Price</div><div class="lv-field-value">1.450,00 €</div></div>
+                </div>
+                <div class="lv-col-total">Total<b>1.450,00 €</b></div>
+              </div>
+            </div>
+            <div class="lv-compare-arrow">→</div>
+            <div class="lv-col lv-result">
+              <div class="lv-col-label">Schedule-of-Services Match</div>
+              <div class="lv-col-ref">No comparison value available in the schedule of services – material was billed as a flat amount without itemized breakdown.</div>
+              <div class="lv-col-numbers">
+                <div class="lv-fields">
+                  <div><div class="lv-field-label">Quantity</div><div class="lv-field-value muted">–</div></div>
+                  <div><div class="lv-field-label">Unit</div><div class="lv-field-value muted">–</div></div>
+                  <div><div class="lv-field-label">Unit Price</div><div class="lv-field-value muted">–</div></div>
+                </div>
+                <div class="lv-col-total muted">Total<b>n/a</b></div>
+              </div>
+            </div>
+            <div class="lv-col ampel-col">
+              <span class="ampel-badge ampel-orange"><span class="dot"></span>Missing Information</span>
+              <span class="ampel-note">A breakdown of material costs is required to match against the schedule of services. The check cannot be completed without itemized documentation.</span>
+            </div>
+            <div class="lv-col lv-missing">
+              <div class="lv-col-label">Potentially Missing Information</div>
+              <textarea class="lv-missing-input">Proof of material costs (supplier invoice) and a quantity breakdown of the material used are missing.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="lv-check-item">
+          <div class="lv-check-head">
+            <span class="pr-num">2</span>
+            <span class="lv-check-name">Labor</span>
+          </div>
+          <div class="lv-compare-grid">
+            <div class="lv-col lv-original">
+              <div class="lv-col-label">Original (Document)</div>
+              <div class="lv-col-numbers">
+                <div class="lv-fields">
+                  <div><div class="lv-field-label">Quantity</div><div class="lv-field-value">18</div></div>
+                  <div><div class="lv-field-label">Unit</div><div class="lv-field-value">Std.</div></div>
+                  <div><div class="lv-field-label">Unit Price</div><div class="lv-field-value">70,00 €</div></div>
+                </div>
+                <div class="lv-col-total">Total<b>1.260,00 €</b></div>
+              </div>
+            </div>
+            <div class="lv-compare-arrow">→</div>
+            <div class="lv-col lv-result">
+              <div class="lv-col-label">Schedule-of-Services Match</div>
+              <div class="lv-col-ref">Schedule item 2.10 (building services trades, skilled labor hours – plumbing) – standard time per schedule of services.</div>
+              <div class="lv-col-numbers">
+                <div class="lv-fields">
+                  <div><div class="lv-field-label">Quantity</div><div class="lv-field-value">15</div></div>
+                  <div><div class="lv-field-label">Unit</div><div class="lv-field-value">Std.</div></div>
+                  <div><div class="lv-field-label">Unit Price</div><div class="lv-field-value">65,00 €</div></div>
+                </div>
+                <div class="lv-col-total">Total<b>975,00 €</b></div>
+              </div>
+            </div>
+            <div class="lv-col ampel-col">
+              <span class="ampel-badge ampel-red"><span class="dot"></span>Strong Implausibility</span>
+              <span class="ampel-note">Both the number of hours (+20% vs. standard time per schedule) and the hourly rate (+7.7% vs. schedule rate) exceed the values in the schedule of services – total deviation +29.2%.</span>
+            </div>
+            <div class="lv-col lv-missing">
+              <div class="lv-col-label">Potentially Missing Information</div>
+              <textarea class="lv-missing-input" placeholder="e.g., request timesheet / work report …">Request a timesheet (work report) to verify the billed time recording.</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="lv-check-item">
+          <div class="lv-check-head">
+            <span class="pr-num">3</span>
+            <span class="lv-check-name">Travel / Flat Fee</span>
+          </div>
+          <div class="lv-compare-grid">
+            <div class="lv-col lv-original">
+              <div class="lv-col-label">Original (Document)</div>
+              <div class="lv-col-numbers">
+                <div class="lv-fields">
+                  <div><div class="lv-field-label">Quantity</div><div class="lv-field-value">1</div></div>
+                  <div><div class="lv-field-label">Unit</div><div class="lv-field-value">Pausch.</div></div>
+                  <div><div class="lv-field-label">Unit Price</div><div class="lv-field-value">120,00 €</div></div>
+                </div>
+                <div class="lv-col-total">Total<b>120,00 €</b></div>
+              </div>
+            </div>
+            <div class="lv-compare-arrow">→</div>
+            <div class="lv-col lv-result">
+              <div class="lv-col-label">Schedule-of-Services Match</div>
+              <div class="lv-col-ref">Schedule item 1.5 (transport flat fee for equipment, job sites €3,000–10,000).</div>
+              <div class="lv-col-numbers">
+                <div class="lv-fields">
+                  <div><div class="lv-field-label">Quantity</div><div class="lv-field-value">1</div></div>
+                  <div><div class="lv-field-label">Unit</div><div class="lv-field-value">Pausch.</div></div>
+                  <div><div class="lv-field-label">Unit Price</div><div class="lv-field-value">275,00 €</div></div>
+                </div>
+                <div class="lv-col-total">Total<b>275,00 €</b></div>
+              </div>
+            </div>
+            <div class="lv-col ampel-col">
+              <span class="ampel-badge ampel-green"><span class="dot"></span>Plausible</span>
+              <span class="ampel-note">The billed amount is significantly below the comparable schedule flat fee (275,00 €) and is plausible.</span>
+            </div>
+            <div class="lv-col lv-missing">
+              <div class="lv-col-label">Potentially Missing Information</div>
+              <textarea class="lv-missing-input" placeholder="No further documentation required …"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="summary-card">
+        <div class="lv-summary-actions">
+          <div class="lv-summary-text">
+            <b>Result:</b> 1 of 3 line items is not listed in the schedule of services (material), 1 line item deviates significantly (labor) and should be manually adjusted, 1 line item is plausible (travel).
+          </div>
+          <div class="btns">
+            <button class="btn btn-lg" onclick="goTo(5)">Back to document</button>
+            <button class="btn btn-primary btn-lg" onclick="goTo(6)">Continue to manual editing</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; margin: 24px 0 8px;">
+        <button class="preview-cta-btn" onclick="goTo(8)">
+          <svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          View review report preview
+        </button>
+      </div>
+
+      <div class="finish-heading">Finalize document</div>
+      <div class="finish-sub">Choose how to proceed with the reviewed document.</div>
+
+      <div class="finish-grid">
+        <div class="action-card card-finish">
+          <div class="action-card-top">
+            <div class="action-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5.5-6"/></svg></div>
+            <div>
+              <div class="action-title">Finalize</div>
+              <div class="action-sub">The document will be finalized and automatically sent to PX.</div>
+            </div>
+          </div>
+          <span class="action-cta">Finalize <span class="arrow">›</span></span>
+        </div>
+
+        <div class="action-card card-attach">
+          <div class="action-card-top">
+            <div class="action-icon"><svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><line x1="12" y1="10" x2="12" y2="15"/><line x1="9.5" y1="12.5" x2="14.5" y2="12.5"/></svg></div>
+            <div>
+              <div class="action-title">Attach to report</div>
+              <div class="action-sub">Attach the original document and reviewed digital version to the review report.</div>
+            </div>
+          </div>
+          <span class="action-cta">Attach <span class="arrow">›</span></span>
+        </div>
+
+        <div class="action-card card-message">
+          <div class="action-card-top">
+            <div class="action-icon"><svg viewBox="0 0 24 24"><path d="M4 6l8 6 8-6"/><rect x="4" y="6" width="16" height="12" rx="1.5"/></svg></div>
+            <div>
+              <div class="action-title">Send as message</div>
+              <div class="action-sub">Send the document along with the review result as a message.</div>
+            </div>
+          </div>
+          <span class="action-cta">Send <span class="arrow">›</span></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== SCREEN 8: REVIEW REPORT PREVIEW ===================== -->
+<div class="screen" id="screen-8">
+<div class="app">
+  <div class="topbar">
+    <div class="logo"></div>
+    <span class="active">Claims</span>
+    <span>User Management</span>
+    <span class="nav-link" onclick="goTo(2)">Tasks</span>
+    <span>Analytics</span>
+    <span>Inbox</span>
+  </div>
+
+  <div class="body-layout">
+    <div class="icon-rail">
+      <div class="rail-item clickable" onclick="goTo(3)">
+        <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8.5" y1="10" x2="15.5" y2="10"/><line x1="8.5" y1="13.5" x2="15.5" y2="13.5"/><line x1="8.5" y1="17" x2="13" y2="17"/></svg>
+        <span class="tooltip">Assessment</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M6.5 18a4 4 0 0 1-.5-7.97A5 5 0 0 1 15.9 8.05 4.5 4.5 0 0 1 17.5 17"/><path d="M9 16l3-3 3 3"/><line x1="12" y1="13" x2="12" y2="20"/></svg>
+        <span class="tooltip">Recordings / Upload</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="1"/><line x1="8.5" y1="8" x2="10" y2="8"/><line x1="13.5" y1="8" x2="15" y2="8"/><line x1="8.5" y1="11.5" x2="10" y2="11.5"/><line x1="13.5" y1="11.5" x2="15" y2="11.5"/><line x1="8.5" y1="15" x2="10" y2="15"/><line x1="13.5" y1="15" x2="15" y2="15"/><line x1="10.5" y1="21" x2="13.5" y2="21"/></svg>
+        <span class="tooltip">Building / Property</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="1.5"/><path d="M4.5 7l7.5 6 7.5-6"/></svg>
+        <span class="tooltip">Communication</span>
+      </div>
+      <div class="rail-item">
+        <svg viewBox="0 0 24 24"><path d="M4 7.5a1.5 1.5 0 0 1 1.5-1.5h4l2 2.5h7a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/></svg>
+        <span class="tooltip">Documents</span>
+      </div>
+      <div class="rail-item active clickable" onclick="goTo(4)">
+        <svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/><line x1="8.5" y1="8" x2="15.5" y2="8"/><line x1="8.5" y1="11.5" x2="15.5" y2="11.5"/><line x1="8.5" y1="15" x2="13" y2="15"/></svg>
+        <span class="tooltip">Document Review</span>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="breadcrumb">
+        <span class="crumb-link" onclick="goTo(1)">Claims</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(3)">Test_Claim_17</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(4)">Document Review</span>
+        <span class="sep">›</span>
+        <span class="crumb-link" onclick="goTo(6)">Manual Editing</span>
+        <span class="sep">›</span>
+        <span class="current">Review Report Preview</span>
+      </div>
+
+      <div class="page-head">
+        <h1>Review Report Preview</h1>
+        <button class="btn btn-lg" onclick="goTo(6)">‹ Back to editing</button>
+      </div>
+
+      <div class="report-doc-wrap">
+
+        <div class="report-cover">
+          <div class="report-logo-row">
+            <div class="report-logo-badge"><div class="dot"></div></div>
+            <span class="wordmark">claimsforce</span>
+          </div>
+          <div class="report-cover-title">Report<br>Document Review</div>
+        </div>
+
+        <div class="report-cover-card">
+          <div class="rc-row">
+            <div><div class="rc-lbl">Claim Number</div><div class="rc-val">Test_Claim_17</div></div>
+          </div>
+          <div class="rc-row">
+            <div><div class="rc-lbl">On behalf of</div><div class="rc-val">Sample Insurance AG</div></div>
+            <div><div class="rc-lbl">Date of Loss</div><div class="rc-val">20.05.2026</div></div>
+          </div>
+          <div class="rc-row">
+            <div><div class="rc-lbl">Line of Business / Peril</div><div class="rc-val">Property / Building / Water Damage/Pipe Burst</div></div>
+          </div>
+          <div class="rc-row">
+            <div><div class="rc-lbl">Adjuster</div><div class="rc-val">Becker, Thomas<br>+49 40 3800 100 | thomas.becker@claimsforce.com</div></div>
+          </div>
+        </div>
+
+        <div class="report-page">
+          <div class="report-header">
+            <span class="ribbon">REVIEW REPORT</span>
+            <span class="header-right"><b>Claim Number: Test_Claim_17</b> | <span class="mini-logo"><span></span></span> claimsforce</span>
+          </div>
+
+          <div class="report-meta-row">
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="4" y1="9.5" x2="20" y2="9.5"/></svg>
+              <div><div class="mi-val">20.05.2026</div><div class="mi-lbl">Date of Loss</div></div>
+            </div>
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24"><path d="M6 3.5h12v17l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z"/></svg>
+              <div><div class="mi-val">16.06.2026</div><div class="mi-lbl">Assigned to claimsforce</div></div>
+            </div>
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1.5"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              <div><div class="mi-val">13.07.2026</div><div class="mi-lbl">claimsforce Report</div></div>
+            </div>
+          </div>
+
+          <div class="report-parties">
+            <div class="party">
+              <div class="p-title">Insurer:</div>
+              <div class="p-line">Name: <b>Sample Insurance AG</b></div>
+              <div class="p-line">Claim Number: <b>Test_Claim_17</b></div>
+              <div class="p-line">Property - Building - Water Damage/Pipe Burst</div>
+            </div>
+            <div class="party">
+              <div class="p-title">Policyholder / Claimant:</div>
+              <div class="p-line"><b>Ida Steller</b></div>
+            </div>
+            <div class="party">
+              <div class="p-title">claimsforce Document Reviewer:</div>
+              <div class="p-line"><b>Becker, Thomas</b></div>
+              <div class="p-line">+49 40 3800 100 | thomas.becker@claimsforce.com</div>
+            </div>
+          </div>
+
+          <div class="report-result-banner">
+            <div class="rr-label">Review Result</div>
+            <div class="rr-text">Technically and factually in order, with reduction</div>
+          </div>
+
+          <div class="report-section-label">Reviewed Document:</div>
+          <div class="report-beleg-meta">
+            <div><div class="rb-lbl">Company</div><div class="rb-val">Sanitär Schmidt GmbH</div></div>
+            <div><div class="rb-lbl">Document Type</div><div class="rb-val">Invoice</div></div>
+            <div><div class="rb-lbl">Document No.</div><div class="rb-val">RE-2026-4471</div></div>
+            <div><div class="rb-lbl">Document Date</div><div class="rb-val">15.06.2026</div></div>
+          </div>
+
+          <table class="report-table">
+            <thead>
+              <tr><th></th><th>Original Value</th><th>Finding</th><th>Difference</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Total net</td><td>2.723,53 €</td><td>2.211,34 €</td><td>512,19 €</td></tr>
+              <tr><td>VAT</td><td>516,47 €</td><td>420,16 €</td><td>96,31 €</td></tr>
+              <tr><td>Total gross</td><td>3.240,00 €</td><td>2.631,50 €</td><td>608,50 €</td></tr>
+              <tr class="recommend"><td colspan="3" style="text-align:right;">Settlement recommendation:</td><td>2.631,50 €</td></tr>
+            </tbody>
+          </table>
+
+          <div class="report-triple">
+            <div class="rt-col">
+              <div class="rt-title">Review Result:</div>
+              <div class="report-quality-row"><span>Market-standard prices:</span><span class="report-dot green"></span></div>
+              <div class="report-quality-row"><span>Quantities and measurements:</span><span class="report-dot red"></span></div>
+              <div class="report-quality-row"><span>Plausibility:</span><span class="report-dot green"></span></div>
+              <div class="report-quality-row"><span>Coverage concerns:</span><span class="report-dot green"></span></div>
+            </div>
+            <div class="rt-col">
+              <div class="rt-title">Reason for Reduction:</div>
+              <div class="p-line">Exceeded standard time per schedule of services (labor)</div>
+            </div>
+            <div class="rt-col">
+              <div class="rt-title">Contact Made</div>
+              <div class="p-line">No, automatically reviewed (PX Pre-Check)</div>
+            </div>
+          </div>
+
+          <div class="report-section-label">Additional Findings:</div>
+          <div class="report-notes">
+            <p>The line items for material (pipe burst repair) and travel/flat fee correspond to market-standard prices and have been confirmed.</p>
+            <p>Line item 2 (labor) exceeds the standard time of 15 hours stored in the schedule of services (original: 18 hours) and was reduced accordingly.</p>
+            <p>We recommend settlement in the amount of 2.631,50 €.</p>
+          </div>
+
+          <div class="report-footer">
+            <span>Claim Number: Test_Claim_17 | REVIEW REPORT</span>
+            <span>claimsforce GmbH | Amsinckstraße 34 | 20097 Hamburg | info@claimsforce.com | 040 / 2000 000 · Page 2 of 2</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('visible'); });
+    document.getElementById('screen-' + n).classList.add('visible');
+    document.querySelectorAll('.stepper span').forEach(function(s){ s.classList.remove('current'); });
+    document.getElementById('step-' + n).classList.add('current');
+    window.scrollTo(0, 0);
+  }
+
+  document.querySelectorAll('.stepper span').forEach(function(el, i){
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', function(){ goTo(i + 1); });
+  });
+
+  document.querySelectorAll('.review-toggle').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.stopPropagation();
+      el.classList.toggle('reviewed');
+    });
+  });
+
+  var dz = document.getElementById('dropzone');
+  if (dz) {
+    ['dragenter','dragover'].forEach(function(evt){
+      dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.add('dragover'); });
+    });
+    ['dragleave','drop'].forEach(function(evt){
+      dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.remove('dragover'); });
+    });
+  }
+</script>
+
+</body>
+</html>

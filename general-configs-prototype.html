@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>General Configs · Admin — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange: #F2660D;
+    --orange-dark: #D85608;
+    --orange-soft: #FDEDE0;
+    --orange-disabled: #F8B287;
+    --blue-bg: #DCEAFE;
+    --blue-text: #1D57C4;
+    --green: #17A34A;
+    --ink-900: #16181D;
+    --ink-700: #3B3F46;
+    --ink-500: #6B7280;
+    --ink-400: #9AA1AB;
+    --border: #E4E6EA;
+    --border-soft: #EDEEF1;
+    --page-bg: #F4F5F7;
+    --card: #FFFFFF;
+    --toggle-off: #D7DAE0;
+    --radius: 8px;
+    --shadow-sm: 0 1px 2px rgba(16,20,24,.06);
+    --shadow-md: 0 6px 20px rgba(16,20,24,.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Open Sans', system-ui, -apple-system, sans-serif;
+    color:var(--ink-900);
+    background:var(--page-bg);
+    font-size:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;}
+  input,select{font-family:inherit;}
+  .app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+  /* ===== TOP NAV (shared with the other prototypes) ===== */
+  .topnav{
+    height:56px;flex:0 0 56px;
+    display:flex;align-items:center;
+    background:#fff;border-bottom:1px solid var(--border);
+    padding:0 18px;gap:22px;
+    position:relative;z-index:50;
+  }
+  .logo{width:32px;height:32px;flex:0 0 auto;display:block;}
+  .navtabs{display:flex;align-items:center;gap:22px;height:100%;}
+  .navtab{
+    position:relative;height:100%;display:flex;align-items:center;gap:4px;
+    border:none;background:none;color:var(--ink-500);font-size:14px;font-weight:600;
+    padding:0 2px;transition:color .15s;
+  }
+  .navtab:hover{color:var(--ink-900);}
+  .navtab.active{color:var(--ink-900);}
+  .navtab.active::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--orange);border-radius:2px 2px 0 0;
+  }
+  .navtab .chev{width:9px;height:9px;opacity:.6;}
+  .navsearch{margin-left:auto;flex:0 1 360px;position:relative;}
+  .navsearch input{
+    width:100%;height:36px;border-radius:8px;border:1px solid var(--border);
+    padding:0 14px 0 36px;font-size:13.5px;background:#F8F9FA;color:var(--ink-900);outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  .navsearch input:focus{border-color:var(--orange);background:#fff;}
+  .navsearch svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.45;}
+  .navicons{display:flex;align-items:center;gap:6px;margin-left:14px;}
+  .navicon-btn{
+    width:34px;height:34px;border-radius:8px;border:none;background:none;
+    display:flex;align-items:center;justify-content:center;color:var(--ink-500);
+    transition:background .15s,color .15s;position:relative;
+  }
+  .navicon-btn:hover{background:#F1F2F4;color:var(--ink-900);}
+
+  /* dropdown menu shared */
+  .dropdown-menu{
+    position:absolute;top:calc(100% + 8px);background:#fff;border:1px solid var(--border);
+    border-radius:10px;box-shadow:var(--shadow-md);min-width:190px;padding:6px;
+    opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .12s,transform .12s,visibility .12s;
+    z-index:200;
+  }
+  .dropdown-menu.open{opacity:1;visibility:visible;transform:translateY(0);}
+  .dropdown-menu button{
+    width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:6px;
+    font-size:13.5px;color:var(--ink-700);display:flex;align-items:center;gap:8px;
+  }
+  .dropdown-menu button:hover{background:#F5F6F8;color:var(--ink-900);}
+  .dropdown-menu .sep{height:1px;background:var(--border-soft);margin:5px 4px;}
+  .admin-nav-wrap{position:relative;display:inline-flex;align-items:center;}
+  .admin-nav-wrap .chev{width:9px;height:9px;opacity:.75;margin-left:1px;transition:transform .15s;flex:0 0 auto;}
+  .admin-nav-wrap:has(.dropdown-menu.open) .chev{transform:rotate(180deg);}
+
+  /* ===== BODY SHELL ===== */
+  .body-shell{flex:1;display:flex;min-height:0;}
+
+  /* icon rail */
+  .iconrail{
+    flex:0 0 52px;background:#fff;border-right:1px solid var(--border);
+    display:flex;flex-direction:column;align-items:center;padding-top:14px;gap:6px;
+  }
+  .rail-btn{
+    width:36px;height:36px;border-radius:10px;border:none;background:none;color:var(--ink-400);
+    display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;
+  }
+  .rail-btn:hover{background:#F1F2F4;color:var(--ink-700);}
+  .rail-btn.active{background:#F1F2F4;color:var(--ink-900);}
+
+  /* buttons */
+  .btn{
+    height:34px;padding:0 14px;border-radius:7px;font-size:13.5px;font-weight:700;border:1.5px solid transparent;
+    display:inline-flex;align-items:center;gap:6px;transition:all .15s;
+  }
+  .btn-neutral{background:#EAEBEF;color:var(--ink-700);}
+  .btn-neutral:hover{background:#E0E2E7;}
+  .btn-outline{background:#fff;border-color:var(--orange);color:var(--orange);}
+  .btn-outline:hover{background:var(--orange-soft);}
+  .btn-solid{background:var(--orange-disabled);color:#fff;cursor:not-allowed;}
+  .btn-solid.enabled{background:var(--orange);cursor:pointer;}
+  .btn-solid.enabled:hover{background:var(--orange-dark);}
+  .btn-peach{background:var(--orange-disabled);color:#7A2E06;}
+  .btn-peach:hover{background:#F5A66C;}
+  .btn-danger-soft{background:#FBDEDB;color:#B3261E;}
+  .btn-danger-soft:hover{background:#F6C9C4;}
+  .btn-sm{height:30px;padding:0 12px;font-size:12.5px;}
+
+  /* toast */
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink-900);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:600;
+    display:flex;align-items:center;gap:10px;opacity:0;visibility:hidden;transition:all .2s;z-index:600;box-shadow:var(--shadow-md);
+  }
+  .toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+  .toast svg{color:var(--green);flex:0 0 auto;}
+
+  /* ===== General Configs ===== */
+  .gc-area{flex:1;overflow-y:auto;min-width:0;background:#fff;}
+  .gc-wrap{max-width:1080px;margin:0 auto;padding:26px 28px 70px;}
+  .gc-header{padding-bottom:20px;border-bottom:1px solid var(--border-soft);margin-bottom:24px;}
+  .gc-title{font-size:26px;font-weight:800;color:var(--ink-900);margin:0 0 4px;}
+  .gc-sub{font-size:13.5px;color:var(--ink-500);margin:0;}
+
+  .gc-shell{display:flex;gap:26px;align-items:flex-start;}
+  .gc-nav{flex:0 0 230px;display:flex;flex-direction:column;gap:4px;}
+  .gc-nav-item{
+    display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:none;background:none;
+    text-align:left;font-size:13.5px;font-weight:700;color:var(--ink-700);transition:background .15s,color .15s;
+  }
+  .gc-nav-item:hover{background:#F5F6F8;color:var(--ink-900);}
+  .gc-nav-item.active{background:var(--orange-soft);color:var(--orange-dark);}
+  .gc-nav-icon{
+    width:32px;height:32px;border-radius:7px;background:#F1F2F4;color:var(--ink-500);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;
+  }
+  .gc-nav-item.active .gc-nav-icon{background:var(--orange-disabled);color:#fff;}
+  .gc-nav-desc{display:block;font-size:11.5px;font-weight:600;color:var(--ink-400);margin-top:1px;}
+  .gc-nav-item.active .gc-nav-desc{color:var(--orange-dark);opacity:.8;}
+
+  .gc-panel{flex:1;min-width:0;background:#fff;border:1px solid var(--border-soft);border-radius:12px;padding:26px 28px;}
+  .gc-panel-head{margin-bottom:14px;}
+  .gc-panel-title{font-size:17px;font-weight:800;color:var(--ink-900);margin:0;}
+  .gc-panel-sub{font-size:12.5px;color:var(--ink-500);margin:3px 0 0;}
+
+  .gc-field-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--border-soft);}
+  .gc-field-row:last-of-type{border-bottom:none;}
+  .gc-field-lbl{font-size:13.5px;font-weight:700;color:var(--ink-900);}
+  .gc-field-hint{font-size:11.5px;font-weight:500;color:var(--ink-500);margin-top:2px;}
+  .gc-field-ctl{flex:0 0 auto;display:flex;align-items:center;gap:8px;}
+  .gc-input{
+    height:36px;border-radius:7px;border:1px solid var(--border);padding:0 12px;font-size:13.5px;color:var(--ink-900);
+    outline:none;transition:border-color .15s;background:#fff;
+  }
+  .gc-input:focus{border-color:var(--orange);}
+  .gc-input-sm{width:100px;}
+  .gc-input-md{width:220px;}
+  .gc-unit{font-size:12px;color:var(--ink-500);}
+  .gc-select{
+    height:36px;border-radius:7px;border:1px solid var(--border);padding:0 30px 0 12px;font-size:13.5px;color:var(--ink-900);
+    outline:none;background:#fff;appearance:none;width:220px;
+    background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7280' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;
+  }
+  .gc-color-swatch{
+    width:36px;height:36px;border-radius:8px;border:1px solid var(--border);cursor:pointer;flex:0 0 auto;padding:0;
+    background:none;
+  }
+  .gc-logo-drop{
+    display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border:1.5px dashed var(--border);border-radius:9px;
+    color:var(--ink-500);font-size:12.5px;font-weight:700;cursor:pointer;
+    transition:border-color .15s,color .15s;flex:0 0 auto;
+  }
+  .gc-logo-drop:hover{border-color:var(--orange);color:var(--orange);}
+  .gc-field-row-top{border-top:none;}
+
+  /* logo preview: same uploaded image rendered at 3 fixed sizes */
+  .gc-logo-preview-ctl{gap:18px;}
+  .gc-logo-preview-item{display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .gc-logo-preview-box{
+    background:#F8F9FA;border:1px solid var(--border);border-radius:8px;display:flex;
+    align-items:center;justify-content:center;padding:6px;
+  }
+  .gc-logo-preview-box img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+  .gc-logo-preview-sm{width:56px;height:36px;}
+  .gc-logo-preview-md{width:96px;height:62px;}
+  .gc-logo-preview-lg{width:160px;height:100px;}
+  .gc-logo-preview-caption{font-size:11px;font-weight:700;color:var(--ink-400);}
+
+  /* symbol: separate square mark, single preview */
+  .gc-symbol-preview-box{
+    width:52px;height:52px;background:#F8F9FA;border:1px solid var(--border);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;padding:6px;flex:0 0 auto;
+  }
+  .gc-symbol-preview-box img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+
+  /* styling: grouped sub-sections (fonts, text color, background color) */
+  .gc-subsection{padding:18px 0;border-bottom:1px solid var(--border-soft);}
+  .gc-subsection-last{border-bottom:none;padding-bottom:0;}
+  .gc-subsection-head{margin-bottom:12px;}
+  .gc-subsection-title{font-size:13.5px;font-weight:800;color:var(--ink-900);margin:0;}
+  .gc-subsection-sub{font-size:11.5px;color:var(--ink-500);margin:2px 0 0;}
+
+  /* available fonts: multi-select chip field */
+  .gc-fonts-multiselect{display:flex;flex-direction:column;gap:12px;}
+  .gc-chip-row{display:flex;flex-wrap:wrap;gap:8px;min-height:28px;}
+  .gc-chip{
+    display:inline-flex;align-items:center;gap:6px;background:#EAEBEF;color:var(--ink-700);
+    font-size:12.5px;font-weight:700;padding:6px 6px 6px 12px;border-radius:20px;
+  }
+  .gc-chip-remove{
+    width:17px;height:17px;border-radius:50%;border:none;background:rgba(0,0,0,.08);color:inherit;
+    display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;padding:0;flex:0 0 auto;
+  }
+  .gc-chip-remove:hover{background:rgba(0,0,0,.18);}
+  .gc-fonts-add-wrap{position:relative;display:inline-flex;}
+  .gc-fonts-menu{max-height:260px;overflow-y:auto;}
+  .gc-font-option{display:flex;align-items:center;gap:9px;width:100%;}
+  .gc-font-check{
+    width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border);flex:0 0 auto;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;transition:all .1s;
+  }
+  .gc-font-option.selected .gc-font-check{background:var(--orange);border-color:var(--orange);}
+
+  /* text / background color presets: up to 8 swatches each */
+  .gc-swatch-list{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .gc-swatch-item{position:relative;width:36px;height:36px;border-radius:8px;border:1px solid var(--border);}
+  .gc-swatch-remove{
+    position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--ink-900);color:#fff;
+    border:2px solid #fff;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .gc-swatch-remove:hover{background:#B3261E;}
+  .gc-swatch-add{
+    width:36px;height:36px;border-radius:8px;border:1.5px dashed var(--border);background:none;color:var(--ink-400);
+    display:flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s;position:relative;
+    font-size:16px;cursor:pointer;
+  }
+  .gc-swatch-add:hover{border-color:var(--orange);color:var(--orange);}
+  .gc-swatch-add input[type=color]{
+    position:absolute;inset:0;opacity:0;width:100%;height:100%;border:none;padding:0;cursor:pointer;
+  }
+  .gc-swatch-hint{font-size:11.5px;color:var(--ink-400);}
+
+  .gc-panel-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--border-soft);}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topnav">
+    <svg class="logo" width="32" height="32" viewBox="67 9 66 66" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
+      <path d="M100.561 64.8853C113.716 64.8853 124.38 54.2416 124.38 41.1119C124.38 27.9822 113.716 17.3385 100.561 17.3385C87.4069 17.3385 76.743 27.9822 76.743 41.1119C76.743 54.2416 87.4069 64.8853 100.561 64.8853Z" fill="white"/>
+      <path d="M99.9347 10.4567C82.7424 10.4567 68.7736 24.399 68.7736 41.6482C68.7736 58.8079 82.7424 72.7502 100.024 72.7502C117.306 72.7502 131.185 58.8079 131.185 41.5588C131.096 24.399 117.127 10.4567 99.9347 10.4567ZM113.456 41.9163C113.456 45.7594 111.128 47.4575 105.307 48.2618L95.4575 49.5131C90.264 50.1387 89.6372 51.4793 89.6372 52.8199C89.6372 54.2499 90.264 55.5905 94.4725 55.5905H113.187V58.8973H94.2039C88.9209 58.8973 86.4136 56.9311 86.4136 52.9093V52.6411C86.4136 49.0662 88.9209 47.1 94.383 46.385L104.501 45.1338C109.337 44.5081 110.322 43.3463 110.322 41.7375C110.322 40.1288 109.337 38.967 104.501 38.3413L94.383 36.9114C88.8313 36.1964 86.4136 34.2301 86.4136 30.6552V30.3871C86.4136 26.3653 88.9209 24.399 94.2039 24.399H113.187V27.7059H94.4725C90.1745 27.7059 89.6372 29.0465 89.6372 30.5658C89.6372 31.8171 90.3535 33.247 95.4575 33.8727L105.307 35.2133C111.217 36.0176 113.456 37.8051 113.456 41.5588V41.9163Z" fill="#FF9933"/>
+    </svg>
+    <nav class="navtabs" id="navtabs">
+      <button class="navtab" data-tab="schaden">Schäden</button>
+      <button class="navtab" data-tab="aufgaben">Aufgaben</button>
+      <button class="navtab" id="backofficeBtn" data-tab="backoffice">Backoffice
+        <svg class="chev" width="9" height="9" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="dropdown-menu" id="backofficeMenu">
+        <button>📁 Dokumentenvorlagen</button>
+        <button>👥 Benutzerverwaltung</button>
+        <button>⚙️ Systemeinstellungen</button>
+        <div class="sep"></div>
+        <button>📊 Berichte</button>
+      </div>
+      <button class="navtab" data-tab="regulierer">Regulierer</button>
+      <button class="navtab" data-tab="analytics">Analytics</button>
+      <button class="navtab" data-tab="eingang">Eingang</button>
+    </nav>
+    <div class="navsearch">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.2" stroke="currentColor" stroke-width="1.6"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Schäden durchsuchen">
+    </div>
+    <div class="admin-nav-wrap">
+      <button class="btn btn-neutral" id="adminNavBtn" title="Admin">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3.5v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9v-5L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Admin
+        <svg class="chev" width="9" height="9" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="dropdown-menu" id="adminNavMenu" style="right:0;left:auto;">
+        <button data-href="vorlagen-liste-prototype.html">📁 Aufnahmen Vorlagen</button>
+        <button data-href="general-configs-prototype.html">⚙️ General Configs</button>
+      </div>
+    </div>
+    <div class="navicons">
+      <button class="navicon-btn" title="Hilfe" id="helpBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 9a2.5 2.5 0 114 2c-.7.6-1.5 1-1.5 2.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="16.6" r=".9" fill="currentColor"/></svg>
+      </button>
+      <button class="navicon-btn" title="Nachrichten" id="chatBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="navicon-btn" title="Einstellungen" id="settingsBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.55 1.55M7.15 16.85L5.6 18.4M18.4 18.4l-1.55-1.55M7.15 7.15L5.6 5.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button class="navicon-btn" title="Abmelden" id="logoutBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h7a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10 12h11m0 0l-3.2-3.2M21 12l-3.2 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="body-shell">
+
+    <!-- LEFT ICON RAIL -->
+    <aside class="iconrail" id="iconrail">
+      <button class="rail-btn" data-rail="clip" title="Bewertung">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="12" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="9" y="2.3" width="6" height="3.4" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="rail-btn" data-rail="grid" title="Übersicht">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <button class="rail-btn" data-rail="folder" title="Dokumentenvorlagen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3.5 6.5a1.5 1.5 0 011.5-1.5h4l2 2.2H19a1.5 1.5 0 011.5 1.5v8.8a1.5 1.5 0 01-1.5 1.5H5a1.5 1.5 0 01-1.5-1.5V6.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="rail-btn" data-rail="mail" title="Posteingang">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5.5" width="17" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 7l7.5 6 7.5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </aside>
+
+    <!-- GENERAL CONFIGS AREA -->
+    <main class="gc-area">
+      <div class="gc-wrap">
+
+        <div class="gc-header">
+          <h1 class="gc-title">General Configs</h1>
+          <p class="gc-sub">Allgemeine Einstellungen für Marke und Erscheinungsbild.</p>
+        </div>
+
+        <div class="gc-shell">
+
+          <nav class="gc-nav" id="gcNav">
+            <button class="gc-nav-item active" data-gcsection="brand">
+              <span class="gc-nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 4h8l8 8-8 8-8-8V4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/></svg>
+              </span>
+              <span>
+                Brand
+                <span class="gc-nav-desc">Logo, Name &amp; Farben</span>
+              </span>
+            </button>
+            <button class="gc-nav-item" data-gcsection="styling">
+              <span class="gc-nav-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/><circle cx="9" cy="10" r="1.2" fill="currentColor"/><circle cx="14" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="14" r="1.2" fill="currentColor"/><path d="M12 3.5c1 2 1 3.5-.5 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </span>
+              <span>
+                Styling
+                <span class="gc-nav-desc">Schrift, Radius &amp; Theme</span>
+              </span>
+            </button>
+          </nav>
+
+          <!-- BRAND -->
+          <section class="gc-panel" data-gcpanel="brand">
+            <div class="gc-panel-head">
+              <h2 class="gc-panel-title">Brand</h2>
+              <p class="gc-panel-sub">Wird in Berichten, E-Mails und im Portal verwendet.</p>
+            </div>
+
+            <div class="gc-field-row">
+              <div>
+                <div class="gc-field-lbl">Firmenname</div>
+                <div class="gc-field-hint">Erscheint im Header von Berichten</div>
+              </div>
+              <div class="gc-field-ctl">
+                <input type="text" class="gc-input gc-input-md" id="gcBrandName" value="claimsforce GmbH">
+              </div>
+            </div>
+
+            <div class="gc-field-row">
+              <div>
+                <div class="gc-field-lbl">Logo</div>
+                <div class="gc-field-hint">PNG oder SVG, max. 2 MB</div>
+              </div>
+              <div class="gc-field-ctl">
+                <div class="gc-logo-drop" id="gcLogoDrop">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  Logo hochladen
+                </div>
+                <input type="file" id="gcLogoFile" accept="image/*" style="display:none;">
+              </div>
+            </div>
+
+            <div class="gc-field-row gc-field-row-top" id="gcLogoPreviewRow" hidden>
+              <div>
+                <div class="gc-field-lbl">Vorschau</div>
+                <div class="gc-field-hint">So erscheint das Logo in unterschiedlichen Größen</div>
+              </div>
+              <div class="gc-field-ctl gc-logo-preview-ctl">
+                <div class="gc-logo-preview-item">
+                  <div class="gc-logo-preview-box gc-logo-preview-sm"><img id="gcLogoPreviewSm" alt="Logo klein"></div>
+                  <span class="gc-logo-preview-caption">Small</span>
+                </div>
+                <div class="gc-logo-preview-item">
+                  <div class="gc-logo-preview-box gc-logo-preview-md"><img id="gcLogoPreviewMd" alt="Logo mittel"></div>
+                  <span class="gc-logo-preview-caption">Medium</span>
+                </div>
+                <div class="gc-logo-preview-item">
+                  <div class="gc-logo-preview-box gc-logo-preview-lg"><img id="gcLogoPreviewLg" alt="Logo groß"></div>
+                  <span class="gc-logo-preview-caption">Large</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="gc-field-row gc-field-row-top">
+              <div>
+                <div class="gc-field-lbl">Symbol</div>
+                <div class="gc-field-hint">Quadratische Bildmarke, z.&nbsp;B. für Favicon &amp; Avatar</div>
+              </div>
+              <div class="gc-field-ctl">
+                <div class="gc-logo-drop" id="gcSymbolDrop">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 16V4M12 4l-4 4M12 4l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                  Symbol hochladen
+                </div>
+                <div class="gc-symbol-preview-box" id="gcSymbolPreviewBox" hidden><img id="gcSymbolPreview" alt="Symbol"></div>
+                <input type="file" id="gcSymbolFile" accept="image/*" style="display:none;">
+              </div>
+            </div>
+
+            <div class="gc-panel-actions">
+              <button class="btn btn-neutral" id="gcBrandCancelBtn">Zurücksetzen</button>
+              <button class="btn btn-peach" id="gcBrandSaveBtn">Speichern</button>
+            </div>
+          </section>
+
+          <!-- STYLING -->
+          <section class="gc-panel" data-gcpanel="styling" hidden>
+            <div class="gc-panel-head">
+              <h2 class="gc-panel-title">Styling</h2>
+              <p class="gc-panel-sub">Beeinflusst das Erscheinungsbild der gesamten Anwendung.</p>
+            </div>
+
+            <div class="gc-field-row">
+              <div>
+                <div class="gc-field-lbl">Basis-Schriftgröße</div>
+                <div class="gc-field-hint">Standardgröße für Fließtext</div>
+              </div>
+              <div class="gc-field-ctl">
+                <input type="number" class="gc-input gc-input-sm" id="gcFontSize" value="14" min="11" max="20">
+                <span class="gc-unit">px</span>
+              </div>
+            </div>
+
+            <div class="gc-field-row">
+              <div>
+                <div class="gc-field-lbl">Eckenradius</div>
+                <div class="gc-field-hint">Für Buttons, Karten &amp; Eingabefelder</div>
+              </div>
+              <div class="gc-field-ctl">
+                <input type="number" class="gc-input gc-input-sm" id="gcRadius" value="8" min="0" max="20">
+                <span class="gc-unit">px</span>
+              </div>
+            </div>
+
+            <div class="gc-field-row">
+              <div>
+                <div class="gc-field-lbl">Akzentfarbe (UI)</div>
+                <div class="gc-field-hint">Für Links, aktive Zustände &amp; Fokus</div>
+              </div>
+              <div class="gc-field-ctl">
+                <input type="color" class="gc-color-swatch" id="gcAccentColor" value="#F2660D">
+                <input type="text" class="gc-input gc-input-sm" id="gcAccentColorHex" value="#F2660D">
+              </div>
+            </div>
+
+            <div class="gc-field-row">
+              <div>
+                <div class="gc-field-lbl">Dichte</div>
+                <div class="gc-field-hint">Abstand zwischen Elementen</div>
+              </div>
+              <div class="gc-field-ctl">
+                <select class="gc-select" id="gcDensity">
+                  <option selected>Standard</option>
+                  <option>Kompakt</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Available Fonts: multi-select chip field -->
+            <div class="gc-subsection">
+              <div class="gc-subsection-head">
+                <h3 class="gc-subsection-title">Verfügbare Schriftarten</h3>
+                <p class="gc-subsection-sub">Schriftarten, die Nutzer:innen im Freitext-Editor auswählen können.</p>
+              </div>
+              <div class="gc-fonts-multiselect">
+                <div class="gc-chip-row" id="gcFontsChipRow"></div>
+                <div class="gc-fonts-add-wrap">
+                  <button type="button" class="btn btn-neutral btn-sm" id="gcFontsAddBtn">+ Schriftart hinzufügen</button>
+                  <div class="dropdown-menu gc-fonts-menu" id="gcFontsMenu"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Text color presets for the free-text report editor -->
+            <div class="gc-subsection">
+              <div class="gc-subsection-head">
+                <h3 class="gc-subsection-title">Textfarbe</h3>
+                <p class="gc-subsection-sub">Bis zu 8 Standardfarben für die Textfarbe im Freitext-Editor.</p>
+              </div>
+              <div class="gc-swatch-list" id="gcTextColorList"></div>
+            </div>
+
+            <!-- Background color presets for the free-text report editor -->
+            <div class="gc-subsection gc-subsection-last">
+              <div class="gc-subsection-head">
+                <h3 class="gc-subsection-title">Hintergrundfarbe</h3>
+                <p class="gc-subsection-sub">Bis zu 8 Standardfarben für die Hintergrundfarbe im Freitext-Editor.</p>
+              </div>
+              <div class="gc-swatch-list" id="gcBgColorList"></div>
+            </div>
+
+            <div class="gc-panel-actions">
+              <button class="btn btn-neutral" id="gcStylingCancelBtn">Zurücksetzen</button>
+              <button class="btn btn-peach" id="gcStylingSaveBtn">Speichern</button>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15"/><path d="M7 12.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toastText">Gespeichert</span>
+</div>
+
+<script>
+(function(){
+  function toast(msg){
+    const t=document.getElementById('toast');
+    document.getElementById('toastText').textContent=msg;
+    t.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer=setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  function closeAllDropdowns(except){
+    document.querySelectorAll('.dropdown-menu.open').forEach(m=>{ if(m!==except) m.classList.remove('open'); });
+  }
+
+  // ---- top nav: Backoffice dropdown ----
+  document.getElementById('backofficeBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    const menu=document.getElementById('backofficeMenu');
+    const willOpen=!menu.classList.contains('open');
+    closeAllDropdowns();
+    if(willOpen) menu.classList.add('open');
+  });
+  document.querySelectorAll('.navtab').forEach(tab=>{
+    tab.addEventListener('click', function(){
+      if(this.id==='backofficeBtn') return;
+      document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
+      this.classList.add('active');
+      closeAllDropdowns();
+    });
+  });
+
+  // ---- top nav: Admin overflow menu ----
+  document.getElementById('adminNavBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    const menu=document.getElementById('adminNavMenu');
+    const willOpen=!menu.classList.contains('open');
+    closeAllDropdowns();
+    if(willOpen) menu.classList.add('open');
+  });
+  document.getElementById('adminNavMenu').addEventListener('click', function(e){
+    const btn=e.target.closest('button[data-href]');
+    if(!btn) return;
+    const href=btn.dataset.href;
+    if(href===location.pathname.split('/').pop()){
+      toast('Sie befinden sich bereits auf dieser Seite');
+      closeAllDropdowns();
+      return;
+    }
+    window.location.href=href;
+  });
+
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.dropdown-menu') && !e.target.closest('#backofficeBtn') && !e.target.closest('#adminNavBtn')){
+      closeAllDropdowns();
+    }
+  });
+
+  // ---- config section switcher ----
+  document.getElementById('gcNav').addEventListener('click', function(e){
+    const item=e.target.closest('.gc-nav-item');
+    if(!item) return;
+    const target=item.dataset.gcsection;
+    document.querySelectorAll('.gc-nav-item').forEach(b=>b.classList.toggle('active', b===item));
+    document.querySelectorAll('.gc-panel').forEach(p=>{ p.hidden = p.dataset.gcpanel!==target; });
+  });
+
+  // ---- color swatch <-> hex text field sync ----
+  function wireColorPair(swatchId, hexId){
+    const swatch=document.getElementById(swatchId);
+    const hex=document.getElementById(hexId);
+    swatch.addEventListener('input', function(){ hex.value=swatch.value.toUpperCase(); });
+    hex.addEventListener('change', function(){
+      const v=hex.value.trim();
+      if(/^#[0-9A-Fa-f]{6}$/.test(v)) swatch.value=v;
+      else hex.value=swatch.value.toUpperCase();
+    });
+  }
+  wireColorPair('gcAccentColor','gcAccentColorHex');
+
+  // ---- logo upload: same uploaded image previewed at 3 fixed sizes ----
+  function readFileAsDataUrl(file, cb){
+    const reader=new FileReader();
+    reader.onload=function(e){ cb(e.target.result); };
+    reader.readAsDataURL(file);
+  }
+  document.getElementById('gcLogoDrop').addEventListener('click', function(){
+    document.getElementById('gcLogoFile').click();
+  });
+  document.getElementById('gcLogoFile').addEventListener('change', function(){
+    const file=this.files[0];
+    if(!file) return;
+    readFileAsDataUrl(file, function(dataUrl){
+      ['gcLogoPreviewSm','gcLogoPreviewMd','gcLogoPreviewLg'].forEach(id=>{ document.getElementById(id).src=dataUrl; });
+      document.getElementById('gcLogoPreviewRow').hidden=false;
+    });
+    this.value='';
+  });
+
+  // ---- symbol upload: single square preview ----
+  document.getElementById('gcSymbolDrop').addEventListener('click', function(){
+    document.getElementById('gcSymbolFile').click();
+  });
+  document.getElementById('gcSymbolFile').addEventListener('change', function(){
+    const file=this.files[0];
+    if(!file) return;
+    readFileAsDataUrl(file, function(dataUrl){
+      document.getElementById('gcSymbolPreview').src=dataUrl;
+      document.getElementById('gcSymbolPreviewBox').hidden=false;
+    });
+    this.value='';
+  });
+
+  // ---- Available Fonts: multi-select chip field ----
+  const AVAILABLE_FONTS=['Open Sans','Inter','Roboto','Source Sans Pro','Lato','Montserrat','Poppins','Merriweather','Nunito','PT Serif'];
+  let selectedFonts=['Open Sans','Inter','Roboto'];
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function renderFontChips(){
+    const row=document.getElementById('gcFontsChipRow');
+    row.innerHTML = selectedFonts.length
+      ? selectedFonts.map(f=>`<span class="gc-chip" data-font="${escapeHtml(f)}">${escapeHtml(f)}<button type="button" class="gc-chip-remove" data-font="${escapeHtml(f)}" title="Entfernen">×</button></span>`).join('')
+      : '<span class="gc-field-hint">Keine Schriftart ausgewählt</span>';
+  }
+  function renderFontMenu(){
+    const menu=document.getElementById('gcFontsMenu');
+    menu.innerHTML = AVAILABLE_FONTS.map(f=>{
+      const sel=selectedFonts.includes(f);
+      return `<button type="button" class="gc-font-option${sel?' selected':''}" data-font="${escapeHtml(f)}">
+        <span class="gc-font-check">${sel?'✓':''}</span>${escapeHtml(f)}
+      </button>`;
+    }).join('');
+  }
+  renderFontChips();
+  renderFontMenu();
+  document.getElementById('gcFontsChipRow').addEventListener('click', function(e){
+    const btn=e.target.closest('.gc-chip-remove');
+    if(!btn) return;
+    selectedFonts=selectedFonts.filter(f=>f!==btn.dataset.font);
+    renderFontChips();
+    renderFontMenu();
+  });
+  document.getElementById('gcFontsAddBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    const menu=document.getElementById('gcFontsMenu');
+    const willOpen=!menu.classList.contains('open');
+    closeAllDropdowns();
+    if(willOpen) menu.classList.add('open');
+  });
+  document.getElementById('gcFontsMenu').addEventListener('click', function(e){
+    const item=e.target.closest('.gc-font-option');
+    if(!item) return;
+    // mutate the clicked item in place (rather than re-rendering the whole
+    // menu) so it stays attached to the DOM while this click event is still
+    // bubbling — replacing innerHTML here would detach e.target mid-bubble
+    // and make the document-level outside-click handler think the click
+    // landed outside the dropdown, closing it after every single selection
+    const font=item.dataset.font;
+    const wasSelected=item.classList.contains('selected');
+    if(wasSelected) selectedFonts=selectedFonts.filter(f=>f!==font);
+    else selectedFonts=[...selectedFonts, font];
+    item.classList.toggle('selected', !wasSelected);
+    item.querySelector('.gc-font-check').textContent = wasSelected ? '' : '✓';
+    renderFontChips();
+    // menu stays open so several fonts can be toggled in one go
+  });
+
+  // ---- Text / Background color presets: up to 8 swatches each ----
+  const MAX_SWATCHES=8;
+  let textColors=['#16181D','#3B3F46','#F2660D','#1D57C4'];
+  let bgColors=['#FDEDE0','#DCEAFE','#FFFFFF','#F4F5F7'];
+  function renderSwatchList(containerId, colors, onChange){
+    const container=document.getElementById(containerId);
+    container.innerHTML='';
+    colors.forEach((color, idx)=>{
+      const item=document.createElement('div');
+      item.className='gc-swatch-item';
+      item.style.background=color;
+      item.title=color;
+      const removeBtn=document.createElement('button');
+      removeBtn.type='button';
+      removeBtn.className='gc-swatch-remove';
+      removeBtn.title='Farbe entfernen';
+      removeBtn.textContent='×';
+      removeBtn.addEventListener('click', function(){
+        colors.splice(idx,1);
+        onChange();
+      });
+      item.appendChild(removeBtn);
+      container.appendChild(item);
+    });
+    if(colors.length<MAX_SWATCHES){
+      const addTile=document.createElement('label');
+      addTile.className='gc-swatch-add';
+      addTile.title='Farbe hinzufügen';
+      addTile.textContent='+';
+      const input=document.createElement('input');
+      input.type='color';
+      input.value='#F2660D';
+      input.addEventListener('input', function(){
+        colors.push(input.value.toUpperCase());
+        onChange();
+      });
+      addTile.appendChild(input);
+      container.appendChild(addTile);
+    } else {
+      const hint=document.createElement('span');
+      hint.className='gc-swatch-hint';
+      hint.textContent='Maximal 8 Farben erreicht';
+      container.appendChild(hint);
+    }
+  }
+  function renderTextColors(){ renderSwatchList('gcTextColorList', textColors, renderTextColors); }
+  function renderBgColors(){ renderSwatchList('gcBgColorList', bgColors, renderBgColors); }
+  renderTextColors();
+  renderBgColors();
+
+  // ---- save / reset actions ----
+  document.getElementById('gcBrandSaveBtn').addEventListener('click', function(){ toast('✓ Markeneinstellungen gespeichert'); });
+  document.getElementById('gcBrandCancelBtn').addEventListener('click', function(){ toast('Änderungen verworfen'); });
+  document.getElementById('gcStylingSaveBtn').addEventListener('click', function(){ toast('✓ Styling-Einstellungen gespeichert'); });
+  document.getElementById('gcStylingCancelBtn').addEventListener('click', function(){ toast('Änderungen verworfen'); });
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bewertung · Schadenübersicht — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange: #F2660D;
+    --orange-dark: #D85608;
+    --orange-soft: #FDEDE0;
+    --orange-disabled: #F8B287;
+    --blue-bg: #DCEAFE;
+    --blue-text: #1D57C4;
+    --green: #17A34A;
+    --ink-900: #16181D;
+    --ink-700: #3B3F46;
+    --ink-500: #6B7280;
+    --ink-400: #9AA1AB;
+    --border: #E4E6EA;
+    --border-soft: #EDEEF1;
+    --page-bg: #F4F5F7;
+    --card: #FFFFFF;
+    --toggle-off: #D7DAE0;
+    --radius: 8px;
+    --shadow-sm: 0 1px 2px rgba(16,20,24,.06);
+    --shadow-md: 0 6px 20px rgba(16,20,24,.12);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Open Sans', system-ui, -apple-system, sans-serif;
+    color:var(--ink-900);
+    background:var(--page-bg);
+    font-size:14px;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font-family:inherit;cursor:pointer;}
+  input,select{font-family:inherit;}
+  .app{display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+  /* ===== TOP NAV (shared with the report editor prototype) ===== */
+  .topnav{
+    height:56px;flex:0 0 56px;
+    display:flex;align-items:center;
+    background:#fff;border-bottom:1px solid var(--border);
+    padding:0 18px;gap:22px;
+    position:relative;z-index:50;
+  }
+  .logo{width:32px;height:32px;flex:0 0 auto;display:block;}
+  .navtabs{display:flex;align-items:center;gap:22px;height:100%;}
+  .navtab{
+    position:relative;height:100%;display:flex;align-items:center;gap:4px;
+    border:none;background:none;color:var(--ink-500);font-size:14px;font-weight:600;
+    padding:0 2px;transition:color .15s;
+  }
+  .navtab:hover{color:var(--ink-900);}
+  .navtab.active{color:var(--ink-900);}
+  .navtab.active::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--orange);border-radius:2px 2px 0 0;
+  }
+  .navtab .chev{width:9px;height:9px;opacity:.6;}
+  .navsearch{
+    margin-left:auto;flex:0 1 360px;position:relative;
+  }
+  .navsearch input{
+    width:100%;height:36px;border-radius:8px;border:1px solid var(--border);
+    padding:0 14px 0 36px;font-size:13.5px;background:#F8F9FA;color:var(--ink-900);outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  .navsearch input:focus{border-color:var(--orange);background:#fff;}
+  .navsearch svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.45;}
+  .navicons{display:flex;align-items:center;gap:6px;margin-left:14px;}
+  .navicon-btn{
+    width:34px;height:34px;border-radius:8px;border:none;background:none;
+    display:flex;align-items:center;justify-content:center;color:var(--ink-500);
+    transition:background .15s,color .15s;position:relative;
+  }
+  .navicon-btn:hover{background:#F1F2F4;color:var(--ink-900);}
+
+  /* dropdown menu shared */
+  .dropdown-menu{
+    position:absolute;top:calc(100% + 8px);background:#fff;border:1px solid var(--border);
+    border-radius:10px;box-shadow:var(--shadow-md);min-width:190px;padding:6px;
+    opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .12s,transform .12s,visibility .12s;
+    z-index:200;
+  }
+  .dropdown-menu.open{opacity:1;visibility:visible;transform:translateY(0);}
+  .dropdown-menu button{
+    width:100%;text-align:left;background:none;border:none;padding:8px 10px;border-radius:6px;
+    font-size:13.5px;color:var(--ink-700);display:flex;align-items:center;gap:8px;
+  }
+  .dropdown-menu button:hover{background:#F5F6F8;color:var(--ink-900);}
+  .dropdown-menu .sep{height:1px;background:var(--border-soft);margin:5px 4px;}
+  .admin-nav-wrap{position:relative;display:inline-flex;align-items:center;}
+  .admin-nav-wrap .chev{width:9px;height:9px;opacity:.75;margin-left:1px;transition:transform .15s;flex:0 0 auto;}
+  .admin-nav-wrap:has(.dropdown-menu.open) .chev{transform:rotate(180deg);}
+
+  /* ===== BODY SHELL ===== */
+  .body-shell{flex:1;display:flex;min-height:0;}
+
+  /* icon rail */
+  .iconrail{
+    flex:0 0 52px;background:#fff;border-right:1px solid var(--border);
+    display:flex;flex-direction:column;align-items:center;padding-top:14px;gap:6px;
+  }
+  .rail-btn{
+    width:36px;height:36px;border-radius:10px;border:none;background:none;color:var(--ink-400);
+    display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;
+  }
+  .rail-btn:hover{background:#F1F2F4;color:var(--ink-700);}
+  .rail-btn.active{background:#F1F2F4;color:var(--ink-900);}
+
+  /* buttons */
+  .btn{
+    height:34px;padding:0 14px;border-radius:7px;font-size:13.5px;font-weight:700;border:1.5px solid transparent;
+    display:inline-flex;align-items:center;gap:6px;transition:all .15s;
+  }
+  .btn-neutral{background:#EAEBEF;color:var(--ink-700);}
+  .btn-neutral:hover{background:#E0E2E7;}
+  .btn-neutral .chev{width:9px;height:9px;opacity:.7;transition:transform .15s;}
+  .btn-neutral.open .chev{transform:rotate(180deg);}
+
+  /* ===== OVERVIEW AREA ===== */
+  .overview-area{flex:1;overflow-y:auto;min-width:0;background:var(--page-bg);}
+  .overview-header{
+    display:flex;align-items:baseline;gap:10px;padding:22px 28px 18px;
+    margin:0 24px;
+  }
+  .overview-claim-id{font-size:19px;font-weight:800;color:var(--ink-900);}
+  .overview-sep{color:var(--border);font-size:18px;font-weight:300;}
+  .overview-subtitle{font-size:19px;font-weight:400;color:var(--ink-500);}
+
+  .section-card{
+    background:#fff;border:1px solid var(--border-soft);border-radius:12px;padding:22px 28px 40px;
+    margin:0 24px 20px;
+  }
+  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .section-title{font-size:17px;font-weight:800;color:var(--ink-900);}
+  .section-head-right{position:relative;}
+
+  .empty-state{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    padding:46px 20px 8px;gap:14px;
+  }
+  .empty-icon{flex:0 0 auto;}
+  .empty-text{font-size:13.5px;color:var(--ink-500);max-width:420px;line-height:1.5;}
+
+  /* Aufnahmen cards */
+  .aufnahmen-list{display:flex;flex-flow:row wrap;gap:12px;margin-top:14px;}
+  .aufnahme-card{
+    width:300px;flex:0 0 auto;
+    border:1px solid var(--border-soft);border-radius:10px;padding:14px 16px;background:#fff;
+  }
+  .aufnahme-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .aufnahme-label{font-size:12.5px;color:var(--ink-500);font-weight:600;}
+  .badge-progress{
+    font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:var(--blue-bg);color:var(--blue-text);
+  }
+  .aufnahme-head-grow{flex:1;}
+  .aufnahme-kebab{
+    position:relative;width:26px;height:26px;border-radius:6px;border:none;background:none;color:var(--ink-400);
+    display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;
+  }
+  .aufnahme-kebab:hover{background:#F1F2F4;color:var(--ink-900);}
+  .aufnahme-title{font-size:14.5px;font-weight:800;color:var(--ink-900);margin-bottom:8px;}
+  .aufnahme-tags{display:flex;align-items:center;flex-wrap:wrap;row-gap:4px;column-gap:12px;margin-bottom:14px;}
+  .aufnahme-tag{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-500);}
+  .aufnahme-actions{display:flex;justify-content:flex-end;gap:8px;}
+  .btn-outline-gray{background:#fff;border:1.5px solid var(--border);color:var(--ink-700);}
+  .btn-outline-gray:hover{background:#F7F8F9;}
+
+  /* far right claim data rail (shared with report editor prototype) */
+  .claim-rail{
+    flex:0 0 30px;background:#fff;border-left:1px solid var(--border);display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;padding-top:16px;gap:10px;
+  }
+  .claim-rail button{
+    background:none;border:none;color:var(--ink-500);display:flex;flex-direction:column;align-items:center;gap:10px;
+  }
+  .claim-rail .vertical-txt{
+    writing-mode:vertical-rl;transform:rotate(180deg);font-size:11.5px;font-weight:600;color:var(--ink-500);
+    letter-spacing:.02em;
+  }
+  .claim-rail .chev{transition:transform .18s;}
+  .claim-rail.open .chev{transform:rotate(180deg);}
+
+  .claim-drawer{
+    flex:0 0 0px;overflow:hidden;background:#fff;border-left:1px solid var(--border);transition:flex-basis .2s ease;
+  }
+  .claim-drawer.open{flex-basis:280px;}
+  .claim-drawer-inner{width:280px;padding:18px;}
+  .claim-drawer-inner h3{font-size:14.5px;margin:0 0 12px;}
+  .claim-field{margin-bottom:12px;}
+  .claim-field .k{font-size:11px;color:var(--ink-400);margin-bottom:2px;}
+  .claim-field .v{font-size:13px;font-weight:600;}
+
+  /* toast */
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink-900);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:600;
+    display:flex;align-items:center;gap:10px;opacity:0;visibility:hidden;transition:all .2s;z-index:600;box-shadow:var(--shadow-md);
+  }
+  .toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
+  .toast svg{color:var(--green);flex:0 0 auto;}
+
+  /* ===== Freitext flyout submenu: hovering "Freitext" in the Hinzufügen
+     dropdown reveals Blanko / Feuerschaden without an extra modal step ===== */
+  .dropdown-submenu-wrap{position:relative;}
+  .dropdown-submenu-wrap > button{width:100%;}
+  .submenu-chev{margin-left:auto;flex:0 0 auto;opacity:.55;transform:rotate(-90deg);}
+  .freitext-submenu{
+    position:absolute;top:-6px;right:calc(100% + 6px);left:auto;min-width:170px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header class="topnav">
+    <svg class="logo" width="32" height="32" viewBox="67 9 66 66" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Logo">
+      <path d="M100.561 64.8853C113.716 64.8853 124.38 54.2416 124.38 41.1119C124.38 27.9822 113.716 17.3385 100.561 17.3385C87.4069 17.3385 76.743 27.9822 76.743 41.1119C76.743 54.2416 87.4069 64.8853 100.561 64.8853Z" fill="white"/>
+      <path d="M99.9347 10.4567C82.7424 10.4567 68.7736 24.399 68.7736 41.6482C68.7736 58.8079 82.7424 72.7502 100.024 72.7502C117.306 72.7502 131.185 58.8079 131.185 41.5588C131.096 24.399 117.127 10.4567 99.9347 10.4567ZM113.456 41.9163C113.456 45.7594 111.128 47.4575 105.307 48.2618L95.4575 49.5131C90.264 50.1387 89.6372 51.4793 89.6372 52.8199C89.6372 54.2499 90.264 55.5905 94.4725 55.5905H113.187V58.8973H94.2039C88.9209 58.8973 86.4136 56.9311 86.4136 52.9093V52.6411C86.4136 49.0662 88.9209 47.1 94.383 46.385L104.501 45.1338C109.337 44.5081 110.322 43.3463 110.322 41.7375C110.322 40.1288 109.337 38.967 104.501 38.3413L94.383 36.9114C88.8313 36.1964 86.4136 34.2301 86.4136 30.6552V30.3871C86.4136 26.3653 88.9209 24.399 94.2039 24.399H113.187V27.7059H94.4725C90.1745 27.7059 89.6372 29.0465 89.6372 30.5658C89.6372 31.8171 90.3535 33.247 95.4575 33.8727L105.307 35.2133C111.217 36.0176 113.456 37.8051 113.456 41.5588V41.9163Z" fill="#FF9933"/>
+    </svg>
+    <nav class="navtabs" id="navtabs">
+      <button class="navtab active" data-tab="schaden">Schäden</button>
+      <button class="navtab" data-tab="aufgaben">Aufgaben</button>
+      <button class="navtab" id="backofficeBtn" data-tab="backoffice">Backoffice
+        <svg class="chev" width="9" height="9" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="dropdown-menu" id="backofficeMenu">
+        <button>📁 Dokumentenvorlagen</button>
+        <button>👥 Benutzerverwaltung</button>
+        <button>⚙️ Systemeinstellungen</button>
+        <div class="sep"></div>
+        <button>📊 Berichte</button>
+      </div>
+      <button class="navtab" data-tab="regulierer">Regulierer</button>
+      <button class="navtab" data-tab="analytics">Analytics</button>
+      <button class="navtab" data-tab="eingang">Eingang</button>
+    </nav>
+    <div class="navsearch">
+      <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6.2" stroke="currentColor" stroke-width="1.6"/><path d="M14 14l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Schäden durchsuchen">
+    </div>
+    <div class="admin-nav-wrap">
+      <button class="btn btn-neutral" id="adminNavBtn" title="Admin">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3.5v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9v-5L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Admin
+        <svg class="chev" width="9" height="9" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="dropdown-menu" id="adminNavMenu" style="right:0;left:auto;">
+        <button data-href="vorlagen-liste-prototype.html">📁 Aufnahmen Vorlagen</button>
+        <button data-href="general-configs-prototype.html">⚙️ General Configs</button>
+      </div>
+    </div>
+    <div class="navicons">
+      <button class="navicon-btn" title="Hilfe" id="helpBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M9.5 9a2.5 2.5 0 114 2c-.7.6-1.5 1-1.5 2.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="16.6" r=".9" fill="currentColor"/></svg>
+      </button>
+      <button class="navicon-btn" title="Nachrichten" id="chatBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="navicon-btn" title="Einstellungen" id="settingsBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18.4 5.6l-1.55 1.55M7.15 16.85L5.6 18.4M18.4 18.4l-1.55-1.55M7.15 7.15L5.6 5.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <button class="navicon-btn" title="Abmelden" id="logoutBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h7a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10 12h11m0 0l-3.2-3.2M21 12l-3.2 3.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="body-shell">
+
+    <!-- LEFT ICON RAIL -->
+    <aside class="iconrail" id="iconrail">
+      <button class="rail-btn active" data-rail="clip" title="Bewertung">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="12" height="17" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="9" y="2.3" width="6" height="3.4" rx="1" fill="currentColor"/></svg>
+      </button>
+      <button class="rail-btn" data-rail="grid" title="Übersicht">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="3.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.4" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <button class="rail-btn" data-rail="folder" title="Ordner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3.5 6.5a1.5 1.5 0 011.5-1.5h4l2 2.2H19a1.5 1.5 0 011.5 1.5v8.8a1.5 1.5 0 01-1.5 1.5H5a1.5 1.5 0 01-1.5-1.5V6.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="rail-btn" data-rail="mail" title="Posteingang">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5.5" width="17" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 7l7.5 6 7.5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </aside>
+
+    <!-- OVERVIEW AREA -->
+    <main class="overview-area">
+
+      <div class="overview-header">
+        <span class="overview-claim-id">TC-15809s9023s</span>
+        <span class="overview-sep">|</span>
+        <span class="overview-subtitle">Bewertung</span>
+      </div>
+
+      <!-- Aufnahmen -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-title">Aufnahmen</span>
+          <div class="section-head-right">
+            <button class="btn btn-neutral" id="aufnahmenAddBtn">Hinzufügen
+              <svg class="chev" width="9" height="9" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="dropdown-menu" id="aufnahmenAddMenu" style="right:0;left:auto;">
+              <button id="addSachBtn">Sach</button>
+              <div class="dropdown-submenu-wrap" id="freitextSubmenuWrap">
+                <button id="addFreitextBtn">Freitext
+                  <svg class="submenu-chev" width="9" height="9" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="dropdown-menu freitext-submenu" id="freitextSubmenu">
+                  <button data-template="blank">Blanko</button>
+                  <button data-template="fire">Feuerschaden</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="aufnahmenEmpty" class="empty-state">
+          <svg class="empty-icon" width="60" height="60" viewBox="0 0 60 60" fill="none">
+            <rect x="10" y="18" width="34" height="28" rx="4" fill="var(--orange-soft)"/>
+            <path d="M10 22a4 4 0 014-4h9l3 4h14a4 4 0 014 4v2H10v-6z" fill="#FBD6B4"/>
+            <circle cx="46" cy="16" r="6" fill="#fff" stroke="var(--orange)" stroke-width="1.6"/>
+            <path d="M46 13.5v3M44.5 15h3" stroke="var(--orange)" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+          <div class="empty-text">Sobald ein Regulierer den Schaden annimmt, wird automatisch eine Aufnahme hinzugefügt</div>
+        </div>
+        <div id="aufnahmenList" class="aufnahmen-list"></div>
+      </div>
+
+      <!-- Formulare -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-title">Formulare</span>
+          <div class="section-head-right">
+            <button class="btn btn-neutral" id="formulareAddBtn">Hinzufügen
+              <svg class="chev" width="9" height="9" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="dropdown-menu" id="formulareAddMenu" style="right:0;left:auto;">
+              <button id="addFormularBtn">Schadenformular</button>
+              <button id="addGutachtenBtn">Gutachterformular</button>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state">
+          <svg class="empty-icon" width="60" height="60" viewBox="0 0 60 60" fill="none">
+            <rect x="12" y="10" width="26" height="34" rx="3" fill="var(--blue-bg)"/>
+            <rect x="20" y="18" width="28" height="34" rx="3" fill="var(--orange-soft)"/>
+            <path d="M27 27h14M27 33h14M27 39h9" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="empty-text">Hinzugefügte Formulare werden hier angezeigt</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- claim data slide-out -->
+    <div class="claim-drawer" id="claimDrawer">
+      <div class="claim-drawer-inner">
+        <h3>Schadendaten</h3>
+        <div class="claim-field"><div class="k">Schadennummer</div><div class="v">TC-15809s9023s</div></div>
+        <div class="claim-field"><div class="k">Versicherungsnehmer</div><div class="v">M. Hartmann</div></div>
+        <div class="claim-field"><div class="k">Schadendatum</div><div class="v">14.06.2026</div></div>
+        <div class="claim-field"><div class="k">Sparte</div><div class="v">Wohngebäude</div></div>
+        <div class="claim-field"><div class="k">Status</div><div class="v">Bewertung</div></div>
+      </div>
+    </div>
+
+    <div class="claim-rail" id="claimRail">
+      <button id="claimRailBtn">
+        <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="vertical-txt">Schadendaten anzeigen</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="toast" id="toast">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".15"/><path d="M7 12.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="toastText">Gespeichert</span>
+</div>
+
+<script>
+(function(){
+  function toast(msg){
+    const t=document.getElementById('toast');
+    document.getElementById('toastText').textContent=msg;
+    t.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer=setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  // ---- top nav tabs (decorative, matches report editor prototype) ----
+  document.querySelectorAll('.navtab[data-tab]').forEach(tab=>{
+    tab.addEventListener('click', function(e){
+      if(this.id==='backofficeBtn') return; // handled by its own dropdown toggle below
+      document.querySelectorAll('.navtab').forEach(t=>t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  function closeAllDropdowns(except){
+    document.querySelectorAll('.dropdown-menu.open').forEach(m=>{ if(m!==except) m.classList.remove('open'); });
+    document.querySelectorAll('.btn-neutral.open').forEach(b=>{ if(b!==except) b.classList.remove('open'); });
+  }
+
+  document.getElementById('backofficeBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    const menu=document.getElementById('backofficeMenu');
+    const willOpen=!menu.classList.contains('open');
+    closeAllDropdowns();
+    if(willOpen) menu.classList.add('open');
+  });
+  document.getElementById('adminNavBtn').addEventListener('click', function(e){
+    e.stopPropagation();
+    const menu=document.getElementById('adminNavMenu');
+    const willOpen=!menu.classList.contains('open');
+    closeAllDropdowns();
+    if(willOpen) menu.classList.add('open');
+  });
+  document.getElementById('adminNavMenu').addEventListener('click', function(e){
+    const btn=e.target.closest('button[data-href]');
+    if(!btn) return;
+    const href=btn.dataset.href;
+    if(href===location.pathname.split('/').pop()){
+      toast('Sie befinden sich bereits auf dieser Seite');
+      closeAllDropdowns();
+      return;
+    }
+    window.location.href=href;
+  });
+
+  // ---- Aufnahmen: Hinzufügen dropdown ----
+  const aufnahmenBtn=document.getElementById('aufnahmenAddBtn');
+  const aufnahmenMenu=document.getElementById('aufnahmenAddMenu');
+  aufnahmenBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    const willOpen=!aufnahmenMenu.classList.contains('open');
+    closeAllDropdowns();
+    if(willOpen){ aufnahmenMenu.classList.add('open'); aufnahmenBtn.classList.add('open'); }
+  });
+  document.getElementById('addSachBtn').addEventListener('click', function(){
+    toast('Sach-Aufnahmen sind in diesem Prototyp noch nicht verfügbar');
+    closeAllDropdowns();
+  });
+
+  // ---- Aufnahmen list: adding a Freitext creates a card instead of navigating away ----
+  const aufnahmenEmpty=document.getElementById('aufnahmenEmpty');
+  const aufnahmenList=document.getElementById('aufnahmenList');
+  const aufnahmenData=[];
+  let aufnahmeIdSeq=0;
+
+  function renderAufnahmen(){
+    aufnahmenEmpty.style.display = aufnahmenData.length ? 'none' : '';
+    aufnahmenList.innerHTML = aufnahmenData.map(a=>`
+      <div class="aufnahme-card" data-id="${a.id}">
+        <div class="aufnahme-head">
+          <span class="aufnahme-label">Aufnahme</span>
+          <span class="badge-progress">In Bearbeitung</span>
+          <span class="aufnahme-head-grow"></span>
+          <span style="position:relative;">
+            <button class="aufnahme-kebab" data-kebab="${a.id}" title="Weitere Optionen">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="19" r="1.7" fill="currentColor"/></svg>
+            </button>
+            <div class="dropdown-menu" id="kebabMenu-${a.id}" style="right:0;left:auto;">
+              <button data-remove="${a.id}">🗑️ Entfernen</button>
+            </div>
+          </span>
+        </div>
+        <div class="aufnahme-title">${a.type}${a.templateLabel ? ' – '+a.templateLabel : ''} - ${a.date}</div>
+        <div class="aufnahme-tags">
+          <span class="aufnahme-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M8 7l1.5-2.5h5L16 7" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+            Fotodokumentation
+          </span>
+          <span class="aufnahme-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3.5 6.5a1.5 1.5 0 011.5-1.5h4l2 2.2H19a1.5 1.5 0 011.5 1.5v8.8a1.5 1.5 0 01-1.5 1.5H5a1.5 1.5 0 01-1.5-1.5V6.5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+            Anhänge
+          </span>
+        </div>
+        <div class="aufnahme-actions">
+          <button class="btn btn-outline-gray" data-preview="${a.id}">Vorschau</button>
+          <button class="btn btn-neutral" data-open="${a.id}">Ansehen</button>
+        </div>
+      </div>`).join('');
+  }
+
+  // ---- Freitext: hovering "Freitext" in the Hinzufügen dropdown reveals a
+  // flyout submenu (Blanko / Feuerschaden) — picking one creates the Aufnahme
+  // immediately, no modal step in between ----
+  const FREITEXT_TEMPLATES={
+    blank:{label:'Blanko'},
+    fire:{label:'Feuerschaden'}
+  };
+  const freitextSubmenuWrap=document.getElementById('freitextSubmenuWrap');
+  const freitextSubmenu=document.getElementById('freitextSubmenu');
+  let freitextSubmenuCloseTimer=null;
+
+  freitextSubmenuWrap.addEventListener('mouseenter', function(){
+    clearTimeout(freitextSubmenuCloseTimer);
+    freitextSubmenu.classList.add('open');
+  });
+  freitextSubmenuWrap.addEventListener('mouseleave', function(){
+    freitextSubmenuCloseTimer=setTimeout(()=>freitextSubmenu.classList.remove('open'), 150);
+  });
+
+  function createFreitextAufnahme(templateKey){
+    const tpl=FREITEXT_TEMPLATES[templateKey];
+    aufnahmeIdSeq++;
+    aufnahmenData.unshift({
+      id:'af'+aufnahmeIdSeq,
+      type:'Freitext',
+      templateLabel: tpl && templateKey!=='blank' ? tpl.label : null,
+      date:new Date().toLocaleDateString('de-DE')
+    });
+    renderAufnahmen();
+    closeAllDropdowns();
+    toast(tpl && templateKey!=='blank'
+      ? `✓ Freitext-Aufnahme „${tpl.label}“ erstellt`
+      : '✓ Freitext-Aufnahme erstellt');
+  }
+  freitextSubmenu.addEventListener('click', function(e){
+    const item=e.target.closest('[data-template]');
+    if(!item) return;
+    createFreitextAufnahme(item.dataset.template);
+  });
+
+  aufnahmenList.addEventListener('click', function(e){
+    const kebabBtn=e.target.closest('[data-kebab]');
+    if(kebabBtn){
+      e.stopPropagation();
+      const menu=kebabBtn.parentElement.querySelector('.dropdown-menu');
+      const willOpen=!menu.classList.contains('open');
+      closeAllDropdowns();
+      if(willOpen) menu.classList.add('open');
+      return;
+    }
+    const removeBtn=e.target.closest('[data-remove]');
+    if(removeBtn){
+      e.stopPropagation();
+      const idx=aufnahmenData.findIndex(a=>a.id===removeBtn.dataset.remove);
+      if(idx>-1) aufnahmenData.splice(idx,1);
+      renderAufnahmen();
+      closeAllDropdowns();
+      return;
+    }
+    const previewBtn=e.target.closest('[data-preview]');
+    if(previewBtn){
+      toast('Vorschau ist in diesem Prototyp noch nicht verfügbar');
+      return;
+    }
+    const openBtn=e.target.closest('[data-open]');
+    if(openBtn){
+      window.location.href='report-editor-prototype.html';
+      return;
+    }
+  });
+  renderAufnahmen();
+
+  // ---- Formulare: Hinzufügen dropdown ----
+  const formulareBtn=document.getElementById('formulareAddBtn');
+  const formulareMenu=document.getElementById('formulareAddMenu');
+  formulareBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    const willOpen=!formulareMenu.classList.contains('open');
+    closeAllDropdowns();
+    if(willOpen){ formulareMenu.classList.add('open'); formulareBtn.classList.add('open'); }
+  });
+  document.querySelectorAll('#formulareAddMenu button').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      toast('Formulare sind in diesem Prototyp noch nicht verfügbar');
+      closeAllDropdowns();
+    });
+  });
+
+  document.addEventListener('click', function(){ closeAllDropdowns(); });
+
+  // ---- icon rail (decorative) ----
+  document.querySelectorAll('.rail-btn').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.rail-btn').forEach(b=>b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // ---- claim data drawer ----
+  const claimDrawer=document.getElementById('claimDrawer');
+  const claimRail=document.getElementById('claimRail');
+  document.getElementById('claimRailBtn').addEventListener('click',()=>{
+    claimDrawer.classList.toggle('open');
+    claimRail.classList.toggle('open');
+  });
+})();
+</script>
+
+</body>
+</html>
