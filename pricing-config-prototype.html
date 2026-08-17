@@ -1,0 +1,3980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing Configs — Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* DS By Claimsforce — pulled from Figma file S4z87xUFoQSx3KE1XOa6Zr (01 - Basics) */
+
+  /* Neutrals */
+  --gray-0:#FCFCFC;
+  --gray-050:#F9F9FA;
+  --gray-100:#F1F3F6;
+  --gray-200:#E2E5EB;
+  --gray-300:#D0D4DD;
+  --gray-400:#9399A7;
+  --gray-500:#7A7F8B;
+  --gray-600:#585D68;
+
+  /* Text */
+  --dark-text-high:#222429;
+  --dark-text-medium:#353940;
+  --dark-text-light:#6B6C70;
+  --dark-text-off:#BCBEC0;
+
+  /* Brand (Violet) */
+  --violet-100:#EDF1FF;
+  --violet-200:#DEE2FF;
+  --violet-300:#C2CAFF;
+  --violet-400:#7F7AFF;
+  --violet-500:#7055FA;
+  --violet-600:#4A32A8;
+
+  /* Semantic */
+  --orange-100:#FFF1E3;
+  --orange-200:#FFE3C6;
+  --orange-300:#FFCBA6;
+  --orange-400:#FFA673;
+  --orange-500:#F28852;
+  --orange-600:#CB5418;
+
+  --red-100:#FFEBEF;
+  --red-200:#FAD2DE;
+  --red-400:#DE3131;
+  --red-500:#C21616;
+  --red-600:#9E020A;
+
+  --green-100:#E4F7E7;
+  --green-200:#B8ECC9;
+  --green-400:#32B053;
+  --green-600:#06672C;
+
+  --blue-100:#D6EFFF;
+  --blue-200:#AFDCFA;
+  --blue-400:#0073D8;
+  --blue-500:#005DBF;
+  --blue-600:#0047A0;
+
+  /* App aliases */
+  --paper:var(--gray-050);
+  --paper-raised:#FFFFFF;
+  --ink:var(--dark-text-high);
+  --ink-soft:var(--dark-text-medium);
+  --ink-faint:var(--dark-text-light);
+  --line:var(--gray-300);
+  --line-strong:var(--gray-400);
+  --focus:var(--violet-400);
+
+  --current:var(--orange-500);
+  --current-tint:var(--orange-100);
+  --current-line:var(--orange-300);
+
+  --future:var(--blue-500);
+  --future-tint:var(--blue-100);
+  --future-line:var(--blue-200);
+
+  --history:var(--gray-600);
+  --history-tint:var(--gray-100);
+  --history-line:var(--gray-300);
+
+  --good:var(--green-600);
+  --good-tint:var(--green-100);
+
+  --mono:'Open Sans',sans-serif;
+  --serif:'Open Sans',sans-serif;
+  --sans:'Open Sans',sans-serif;
+
+  --radius:4px;
+  --shadow:0 1px 0 rgba(34,36,41,0.04), 0 8px 24px -12px rgba(34,36,41,0.16);
+  --section-accent: var(--current);
+  --section-tint: var(--current-tint);
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ===== App shell ===== */
+.app{
+  display:grid;
+  grid-template-columns:236px 1fr;
+  min-height:100vh;
+}
+
+/* ---- Sidebar ---- */
+.sidebar{
+  background:var(--ink);
+  color:var(--paper);
+  padding:28px 20px;
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:0;
+  height:100vh;
+}
+.brand{
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  margin-bottom:6px;
+}
+.brand-mark{
+  width:10px;height:10px;
+  background:var(--current);
+  transform:rotate(45deg);
+  flex-shrink:0;
+}
+.brand-name{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:19px;
+  letter-spacing:-0.01em;
+}
+.brand-sub{
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:#9399A7;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:36px;
+  padding-left:18px;
+}
+
+.nav-group-label{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#9399A7;
+  margin:18px 0 10px 2px;
+}
+.nav-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:11px 12px;
+  border-radius:4px;
+  cursor:pointer;
+  font-size:13.5px;
+  font-weight:500;
+  color:#D0D4DD;
+  border-left:2px solid transparent;
+  transition:background .15s ease, color .15s ease;
+  margin-bottom:2px;
+}
+.nav-item .dot{
+  width:7px;height:7px;
+  border-radius:50%;
+  flex-shrink:0;
+  background:#585D68;
+}
+.nav-item:hover{ background:rgba(255,255,255,0.06); color:#fff; }
+.nav-item.active{
+  background:rgba(255,255,255,0.09);
+  color:#fff;
+  border-left-color:var(--nav-accent, var(--current));
+}
+.nav-item.active .dot{ background:var(--nav-accent, var(--current)); box-shadow:0 0 0 3px rgba(255,255,255,0.08);}
+.nav-item .count{
+  margin-left:auto;
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:#9399A7;
+}
+.nav-item.active .count{ color:#E2E5EB; }
+
+.sidebar-footer{
+  margin-top:auto;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,0.1);
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:#9399A7;
+  line-height:1.6;
+}
+.sidebar-footer b{ color:#E2E5EB; font-weight:500;}
+
+/* ---- Main ---- */
+.main{
+  padding:0;
+  overflow-x:hidden;
+}
+.topbar{
+  padding:26px 40px 22px;
+  border-bottom:1px solid var(--line);
+  background:var(--paper-raised);
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:24px;
+}
+.topbar-eyebrow{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--section-accent);
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.topbar-eyebrow .bar{ width:20px; height:2px; background:var(--section-accent); }
+.topbar h1{
+  font-family:var(--serif);
+  font-size:30px;
+  font-weight:600;
+  letter-spacing:-0.01em;
+}
+.topbar p.desc{
+  color:var(--ink-soft);
+  font-size:13.5px;
+  margin-top:6px;
+  max-width:620px;
+}
+.topbar-meta{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--ink-faint);
+  text-align:right;
+  line-height:1.7;
+}
+
+.content{
+  padding:34px 40px 80px;
+  max-width:1180px;
+}
+
+/* ===== Breadcrumb ===== */
+.crumbs{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--mono);
+  font-size:11.5px;
+  color:var(--ink-faint);
+  margin-bottom:22px;
+}
+.crumbs .seg{ cursor:pointer; }
+.crumbs .seg:hover{ color:var(--ink); text-decoration:underline; }
+.crumbs .seg.current{ color:var(--ink); font-weight:500; text-decoration:none; cursor:default; }
+.crumbs .sep{ color:var(--line-strong); }
+
+/* ===== List rows ===== */
+.btn{
+  font-family:var(--sans);
+  font-size:13px;
+  font-weight:600;
+  padding:9px 15px;
+  border-radius:var(--radius);
+  border:1px solid var(--violet-500);
+  background:var(--violet-500);
+  color:#fff;
+  cursor:pointer;
+  transition:background .12s ease, box-shadow .12s ease, border-color .12s ease;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  white-space:nowrap;
+}
+.btn:hover{ background:var(--violet-600); border-color:var(--violet-600); box-shadow:0 2px 8px -2px rgba(74,50,168,0.4); }
+.btn.ghost{
+  background:#fff;
+  color:var(--ink);
+  border:1px solid var(--line);
+}
+.btn.ghost:hover{ border-color:var(--gray-500); background:var(--gray-050); box-shadow:none; }
+.btn.accent{ background:var(--section-accent); border-color:var(--section-accent); color:#fff; }
+.btn.accent:hover{ filter:brightness(0.94); box-shadow:none; }
+.btn.small{ padding:6px 11px; font-size:12px; }
+.btn.danger-ghost{ color:var(--red-400); border-color:var(--red-200); background:#fff; }
+.btn.danger-ghost:hover{ border-color:var(--red-400); background:var(--red-100); box-shadow:none; }
+
+.tag-default{
+  font-family:var(--mono);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--ink-faint);
+  border:1px solid var(--line-strong);
+  padding:2px 6px;
+  border-radius:20px;
+  font-weight:600;
+}
+
+/* ===== Tier list table ===== */
+.list-toolbar{ display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:14px; }
+.list-search{ width:280px; }
+.list-search input{ font-size:13px; padding:9px 12px; }
+.tier-table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--paper-raised);
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:var(--shadow);
+}
+.tier-table thead th{
+  text-align:left;
+  font-family:var(--sans);
+  font-weight:700;
+  font-size:13px;
+  color:var(--ink);
+  padding:14px 20px;
+  border-bottom:2px solid var(--line);
+  background:var(--paper-raised);
+}
+.tier-table thead th:first-child{ border-top-left-radius:8px; }
+.tier-table thead th:last-child{ border-top-right-radius:8px; }
+.tier-table tbody td{
+  padding:20px 20px;
+  border-bottom:1px solid var(--line);
+  font-size:14px;
+  color:var(--ink);
+  vertical-align:middle;
+  background:var(--paper-raised);
+}
+.tier-table tbody tr{ cursor:pointer; transition:background .12s ease; }
+.tier-table tbody tr:hover td{ background:var(--paper); }
+.tier-table tbody tr:last-child td{ border-bottom:none; }
+.tier-table tbody tr:last-child td:first-child{ border-bottom-left-radius:8px; }
+.tier-table tbody tr:last-child td:last-child{ border-bottom-right-radius:8px; }
+.tier-table .name-cell{ display:flex; align-items:center; gap:8px; font-weight:600; }
+.std-summary-wrap{ position:relative; width:fit-content; }
+.std-summary-icon{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:15px;
+  height:15px;
+  border-radius:50%;
+  background:var(--gray-200, #e5e5e5);
+  color:var(--ink-faint);
+  font-size:10px;
+  font-weight:700;
+  flex-shrink:0;
+}
+.std-summary-popover{
+  position:absolute;
+  top:50%;
+  left:calc(100% + 12px);
+  min-width:300px;
+  max-width:380px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  padding:12px 14px;
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(-50%) translateX(-4px);
+  transition:opacity .12s ease, transform .12s ease, visibility .12s ease;
+  z-index:30;
+  cursor:default;
+}
+.std-summary-wrap:hover .std-summary-popover{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(-50%) translateX(0);
+}
+.std-summary-popover::before{
+  content:'';
+  position:absolute;
+  top:50%;
+  right:100%;
+  transform:translateY(-50%);
+  border:6px solid transparent;
+  border-right-color:#fff;
+}
+.std-summary-popover .popover-title{
+  font-family:var(--mono);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  font-weight:700;
+  color:var(--ink-faint);
+  margin-bottom:8px;
+}
+.std-summary-row{ padding:6px 0; border-top:1px solid var(--line); }
+.std-summary-row:first-child{ border-top:none; }
+.std-summary-product{
+  font-family:var(--sans);
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:3px;
+}
+.std-summary-fields{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:400;
+  color:var(--ink);
+}
+.std-summary-label{ color:var(--ink-faint); font-weight:600; margin-right:5px; }
+.std-summary-note{
+  margin-top:8px;
+  padding-top:8px;
+  border-top:1px solid var(--line);
+  font-family:var(--sans);
+  font-size:11.5px;
+  font-style:italic;
+  color:var(--ink-faint);
+}
+.tier-table-static tbody tr{ cursor:default; }
+.tier-table-static tbody tr:hover td{ background:var(--paper-raised); }
+.tier-table-static tbody tr.clickable{ cursor:pointer; }
+.tier-table-static tbody tr.clickable:hover td{ background:var(--paper); }
+.type-chip{
+  display:inline-flex;
+  align-items:center;
+  font-family:var(--sans);
+  font-weight:700;
+  font-size:12px;
+  padding:5px 12px;
+  border-radius:20px;
+  cursor:default;
+}
+.type-chip.standard{ background:var(--blue-100); color:var(--blue-400); }
+.type-chip.custom{ background:var(--green-100); color:var(--green-600); }
+.type-chip.none{ background:var(--gray-100); color:var(--gray-500); }
+
+.icon-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:30px; height:30px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:var(--paper-raised);
+  color:var(--ink-soft);
+  cursor:pointer;
+  font-size:13px;
+  transition:background .12s ease, border-color .12s ease, color .12s ease;
+}
+.icon-btn:hover{ background:var(--violet-100); border-color:var(--violet-200); color:var(--ink); }
+
+.bo-toggle-row{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.bo-toggle-row .toggle-label{ font-family:var(--sans); font-size:14px; font-weight:700; color:var(--ink); }
+
+.type-chip-wrap{ position:relative; display:inline-block; }
+.type-chip-popover{
+  position:absolute;
+  top:calc(100% + 10px);
+  left:50%;
+  transform:translateX(-50%) translateY(4px);
+  min-width:220px;
+  max-width:320px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  padding:12px 14px;
+  z-index:70;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .14s ease, transform .14s ease;
+  text-align:left;
+  cursor:default;
+}
+.type-chip-wrap:hover .type-chip-popover{
+  opacity:1;
+  visibility:visible;
+  transform:translateX(-50%) translateY(0);
+}
+.type-chip-popover::before{
+  content:'';
+  position:absolute;
+  bottom:100%;
+  left:50%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-bottom-color:#fff;
+}
+.type-chip-popover .popover-group{ margin-bottom:9px; }
+.type-chip-popover .popover-group:last-child{ margin-bottom:0; }
+.type-chip-popover .popover-label{
+  font-family:var(--mono);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:4px;
+  color:var(--ink-faint);
+}
+.type-chip-popover .popover-dot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.type-chip-popover .popover-dot.standard{ background:var(--blue-400); }
+.type-chip-popover .popover-dot.custom{ background:var(--green-600); }
+.type-chip-popover .popover-dot.none{ background:var(--gray-500); }
+.type-chip-popover .popover-names{
+  font-family:var(--sans);
+  font-size:12.5px;
+  color:var(--ink);
+  line-height:1.5;
+}
+
+/* ===== Chip multi-select ===== */
+.chip-select{ position:relative; }
+.chip-select-box{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  min-height:38px;
+  padding:6px 34px 6px 8px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  position:relative;
+}
+.chip-select.open .chip-select-box{ border-color:var(--section-accent); }
+.chip-select-chips{ display:flex; flex-wrap:wrap; gap:6px; flex:1; }
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  background:var(--current-tint, #f2f2f2);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:600;
+  padding:4px 6px 4px 10px;
+  border-radius:999px;
+  line-height:1.3;
+}
+.chip-remove{
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  font-size:14px;
+  line-height:1;
+  color:var(--ink-faint);
+  padding:0 2px;
+  font-family:var(--sans);
+}
+.chip-remove:hover{ color:var(--red-400); }
+.chip-select-arrow{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:13px;
+  color:var(--ink-faint);
+  pointer-events:none;
+}
+.chip-select-dropdown{
+  display:none;
+  position:absolute;
+  top:calc(100% + 6px);
+  left:0;
+  right:0;
+  max-height:220px;
+  overflow-y:auto;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  padding:6px;
+  z-index:20;
+}
+.chip-select.open .chip-select-dropdown{ display:block; }
+.chip-option{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 8px;
+  border-radius:6px;
+  font-family:var(--sans);
+  font-size:13px;
+  color:var(--ink);
+  cursor:pointer;
+}
+.chip-option:hover{ background:var(--gray-50, #f7f7f7); }
+.chip-option input[type=checkbox]{ margin:0; }
+.chip-select-count{
+  margin-top:6px;
+  font-family:var(--sans);
+  font-size:11.5px;
+  color:var(--ink-faint);
+}
+
+/* ===== Detail ===== */
+.detail-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:22px;
+  gap:20px;
+}
+.detail-header h2{
+  font-family:var(--serif);
+  font-size:26px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.detail-header .sub{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--ink-faint);
+  margin-top:6px;
+}
+.detail-actions{ display:flex; gap:10px; flex-shrink:0; }
+
+.back-arrow{ cursor:pointer; color:var(--ink-faint); transition:color .12s ease; }
+.back-arrow:hover{ color:var(--ink); }
+
+/* ===== Regulierer Standard detail ===== */
+.tab-row-with-actions{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; }
+.tab-row-with-actions .tab-row{ margin-bottom:0; }
+.reg-breakdown-triggers{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+.reg-sidebar-stack{ display:flex; flex-direction:column; gap:16px; }
+.scope-select-wrap{ padding:14px; }
+.scope-select-wrap select{ width:100%; }
+.scope-list-header .range-toggle-link{ padding:0; font-size:10.5px; }
+
+
+.radio-row{ display:flex; flex-wrap:wrap; align-items:center; gap:18px; margin-top:6px; }
+.radio-option{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-family:var(--sans);
+  font-size:13px;
+  font-weight:400;
+  color:var(--ink);
+  cursor:pointer;
+}
+.radio-option input[type=radio]{
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  width:16px;
+  height:16px;
+  flex-shrink:0;
+  margin:0;
+  border:1.5px solid var(--line-strong);
+  border-radius:50%;
+  background:#fff;
+  cursor:pointer;
+  position:relative;
+  transition:border-color .12s ease;
+}
+.radio-option input[type=radio]:hover{ border-color:var(--section-accent); }
+.radio-option input[type=radio]:checked{ border-color:var(--section-accent); }
+.radio-option input[type=radio]:checked::before{
+  content:'';
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--section-accent);
+}
+
+.inherit-callout{
+  border:1px dashed var(--line-strong);
+  border-radius:4px;
+  padding:36px 30px;
+  text-align:center;
+  background:var(--paper-raised);
+}
+.inherit-callout .icon{ font-size:22px; margin-bottom:12px; }
+.inherit-callout h3{ font-family:var(--serif); font-size:19px; margin-bottom:8px; }
+.inherit-callout p{ font-size:13px; color:var(--ink-soft); max-width:420px; margin:0 auto 18px; }
+
+.scope-layout{
+  display:grid;
+  grid-template-columns:200px 1fr;
+  gap:28px;
+  align-items:start;
+}
+.scope-list{
+  border:1px solid var(--line);
+  background:var(--paper-raised);
+  border-radius:4px;
+  overflow:hidden;
+}
+.scope-list-header{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+  font-family:var(--mono);
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--ink-faint);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.scope-item{
+  padding:14px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+  transition:background .12s ease;
+  position:relative;
+}
+.scope-item:last-child{ border-bottom:none; }
+.scope-item:hover{ background:var(--paper); }
+.scope-item.active{ background:var(--section-tint); }
+.scope-item.active::before{
+  content:'';
+  position:absolute;
+  left:0; top:0; bottom:0;
+  width:3px;
+  background:var(--section-accent);
+}
+.scope-item .stitle{
+  font-size:13.5px;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.scope-item .scode{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--ink-faint);
+  font-weight:400;
+}
+.scope-item .smeta{
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:var(--ink-faint);
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+/* ===== Cost reference panel (Regulierer / BO fees, read-only) ===== */
+.detail-row{ display:flex; gap:20px; align-items:flex-start; min-width:0; }
+.detail-row #editor-slot, .detail-row > .editor-col{ flex:1; min-width:0; }
+
+.cost-ref-panel{ flex-shrink:0; width:300px; transition:width .15s ease; }
+.cost-ref-panel.collapsed{ width:34px; }
+
+.cost-ref-collapsed-strip{
+  border:1px solid var(--line);
+  background:var(--paper-raised);
+  border-radius:4px;
+  width:34px;
+  height:100%;
+  min-height:220px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:14px;
+  padding:14px 0;
+  cursor:pointer;
+}
+.cost-ref-collapsed-strip:hover{ border-color:var(--ink); }
+.cost-ref-collapsed-strip .crs-icon{ font-size:13px; }
+.cost-ref-collapsed-strip .crs-label{
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+.cost-ref-info{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:11.5px;
+  line-height:1.5;
+  color:var(--blue-600);
+  background:var(--blue-100);
+  border:1px solid var(--blue-200);
+  padding:10px 12px;
+  border-radius:4px;
+  margin-bottom:14px;
+}
+.cost-ref-info .close-x{
+  margin-left:auto;
+  cursor:pointer;
+  color:var(--blue-600);
+  font-size:13px;
+  line-height:1;
+  background:none;
+  border:none;
+  flex-shrink:0;
+}
+
+.cost-ref-card{
+  border:1px solid var(--line);
+  background:var(--paper-raised);
+  border-radius:4px;
+  overflow:hidden;
+}
+.cost-ref-card + .cost-ref-card{ margin-top:16px; }
+.cost-ref-card-head{
+  padding:13px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+.cost-ref-card-head h4{ font-family:var(--serif); font-size:14.5px; font-weight:700; }
+
+.cost-ref-provider-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 16px 0;
+}
+.cost-ref-provider-row label{
+  font-family:var(--sans);
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--dark-text-high);
+  white-space:nowrap;
+}
+.cost-ref-provider-row select{ flex:1; }
+
+.cost-ref-section{ padding:14px; }
+.cost-ref-section-label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12px;
+  font-weight:700;
+  margin-bottom:12px;
+}
+.cost-ref-section-label .bar{ width:3px; height:14px; border-radius:2px; }
+.cost-ref-section-label .bar.pauschal{ background:var(--blue-400); }
+.cost-ref-section-label .bar.individual{ background:var(--orange-500); }
+.cost-ref-fields{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px 12px; }
+.cost-ref-fields .field label{ font-size:11px; }
+.cost-ref-fields input, .cost-ref-fields select{ font-size:12.5px; padding:8px 10px; }
+.cost-ref-section + .cost-ref-section{ border-top:1px solid var(--line); }
+
+/* ===== Period tabs ===== */
+.tab-row{ display:flex; gap:8px; margin-bottom:18px; }
+.tab-btn{
+  font-family:var(--mono);
+  font-size:11.5px;
+  font-weight:600;
+  letter-spacing:.03em;
+  padding:9px 16px;
+  border-radius:20px;
+  border:1px solid var(--line-strong);
+  background:var(--paper-raised);
+  color:var(--ink-soft);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  transition:all .15s ease;
+}
+.tab-btn .tdot{ width:6px; height:6px; border-radius:50%; background:var(--line-strong); }
+.tab-btn.tab-current.active{ background:var(--current-tint); border-color:var(--current-line); color:var(--current); }
+.tab-btn.tab-current.active .tdot{ background:var(--current); }
+.tab-btn.tab-future.active{ background:var(--future-tint); border-color:var(--future-line); color:var(--future); }
+.tab-btn.tab-future.active .tdot{ background:var(--future); }
+.tab-btn.tab-history.active{ background:var(--history-tint); border-color:var(--history-line); color:var(--history); }
+.tab-btn.tab-history.active .tdot{ background:var(--history); }
+.tab-btn:hover{ border-color:var(--ink); }
+
+.planned-banner{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--future);
+  background:var(--future-tint);
+  border:1px solid var(--future-line);
+  padding:9px 14px;
+  border-radius:4px;
+  margin-bottom:16px;
+}
+.planned-banner input[type=date]{
+  width:auto;
+  padding:3px 8px;
+  font-size:11px;
+  border-color:var(--future-line);
+  background:#fff;
+}
+
+.future-warning{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-family:var(--sans);
+  font-size:12.5px;
+  line-height:1.5;
+  color:var(--orange-600);
+  background:var(--orange-100);
+  border:1px solid var(--orange-300);
+  padding:10px 14px;
+  border-radius:4px;
+  margin-bottom:16px;
+}
+.future-warning b{ font-weight:700; }
+
+/* ===== Editor ===== */
+.editor{
+  border:1px solid var(--line);
+  background:var(--paper-raised);
+  border-radius:4px;
+}
+.editor-head{
+  padding:18px 22px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.editor-head .etitle{
+  font-family:var(--serif);
+  font-size:19px;
+  font-weight:600;
+}
+.editor-head .esub{
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:var(--ink-faint);
+  margin-top:3px;
+}
+
+.dual-note{
+  margin:0 22px 18px;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-left:3px solid var(--ink-faint);
+  background:var(--paper);
+  font-size:12px;
+  color:var(--ink-soft);
+  border-radius:0 3px 3px 0;
+  line-height:1.5;
+}
+.dual-note b{ color:var(--ink); }
+
+.editor-body{ padding:0 22px 22px; display:flex; flex-direction:column; gap:18px; }
+
+.section-block{
+  border:1px solid var(--line);
+  border-radius:4px;
+  overflow:hidden;
+}
+/* Some section-blocks contain floating content that must be able to escape
+   the card's bounds (e.g. the insurer chip-select dropdown in the Invoices
+   section) — for those we drop the overflow clip and re-apply the rounded
+   top corners directly on the header instead, so the card still looks the
+   same but no longer clips its own popovers. */
+.section-block.overflow-visible{ overflow:visible; }
+.section-block.overflow-visible .section-block-head{ border-top-left-radius:4px; border-top-right-radius:4px; }
+.section-block-head{
+  padding:12px 16px;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.section-block-head .stitle2{
+  font-family:var(--mono);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.section-block-head .num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;height:18px;
+  border-radius:50%;
+  background:var(--ink);
+  color:var(--paper);
+  font-size:10px;
+}
+.section-block-head .htag{
+  font-family:var(--mono);
+  font-size:9.5px;
+  color:var(--ink-faint);
+}
+.section-block-body{
+  padding:18px 16px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.section-block-body.two-col{ grid-template-columns:repeat(2,1fr); }
+
+.range-toggle-link{
+  font-family:var(--mono);
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--section-accent);
+  background:none;
+  border:none;
+  cursor:pointer;
+  text-decoration:underline;
+  text-underline-offset:3px;
+  padding:9px 0 0;
+}
+.range-table{ display:flex; flex-direction:column; gap:12px; }
+/* When multiple extra costs are configured, separate each one with a dashed
+   divider so they read as distinct entries rather than one dense block. */
+#extra-costs-table .range-row + .range-row{ border-top:1px dashed var(--line); padding-top:14px; }
+.range-row{ display:grid; grid-template-columns:1fr 1fr 1fr 84px; gap:14px; align-items:end; }
+.range-row .field label{ font-size:11.5px; }
+.range-actions{ margin-top:2px; }
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field.span-3{ grid-column:span 3; }
+.field.span-2{ grid-column:span 2; }
+.field label{
+  font-family:var(--sans);
+  font-size:12.5px;
+  font-weight:700;
+  color:var(--dark-text-high);
+}
+.field label.required::before{ content:'* '; color:var(--red-400); }
+.field .hint{ font-size:11.5px; color:var(--ink-faint); font-family:var(--sans); font-weight:400; margin-top:-2px;}
+.field-info{ position:relative; display:inline-flex; color:var(--ink-faint); font-weight:400; cursor:help; }
+.field-info::after{
+  content:attr(data-tooltip);
+  position:absolute;
+  bottom:calc(100% + 9px);
+  left:50%;
+  transform:translateX(-50%) translateY(4px);
+  min-width:180px;
+  max-width:260px;
+  width:max-content;
+  background:#fff;
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  padding:8px 11px;
+  font-family:var(--sans);
+  font-size:11.5px;
+  font-weight:400;
+  line-height:1.4;
+  white-space:normal;
+  text-align:left;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .12s ease, transform .12s ease, visibility .12s ease;
+  z-index:40;
+  pointer-events:none;
+}
+.field-info::before{
+  content:'';
+  position:absolute;
+  bottom:calc(100% + 3px);
+  left:50%;
+  transform:translateX(-50%);
+  border:6px solid transparent;
+  border-top-color:#fff;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .12s ease, visibility .12s ease;
+  z-index:40;
+}
+.field-info:hover::after, .field-info:hover::before{ opacity:1; visibility:visible; }
+.field-info:hover::after{ transform:translateX(-50%) translateY(0); }
+
+.toggle-switch{
+  position:relative;
+  display:inline-block;
+  width:38px;
+  height:22px;
+  flex-shrink:0;
+}
+.toggle-switch input{ opacity:0; width:0; height:0; position:absolute; }
+.toggle-switch .slider{
+  position:absolute;
+  cursor:pointer;
+  top:0; left:0; right:0; bottom:0;
+  background:var(--gray-300);
+  border-radius:22px;
+  transition:background .15s ease;
+}
+.toggle-switch .slider::before{
+  content:'';
+  position:absolute;
+  height:16px; width:16px;
+  left:3px; top:3px;
+  background:#fff;
+  border-radius:50%;
+  box-shadow:0 1px 2px rgba(34,36,41,0.3);
+  transition:transform .15s ease;
+}
+.toggle-switch input:checked + .slider{ background:var(--orange-500); }
+.toggle-switch input:checked + .slider::before{ transform:translateX(16px); }
+.toggle-switch input:disabled + .slider{ cursor:not-allowed; opacity:.6; }
+
+.input-wrap{ position:relative; }
+.input-wrap .unit{
+  position:absolute;
+  right:10px; top:50%; transform:translateY(-50%);
+  font-family:var(--sans);
+  font-size:12px;
+  color:var(--ink-faint);
+  pointer-events:none;
+}
+input[type=text], input[type=date], textarea{
+  width:100%;
+  font-family:var(--sans);
+  font-size:14px;
+  padding:8px 34px 8px 10px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--paper-raised);
+  color:var(--ink);
+  transition:border-color .15s ease, background .15s ease;
+}
+textarea{ font-family:var(--sans); font-size:13px; padding:9px 10px; resize:vertical; min-height:42px; }
+input:hover, textarea:hover{ background:var(--violet-100); border-color:var(--violet-200); }
+input:focus, textarea:focus{
+  outline:none;
+  border-color:var(--focus);
+  background:#fff;
+}
+input:disabled, textarea:disabled{ background:var(--gray-100); border-color:var(--line); color:var(--ink-faint); cursor:not-allowed; }
+select:disabled{ background-color:var(--gray-100); border-color:var(--line); color:var(--ink-faint); cursor:not-allowed; }
+.btn:disabled, .range-toggle-link:disabled{ opacity:.45; cursor:not-allowed; pointer-events:none; box-shadow:none; }
+
+.editor-footer{
+  padding:16px 22px;
+  border-top:1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:var(--paper);
+  border-radius:0 0 4px 4px;
+}
+.editor-footer .saved-hint{
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:var(--ink-faint);
+}
+.footer-actions{ display:flex; gap:10px; }
+
+.tier-actions-bar{
+  margin-top:20px;
+  padding:16px 22px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:var(--paper);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.tier-actions-bar .saved-hint{
+  font-family:var(--mono);
+  font-size:10.5px;
+  color:var(--ink-faint);
+}
+.tier-actions-bar .actions-left{ display:flex; align-items:center; gap:14px; }
+
+.empty-state{
+  border:1px dashed var(--line-strong);
+  border-radius:4px;
+  padding:60px 30px;
+  text-align:center;
+  color:var(--ink-faint);
+  font-family:var(--mono);
+  font-size:12px;
+}
+
+select{
+  font-family:var(--sans);
+  font-size:13px;
+  padding:8px 34px 8px 12px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:var(--paper-raised) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%236B6C70' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+  background-size:12px;
+  color:var(--ink);
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+}
+
+/* toast */
+.toast{
+  position:fixed;
+  bottom:24px; right:24px;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--mono);
+  font-size:12px;
+  padding:12px 18px;
+  border-radius:4px;
+  display:flex; align-items:center; gap:10px;
+  box-shadow:var(--shadow);
+  transform:translateY(20px);
+  opacity:0;
+  pointer-events:none;
+  transition:all .25s ease;
+  z-index:50;
+}
+.toast.show{ transform:translateY(0); opacity:1; }
+.toast .dotgood{ width:7px;height:7px;border-radius:50%; background:var(--green-400); }
+
+.btn.danger{ background:var(--red-400); border-color:var(--red-400); color:#fff; }
+.btn.danger:hover{ background:var(--red-600); border-color:var(--red-600); box-shadow:none; }
+
+/* ===== Modal ===== */
+.modal-overlay{
+  position:fixed; inset:0;
+  background:rgba(34,36,41,0.55);
+  display:flex; align-items:center; justify-content:center;
+  z-index:100;
+  padding:20px;
+}
+.modal-card{
+  background:var(--paper-raised);
+  border-radius:8px;
+  padding:28px;
+  max-width:420px;
+  width:100%;
+  box-shadow:var(--shadow);
+}
+.modal-card h3{
+  font-family:var(--serif);
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:10px;
+  display:flex; align-items:center; gap:9px;
+  color:var(--ink);
+}
+.modal-card p{
+  font-size:13.5px;
+  color:var(--ink-soft);
+  line-height:1.55;
+  margin-bottom:24px;
+}
+.modal-actions{ display:flex; justify-content:flex-end; gap:10px; }
+
+::selection{ background:var(--current); color:#fff; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-name">Pricing Configs</div>
+    </div>
+    <div class="brand-sub">Product &amp; Insurer Rate Console</div>
+
+    <div class="nav-group-label">Configuration</div>
+    <div class="nav-item" data-section="priceConfig" style="--nav-accent:var(--current)">
+      <span class="dot"></span> Preise Versicherer <span class="count" id="count-priceConfig"></span>
+    </div>
+    <div class="nav-item" data-section="regFees" style="--nav-accent:var(--current)">
+      <span class="dot"></span> Regulierer Gebühren <span class="count" id="count-regFees"></span>
+    </div>
+    <div class="nav-item" data-section="boFees" style="--nav-accent:var(--current)">
+      <span class="dot"></span> BO Gebühren
+    </div>
+    <div class="nav-item" data-section="generalConfigs" style="--nav-accent:var(--current)">
+      <span class="dot"></span> General Configs
+    </div>
+
+    <div class="sidebar-footer">
+      <div><b>Prototype build</b></div>
+      <div id="clock-date"></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-eyebrow" id="topbar-eyebrow"><span class="bar"></span><span id="eyebrow-text">Configuration</span></div>
+        <h1 id="topbar-title">Preise Versicherer</h1>
+        <p class="desc" id="topbar-desc"></p>
+      </div>
+      <div class="topbar-meta" id="topbar-meta"></div>
+    </div>
+
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"><span class="dotgood"></span><span id="toast-text">Saved</span></div>
+<div id="modal-root"></div>
+
+<script>
+/* ===================== DATA MODEL =====================
+   Price Configuration (single section) lists Standard Tier + each
+   Insurer. An insurer either inherits Standard Tier or has its own
+   custom products. Each product always carries BOTH a Pauschal and
+   an Individual pricing config (never just one) — which one is
+   billed is decided per case by external factors (e.g. measured
+   usage vs. the threshold), not by a toggle in this tool. Every
+   product also carries a Current period and a Future (planned)
+   period, edited via tabs in the same screen.
+*/
+
+const INSURERS = [
+  { id:'ins1', name:'Insurer 1' },
+  { id:'ins2', name:'Insurer 2' },
+  { id:'ins3', name:'Insurer 3' },
+];
+
+const PRODUCTS = [
+  { id:'p1', code:'P-01', name:'Product A' },
+  { id:'p2', code:'P-02', name:'Product B' },
+  { id:'p3', code:'P-03', name:'Product C' },
+  { id:'p4', code:'P-04', name:'Product D' },
+];
+
+// Read-only reference data: what the company pays external Regulierer / BO
+// providers to solve claims for each product. Independent of our own
+// Standard Tier / insurer pricing — each "Standard 0x" entry is a distinct
+// provider contract, not one of our Standard Tiers.
+const COST_REFERENCE = {
+  p1: [
+    { label:'Standard 01', regulierer:{ feeType:'Festpreis', fee:300.00, hourRate:50.00, kmRate:3.00, driveRate:3.00 }, bo:{ feeType:'Festpreis', fee:300.00, hourRate:50.00 } },
+    { label:'Standard 02', regulierer:{ feeType:'Festpreis', fee:280.00, hourRate:48.00, kmRate:2.80, driveRate:2.80 }, bo:{ feeType:'Festpreis', fee:270.00, hourRate:46.00 } },
+    { label:'Standard 03', regulierer:{ feeType:'Festpreis', fee:320.00, hourRate:55.00, kmRate:3.20, driveRate:3.20 }, bo:{ feeType:'Festpreis', fee:310.00, hourRate:52.00 } },
+  ],
+  p2: [
+    { label:'Standard 01', regulierer:{ feeType:'Festpreis', fee:260.00, hourRate:45.00, kmRate:2.60, driveRate:2.60 }, bo:{ feeType:'Festpreis', fee:250.00, hourRate:44.00 } },
+    { label:'Standard 02', regulierer:{ feeType:'Festpreis', fee:245.00, hourRate:43.00, kmRate:2.50, driveRate:2.50 }, bo:{ feeType:'Festpreis', fee:240.00, hourRate:42.00 } },
+    { label:'Standard 03', regulierer:{ feeType:'Festpreis', fee:275.00, hourRate:47.00, kmRate:2.75, driveRate:2.75 }, bo:{ feeType:'Festpreis', fee:265.00, hourRate:45.00 } },
+  ],
+  p3: [
+    { label:'Standard 01', regulierer:{ feeType:'Festpreis', fee:340.00, hourRate:58.00, kmRate:3.40, driveRate:3.40 }, bo:{ feeType:'Festpreis', fee:330.00, hourRate:56.00 } },
+    { label:'Standard 02', regulierer:{ feeType:'Festpreis', fee:315.00, hourRate:54.00, kmRate:3.10, driveRate:3.10 }, bo:{ feeType:'Festpreis', fee:305.00, hourRate:52.00 } },
+    { label:'Standard 03', regulierer:{ feeType:'Festpreis', fee:355.00, hourRate:60.00, kmRate:3.55, driveRate:3.55 }, bo:{ feeType:'Festpreis', fee:345.00, hourRate:58.00 } },
+  ],
+  p4: [
+    { label:'Standard 01', regulierer:{ feeType:'Festpreis', fee:290.00, hourRate:49.00, kmRate:2.90, driveRate:2.90 }, bo:{ feeType:'Festpreis', fee:280.00, hourRate:47.00 } },
+    { label:'Standard 02', regulierer:{ feeType:'Festpreis', fee:270.00, hourRate:46.00, kmRate:2.70, driveRate:2.70 }, bo:{ feeType:'Festpreis', fee:260.00, hourRate:44.00 } },
+    { label:'Standard 03', regulierer:{ feeType:'Festpreis', fee:305.00, hourRate:51.00, kmRate:3.05, driveRate:3.05 }, bo:{ feeType:'Festpreis', fee:295.00, hourRate:49.00 } },
+  ],
+};
+
+// Product categories used specifically for Regulierer Standard pricing —
+// distinct from the app's claims PRODUCTS, since Regulierer fees scale with
+// the size of the external regulation work rather than the insurance product.
+const REGULIERER_PRODUCTS = [
+  { id:'reg_p_small', name:'Außenregulierung Small' },
+  { id:'reg_p_medium', name:'Außenregulierung Medium' },
+  { id:'reg_p_large', name:'Außenregulierung Large' },
+];
+
+function freshRegulierPeriod(){
+  return {
+    pauschal:{ feeType:'Festpreis', fee:0, rangePricing:{ enabled:false, ranges:[] } },
+    individual:{ hourRate:0, kmRate:0, driveRate:0, minuteRate:0, billingType:'Stunde', percentRate:0 },
+    other:{ prereq:'Bericht QS akzeptiert', creditingMethod:'Pauschal' },
+  };
+}
+function cloneReg(obj){ return JSON.parse(JSON.stringify(obj)); }
+// Builds one read-only historical snapshot entry (validFrom/validTo + a full
+// Pauschal/Individual/Andere period), used to seed example past pricing on
+// the History tab of Regulierer Standards, Regulierer experts, and BO.
+function regHistoryEntry(validFrom, validTo, overrides){
+  overrides = overrides || {};
+  const period = freshRegulierPeriod();
+  if(overrides.pauschal) Object.assign(period.pauschal, overrides.pauschal);
+  if(overrides.individual) Object.assign(period.individual, overrides.individual);
+  if(overrides.other) Object.assign(period.other, overrides.other);
+  return { validFrom, validTo, period };
+}
+
+// A Regulierer Standard's pricing defaults to one universal config that
+// applies to every insurer and every product. Users can optionally "break
+// down" by insurer and/or by product — each is an independent, opt-in
+// override dimension (not a combined insurer+product matrix): picking an
+// insurer edits that insurer's config for all products, picking a product
+// edits that product's config for all insurers. Clearing a breakdown drops
+// all overrides for that dimension and reverts to the universal config.
+function freshRegStandard(name){
+  return {
+    name,
+    currentValidity:{ from:'2025-01-01', to:'2025-12-31' },
+    futureValidity:{ from:'', to:'' },
+    insurerBreakdown:false,
+    byInsurer:{},   // { insurerId: { current: period, future: period } }
+    productBreakdown:false,
+    byProduct:{},   // { productId: { current: period, future: period } }
+    universal:{ current: freshRegulierPeriod(), future: freshRegulierPeriod() },
+    history:[],     // [{ validFrom, validTo, period }] — past superseded configs, read-only
+  };
+}
+
+// Roster shown on the "Regulierer Gebühren" list page: the base Standard
+// price groups themselves, plus individual Regulierer (experts) who either
+// follow one of those Standard groups or have their own Einzelvereinbarung.
+const REGULIERER_STANDARDS = [
+  Object.assign({ id:'reg_std_01' }, freshRegStandard('Standard 01')),
+  Object.assign({ id:'reg_std_02' }, freshRegStandard('Standard 02')),
+];
+// Seed Standard 02 with figures matching the reference screenshot.
+Object.assign(REGULIERER_STANDARDS[1].universal.current.pauschal, { feeType:'Festpreis', fee:700.00 });
+Object.assign(REGULIERER_STANDARDS[1].universal.current.individual, { hourRate:50.00, kmRate:15.00, driveRate:10.00 });
+REGULIERER_STANDARDS[1].insurerBreakdown = true;
+REGULIERER_STANDARDS[1].byInsurer.ins1 = cloneReg(REGULIERER_STANDARDS[1].universal);
+
+// Example past pricing for the History tab.
+REGULIERER_STANDARDS[0].history = [
+  regHistoryEntry('2024-01-01','2024-12-31', { pauschal:{ feeType:'Festpreis', fee:280.00 }, individual:{ hourRate:48.00, kmRate:2.80, driveRate:2.80 } }),
+  regHistoryEntry('2023-01-01','2023-12-31', { pauschal:{ feeType:'Festpreis', fee:260.00 }, individual:{ hourRate:45.00, kmRate:2.60, driveRate:2.60 } }),
+];
+REGULIERER_STANDARDS[1].history = [
+  regHistoryEntry('2024-01-01','2024-12-31', { pauschal:{ feeType:'Festpreis', fee:650.00 }, individual:{ hourRate:47.00, kmRate:14.00, driveRate:9.00 } }),
+];
+
+// Individual Regulierer (experts). Each has the same pricing shape as a
+// Standard (freshRegStandard) plus a configType: either 'Einzelvereinbarung'
+// (their own independent pricing, fully editable) or the id of one of the
+// REGULIERER_STANDARDS entries (their pricing mirrors that Standard's live
+// values, read-only).
+const REGULIERER_EXPERTS = [
+  Object.assign({ id:'reg_amanda', configType:'Einzelvereinbarung' }, freshRegStandard('Amanda Fuchs')),
+  Object.assign({ id:'reg_tim', configType:'reg_std_02' }, freshRegStandard('Tim Tay')),
+  Object.assign({ id:'reg_lukas', configType:'reg_std_01' }, freshRegStandard('Lukas Schmit')),
+  Object.assign({ id:'reg_laura', configType:'reg_std_01' }, freshRegStandard('Laura Abo')),
+  Object.assign({ id:'reg_piet', configType:'Einzelvereinbarung' }, freshRegStandard('Piet Otto')),
+  Object.assign({ id:'reg_brunna', configType:'reg_std_02' }, freshRegStandard('Brunna Schultz')),
+];
+// Give the two Einzelvereinbarung experts some non-zero sample figures.
+Object.assign(REGULIERER_EXPERTS[0].universal.current.pauschal, { feeType:'Festpreis', fee:260.00 });
+Object.assign(REGULIERER_EXPERTS[0].universal.current.individual, { hourRate:44.00, kmRate:2.60, driveRate:2.60 });
+Object.assign(REGULIERER_EXPERTS[4].universal.current.pauschal, { feeType:'Festpreis', fee:310.00 });
+Object.assign(REGULIERER_EXPERTS[4].universal.current.individual, { hourRate:52.00, kmRate:3.10, driveRate:3.10 });
+REGULIERER_EXPERTS[0].history = [
+  regHistoryEntry('2024-01-01','2024-12-31', { pauschal:{ feeType:'Festpreis', fee:235.00 }, individual:{ hourRate:40.00, kmRate:2.40, driveRate:2.40 } }),
+];
+
+const futureDates = {
+  standard:{ from:'2026-10-01', to:'' },
+  ins1:{ from:'2026-10-01', to:'' },
+  ins2:{ from:'2026-10-01', to:'' },
+  ins3:{ from:'2026-10-01', to:'' },
+};
+
+function freshPeriod(overrides){
+  overrides = overrides || {};
+  const base = {
+    pauschal:{ price:48.00, anmerkung:'', threshold:60, rangePricing:{ enabled:false, ranges:[] }, configType:'Standard' },
+    individual:{ hourRate:32.00, kmRate:0.55, drivingTimeRate:18.00, anmerkung:'', configType:'Standard' },
+    other:{ extraCostsEnabled:false, extraCosts:[], configType:'Standard' },
+    updated:'2026-06-02',
+  };
+  const merged = Object.assign({}, base, overrides);
+  merged.pauschal = Object.assign({}, base.pauschal, overrides.pauschal||{});
+  merged.individual = Object.assign({}, base.individual, overrides.individual||{});
+  merged.other = Object.assign({}, base.other, overrides.other||{});
+  return merged;
+}
+function cloneP(period){ return JSON.parse(JSON.stringify(period)); }
+
+function buildProducts(curOverrides, futOverrides){
+  const out = {};
+  PRODUCTS.forEach(p=>{
+    out[p.id] = {
+      current: freshPeriod((curOverrides && curOverrides[p.id]) || {}),
+      future:  freshPeriod((futOverrides && futOverrides[p.id]) || {}),
+    };
+  });
+  return out;
+}
+
+/* A truly blank period for brand-new standard tiers — every value field
+   starts empty; toggles/selects stay at their default state. */
+function emptyPeriod(){
+  return {
+    pauschal:{ price:'', anmerkung:'', threshold:'', rangePricing:{ enabled:false, ranges:[] }, configType:'Standard' },
+    individual:{ hourRate:'', kmRate:'', drivingTimeRate:'', anmerkung:'', configType:'Standard' },
+    other:{ extraCostsEnabled:false, extraCosts:[], configType:'Standard' },
+    updated: new Date().toISOString().slice(0,10),
+  };
+}
+const standardProducts = buildProducts(
+  {
+    p1:{ pauschal:{price:52,anmerkung:'Default rate for short-distance trips.',threshold:60,
+          rangePricing:{ enabled:true, ranges:[
+            { from:0,    to:5000,  price:700  },
+            { from:5000, to:7000,  price:1000 },
+            { from:7000, to:10000, price:2000 },
+          ] } } },
+    p2:{ pauschal:{price:74,anmerkung:'',threshold:90}, individual:{hourRate:36,kmRate:0.60,drivingTimeRate:20,anmerkung:''} },
+    p3:{ pauschal:{price:39,anmerkung:'Legacy pricing, under review.',threshold:45} },
+    p4:{ pauschal:{price:60,anmerkung:'',threshold:75} },
+  },
+  {
+    p1:{ pauschal:{price:55,anmerkung:'Planned increase pending board approval.',threshold:60} },
+    p2:{ pauschal:{price:74,anmerkung:'',threshold:90}, individual:{hourRate:38,kmRate:0.62,drivingTimeRate:21,anmerkung:''} },
+    p3:{ pauschal:{price:42,anmerkung:'',threshold:45} },
+    p4:{ pauschal:{price:60,anmerkung:'',threshold:75} },
+  }
+);
+
+/* Registry of "standard-type" tiers. There is always the original `standard`
+   entry (the system fallback used by every insurer). */
+const STANDARD_TIERS = {
+  standard: { name:'Standard', products: standardProducts },
+};
+function isStandardTier(tierId){ return Object.prototype.hasOwnProperty.call(STANDARD_TIERS, tierId); }
+
+function customFromStandard(curOverrides, futOverrides){
+  const out = {};
+  PRODUCTS.forEach(p=>{
+    out[p.id] = { current: cloneP(standardProducts[p.id].current), future: cloneP(standardProducts[p.id].future) };
+  });
+  Object.keys(curOverrides||{}).forEach(pid=>{ out[pid].current = freshPeriod(curOverrides[pid]); });
+  Object.keys(futOverrides||{}).forEach(pid=>{ out[pid].future = freshPeriod(futOverrides[pid]); });
+  return out;
+}
+
+const INSURER_STATE = {
+  ins1: { custom:true,  products: customFromStandard(
+            { p1:{pauschal:{price:46,anmerkung:'Negotiated rate per 2025 framework agreement.',threshold:50,configType:'Einzelvereinbarung'}} },
+            { p1:{pauschal:{price:48,anmerkung:'',threshold:50,configType:'Einzelvereinbarung'}} }
+          ) },
+  ins2: { custom:false, products:null },
+  ins3: { custom:true,  products: customFromStandard(
+            { p3:{pauschal:{price:35,anmerkung:'Volume discount tier.',threshold:70,configType:'Einzelvereinbarung'}} },
+            {}
+          ) },
+};
+
+/* Historical periods apply tier-wide: every product in a tier shares the same
+   set of date ranges (unlike Current/Future, which is a single live + a
+   single planned period, History can hold any number of closed periods).
+   TIER_HISTORY_PERIODS lists the shared date ranges per tier; HISTORY_DATA
+   holds each product's values for a given tier + period index. */
+const TIER_HISTORY_PERIODS = {
+  standard: [
+    { validFrom:'2025-01-01', validTo:'2025-12-31' },
+    { validFrom:'2024-01-01', validTo:'2024-12-31' },
+  ],
+  ins1: [
+    { validFrom:'2025-01-01', validTo:'2025-11-14' },
+    { validFrom:'2024-03-01', validTo:'2024-12-31' },
+  ],
+  ins3: [
+    { validFrom:'2024-01-01', validTo:'2025-12-31' },
+  ],
+};
+// The Current tab's pricing has been in effect since the day right after the
+// most recent historical period ended. Tiers with no recorded history (e.g.
+// ins2, or a freshly-created Standard Tier) fall back to a generic date.
+function currentPricingSinceDate(tierId){
+  const periods = TIER_HISTORY_PERIODS[tierId];
+  if(periods && periods.length){
+    // Use UTC throughout so this isn't affected by the browser's local
+    // timezone shifting the date by a day in either direction.
+    const d = new Date(periods[0].validTo + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() + 1);
+    return d.toISOString().slice(0,10);
+  }
+  return '2026-01-01';
+}
+
+const HISTORY_DATA = {
+  standard: [
+    { // 2025-01-01 → 2025-12-31
+      p1: { pauschal:{price:49.00, anmerkung:'', threshold:55}, individual:{hourRate:30.00, kmRate:0.50, drivingTimeRate:16.00, anmerkung:''}, other:{officeCosts:4.00} },
+      p2: { pauschal:{price:70.00, anmerkung:'', threshold:85}, individual:{hourRate:34.00, kmRate:0.58, drivingTimeRate:19.00, anmerkung:''}, other:{officeCosts:4.00} },
+      p3: { pauschal:{price:36.00, anmerkung:'', threshold:42}, individual:{hourRate:28.00, kmRate:0.50, drivingTimeRate:15.00, anmerkung:''}, other:{officeCosts:3.50} },
+      p4: { pauschal:{price:58.00, anmerkung:'', threshold:70}, individual:{hourRate:33.00, kmRate:0.55, drivingTimeRate:18.00, anmerkung:''}, other:{officeCosts:4.50} },
+    },
+    { // 2024-01-01 → 2024-12-31
+      p1: { pauschal:{price:45.00, anmerkung:'', threshold:52}, individual:{hourRate:28.00, kmRate:0.48, drivingTimeRate:15.00, anmerkung:''}, other:{officeCosts:3.80} },
+      p2: { pauschal:{price:66.00, anmerkung:'', threshold:80}, individual:{hourRate:32.00, kmRate:0.55, drivingTimeRate:18.00, anmerkung:''}, other:{officeCosts:3.80} },
+      p3: { pauschal:{price:33.00, anmerkung:'', threshold:40}, individual:{hourRate:26.00, kmRate:0.47, drivingTimeRate:14.00, anmerkung:''}, other:{officeCosts:3.20} },
+      p4: { pauschal:{price:54.00, anmerkung:'', threshold:65}, individual:{hourRate:30.00, kmRate:0.52, drivingTimeRate:16.00, anmerkung:''}, other:{officeCosts:4.00} },
+    },
+  ],
+  ins1: [
+    { // 2025-01-01 → 2025-11-14
+      p1: { pauschal:{price:44.00, anmerkung:'Negotiated rate per 2025 framework agreement.', threshold:48}, individual:{hourRate:31.00, kmRate:0.52, drivingTimeRate:17.00, anmerkung:''}, other:{officeCosts:4.00} },
+      p2: { pauschal:{price:70.00, anmerkung:'', threshold:85}, individual:{hourRate:34.00, kmRate:0.58, drivingTimeRate:19.00, anmerkung:''}, other:{officeCosts:4.00} },
+      p3: { pauschal:{price:36.00, anmerkung:'', threshold:42}, individual:{hourRate:28.00, kmRate:0.50, drivingTimeRate:15.00, anmerkung:''}, other:{officeCosts:3.50} },
+      p4: { pauschal:{price:58.00, anmerkung:'', threshold:70}, individual:{hourRate:33.00, kmRate:0.55, drivingTimeRate:18.00, anmerkung:''}, other:{officeCosts:4.50} },
+    },
+    { // 2024-03-01 → 2024-12-31
+      p1: { pauschal:{price:41.00, anmerkung:'', threshold:40}, individual:{hourRate:31.00, kmRate:0.52, drivingTimeRate:17.00, anmerkung:''}, other:{officeCosts:4.00} },
+      p2: { pauschal:{price:66.00, anmerkung:'', threshold:80}, individual:{hourRate:32.00, kmRate:0.55, drivingTimeRate:18.00, anmerkung:''}, other:{officeCosts:3.80} },
+      p3: { pauschal:{price:33.00, anmerkung:'', threshold:40}, individual:{hourRate:26.00, kmRate:0.47, drivingTimeRate:14.00, anmerkung:''}, other:{officeCosts:3.20} },
+      p4: { pauschal:{price:54.00, anmerkung:'', threshold:65}, individual:{hourRate:30.00, kmRate:0.52, drivingTimeRate:16.00, anmerkung:''}, other:{officeCosts:4.00} },
+    },
+  ],
+  ins3: [
+    { // 2024-01-01 → 2025-12-31
+      p1: { pauschal:{price:49.00, anmerkung:'', threshold:55}, individual:{hourRate:30.00, kmRate:0.50, drivingTimeRate:16.00, anmerkung:''}, other:{officeCosts:4.00} },
+      p2: { pauschal:{price:70.00, anmerkung:'', threshold:85}, individual:{hourRate:34.00, kmRate:0.58, drivingTimeRate:19.00, anmerkung:''}, other:{officeCosts:4.00} },
+      p3: { pauschal:{price:33.00, anmerkung:'Volume discount tier.', threshold:65}, individual:{hourRate:27.00, kmRate:0.48, drivingTimeRate:14.00, anmerkung:''}, other:{officeCosts:3.50} },
+      p4: { pauschal:{price:58.00, anmerkung:'', threshold:70}, individual:{hourRate:33.00, kmRate:0.55, drivingTimeRate:18.00, anmerkung:''}, other:{officeCosts:4.50} },
+    },
+  ],
+};
+
+// Migrate the legacy officeCosts shape above into the new Extra costs list —
+// each historical snapshot shows a single "Office costs" entry carrying the
+// value it always had, with the toggle on since it was a real recorded cost.
+Object.values(HISTORY_DATA).forEach(periods=>{
+  periods.forEach(periodSet=>{
+    Object.values(periodSet).forEach(productPeriod=>{
+      const legacyValue = productPeriod.other ? productPeriod.other.officeCosts : 0;
+      productPeriod.other = {
+        extraCostsEnabled: true,
+        extraCosts: [ { id:'hist_office', costType:'Office costs', art:'Pauschal', value: legacyValue || 0 } ],
+      };
+    });
+  });
+});
+
+const GENERAL_CONFIG = {
+  regulierGebuehrenEnabled: true,
+  prereq: 'Bericht QS akzeptiert',
+  boPrereq: 'Bericht QS akzeptiert',
+  invoiceDueDays: 30,
+  // When active, the single due-date field above is replaced by one or more
+  // insurer-group overrides. Each entry groups one or more insurers under
+  // the same due-date value — insurers not covered by any group fall back
+  // to invoiceDueDays.
+  invoiceDueBreakdownActive: false,
+  invoiceDueOverrides: [],
+  // Extra costs: a single global config applied to every insurer and
+  // product by default. When broken down, each override group carries its
+  // own enabled flag + cost list and applies only to its selected insurers —
+  // insurers not covered by any group get no extra costs at all.
+  extraCostsEnabled: false,
+  extraCostsList: [],
+  extraCostsBreakdownActive: false,
+  extraCostsOverrides: [],
+};
+
+const BO_CONFIG = {
+  enabled: true,
+  // Each BO Standard shares the exact same pricing shape as a Regulierer
+  // Standard (validity, insurer/product breakdown, Pauschal/Individual/Extra
+  // costs universal + override periods) so the detail page can reuse
+  // renderRegStdDetail()/renderRegEditorSlot() unchanged.
+  standards: [
+    Object.assign({ id:'bo_std_01' }, freshRegStandard('Standard')),
+  ],
+};
+BO_CONFIG.standards[0].history = [
+  regHistoryEntry('2024-01-01','2024-12-31', { pauschal:{ feeType:'Festpreis', fee:240.00 }, individual:{ hourRate:38.00, minuteRate:0.60 } }),
+  regHistoryEntry('2023-01-01','2023-12-31', { pauschal:{ feeType:'Festpreis', fee:220.00 }, individual:{ hourRate:35.00, minuteRate:0.55 } }),
+];
+
+/* ===================== STATE ===================== */
+const state = {
+  section: 'priceConfig',
+  tierId: null,             // 'standard' or insurer id
+  productId: null,
+  periodTab: 'current',     // current | future | history
+  historyProductId: null,
+  historyPeriodIdx: 0,
+  costPanelOpen: false,
+  costPanelTab: 0,
+  costBannerDismissed: false,
+  tierSearchQuery: '',
+  regFeesSearchQuery: '',
+  regStdId: null,
+  regKind: null,            // 'standard' | 'expert'
+  regPeriodTab: 'current',
+  regSelectedInsurer: null,
+  regSelectedProduct: null,
+  regHistoryIdx: 0,
+  generalConfigTab: 'abrechnung', // 'abrechnung' | 'rechnung'
+};
+
+const SECTION_META = {
+  priceConfig:{ eyebrow:'Configuration', title:'Preise Versicherer', accent:'var(--current)', tint:'var(--current-tint)',
+    desc:'Manage the Standard Tier or customize pricing for a specific insurer. Every product always keeps both a Pauschal and an Individual config — which one is billed is decided per case by external factors (e.g. usage crossing the threshold), not a switch in this tool. Future-dated changes live right inside each product, under the Future tab.' },
+  regFees:{ eyebrow:'Configuration', title:'Regulierer Gebühren', accent:'var(--current)', tint:'var(--current-tint)',
+    desc:'Overview of what is paid out to Regulierer for solving claims — the base Standard price groups, and individual Regulierer who either follow one of them or have their own Einzelvereinbarung.' },
+  boFees:{ eyebrow:'Configuration', title:'BO Gebühren', accent:'var(--current)', tint:'var(--current-tint)',
+    desc:'Manage the fees paid out to BOs for solving claims.' },
+  generalConfigs:{ eyebrow:'Configuration', title:'General Configs', accent:'var(--current)', tint:'var(--current-tint)',
+    desc:'System-wide settings that apply across all Regulierer price configurations.' },
+};
+
+/* ===================== HELPERS ===================== */
+function findProduct(id){ return PRODUCTS.find(p=>p.id===id); }
+// The last row in an Erstreserve range table only ever asks for "Erstreserve
+// ab" and "Preis" — no "bis" field at all — since it's the open-ended top
+// bracket covering everything above the last defined boundary.
+function rangeRowHtml(r, i, total, locked){
+  const dis = locked ? 'disabled' : '';
+  const isLast = i === total - 1;
+  return `
+    <div class="range-row" data-range-idx="${i}">
+      <div class="field">
+        <label>* Erstreserve ab (€)</label>
+        <div class="input-wrap"><input type="text" value="${r.from}" class="range-from-display" data-idx="${i}" disabled><span class="unit">EUR</span></div>
+      </div>
+      ${isLast ? '' : `
+      <div class="field">
+        <label>* Erstreserve bis (€)</label>
+        <div class="input-wrap"><input type="text" value="${r.to}" class="range-to-input" data-idx="${i}" ${dis}><span class="unit">EUR</span></div>
+      </div>`}
+      <div class="field${isLast ? ' span-2' : ''}">
+        <label>* Preis (€)</label>
+        <div class="input-wrap"><input type="text" value="${r.price}" class="range-price-input" data-idx="${i}" ${dis}><span class="unit">EUR</span></div>
+      </div>
+      <button class="btn danger-ghost small range-delete-btn" type="button" data-idx="${i}" ${dis} ${total<=1?'style="visibility:hidden;"':''}>Löschen</button>
+    </div>`;
+}
+// These "Follow up" extra cost types only ever bill as a fixed amount — no
+// Pauschal/Individuell choice makes sense for them, so their row skips the
+// "Art" selector entirely and shows just a single fixed-value input.
+const FIXED_VALUE_ONLY_EXTRA_COSTS = ['Follow up: Belegprüfung', 'Follow up: Nachtrag'];
+const ALL_EXTRA_COST_TYPES = ['Office costs', 'Island costs', 'Follow up: Belegprüfung', 'Follow up: Nachtrag', 'Others'];
+// Each cost type may only be added once per product/insurer — build the "+
+// Add extra cost" select with already-used types left out entirely, and
+// show a plain message once every type has been added.
+function extraCostAddSelectHtml(extraCosts, disabled){
+  const dis = disabled ? 'disabled' : '';
+  const usedTypes = (extraCosts||[]).map(c=>c.costType);
+  const remaining = ALL_EXTRA_COST_TYPES.filter(t=>!usedTypes.includes(t));
+  if(!remaining.length){
+    return `<div class="hint" style="margin:0;">All extra cost types have already been added.</div>`;
+  }
+  // No fixed id here: the Extra costs section can render more than one of
+  // these concurrently (the default list plus any number of insurer-group
+  // overrides), so wiring targets it via the shared class instead and
+  // resolves which list it belongs to by walking up to the nearest
+  // [data-override-idx] ancestor (see extraCostsListFor in renderGeneralConfigs).
+  return `
+    <select class="add-extra-cost-select" style="max-width:220px;" ${dis}>
+      <option value="">+ Add extra cost…</option>
+      ${remaining.map(t=>`<option value="${t}">${t}</option>`).join('')}
+    </select>`;
+}
+function extraCostRowHtml(item, i, locked){
+  const dis = locked ? 'disabled' : '';
+  if(FIXED_VALUE_ONLY_EXTRA_COSTS.includes(item.costType)){
+    return `
+      <div class="range-row" data-extra-idx="${i}">
+        <div class="field">
+          <label>Kostenart</label>
+          <div class="input-wrap"><input type="text" value="${item.costType}" disabled></div>
+        </div>
+        <div class="field">
+          <label class="required">Fixed value (€)</label>
+          <div class="input-wrap"><input type="text" value="${item.value}" class="extra-cost-value-input" data-idx="${i}" ${dis}><span class="unit">EUR</span></div>
+        </div>
+        <div class="field">
+          <label class="required">Amount free <span class="field-info" data-tooltip="amount free before start charging for it" title="amount free before start charging for it">ⓘ</span></label>
+          <div class="input-wrap"><input type="text" value="${item.amountFree||0}" class="extra-cost-amount-free-input" data-idx="${i}" ${dis}></div>
+        </div>
+        <button class="btn danger-ghost small extra-cost-delete-btn" type="button" data-idx="${i}" ${dis}>Löschen</button>
+      </div>`;
+  }
+  return `
+    <div class="range-row" data-extra-idx="${i}">
+      <div class="field">
+        <label>Kostenart</label>
+        <div class="input-wrap"><input type="text" value="${item.costType}" disabled></div>
+      </div>
+      <div class="field">
+        <label class="required">Art</label>
+        <select class="extra-cost-art-input" data-idx="${i}" ${dis}>
+          <option value="Pauschal" ${(item.art||'Pauschal')==='Pauschal'?'selected':''}>Pauschal</option>
+          <option value="Individuell" ${(item.art||'Pauschal')==='Individuell'?'selected':''}>Individuell</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="required">Wert (€)${(item.costType==='Office costs' && (item.art||'Pauschal')==='Individuell') ? ` <span class="field-info" data-tooltip="based on BO stundesatz time tracking if available" title="based on BO stundesatz time tracking if available">ⓘ</span>` : ''}</label>
+        <div class="input-wrap"><input type="text" value="${item.value}" class="extra-cost-value-input" data-idx="${i}" ${dis}><span class="unit">${(item.art||'Pauschal')==='Individuell' ? 'EUR/hour' : 'EUR'}</span></div>
+      </div>
+      <button class="btn danger-ghost small extra-cost-delete-btn" type="button" data-idx="${i}" ${dis}>Löschen</button>
+    </div>`;
+}
+function chipHtml(insurerId, groupIdx){
+  const ins = INSURERS.find(x=>x.id===insurerId);
+  const name = ins ? ins.name : insurerId;
+  return `<span class="chip">${name}<button type="button" class="chip-remove" data-idx="${groupIdx}" data-insurer="${insurerId}">×</button></span>`;
+}
+function invoiceOverrideRowHtml(grp, i){
+  return `
+    <div class="invoice-override-row" data-override-idx="${i}" style="display:flex; gap:16px; align-items:flex-start;">
+      <div class="field" style="flex:1; margin-bottom:0;">
+        <label class="required">Insurers <span class="field-info" data-tooltip="Select which insurers this due date applies to" title="Select which insurers this due date applies to">ⓘ</span></label>
+        <div class="chip-select" data-idx="${i}">
+          <div class="chip-select-box" data-idx="${i}">
+            <div class="chip-select-chips" id="chip-select-chips-${i}">
+              ${grp.insurerIds.map(id=>chipHtml(id,i)).join('')}
+            </div>
+            <span class="chip-select-arrow">⌄</span>
+          </div>
+          <div class="chip-select-dropdown">
+            ${INSURERS.map(ins=>`
+            <label class="chip-option">
+              <input type="checkbox" class="chip-option-checkbox" data-idx="${i}" data-insurer="${ins.id}" ${grp.insurerIds.includes(ins.id)?'checked':''}>
+              ${ins.name}
+            </label>`).join('')}
+          </div>
+        </div>
+        <div class="chip-select-count" id="chip-select-count-${i}">${grp.insurerIds.length} von ${INSURERS.length} ausgewählt</div>
+      </div>
+      <div class="field" style="width:150px; margin-bottom:0;">
+        <label class="required">Due date (days)</label>
+        <div class="input-wrap"><input type="text" class="invoice-override-days" data-idx="${i}" value="${grp.days}"><span class="unit">days</span></div>
+      </div>
+      <button class="btn danger-ghost small invoice-override-delete-btn" type="button" data-idx="${i}" style="margin-top:26px;">Löschen</button>
+    </div>`;
+}
+// ---- Extra costs insurer-breakdown group (mirrors the invoice due-date
+// breakdown pattern above, but uses its own "ec-" prefixed classes for the
+// chip-select interactions so its wiring never collides with the invoice
+// override wiring, even though both features share the generic
+// .chip-select/.chip-select-box open/close behavior). ----
+function ecChipHtml(insurerId, groupIdx){
+  const ins = INSURERS.find(x=>x.id===insurerId);
+  const name = ins ? ins.name : insurerId;
+  return `<span class="chip">${name}<button type="button" class="ec-chip-remove" data-idx="${groupIdx}" data-insurer="${insurerId}">×</button></span>`;
+}
+function extraCostsOverrideGroupHtml(grp, i){
+  // No separate enable toggle: a group is implicitly disabled while no
+  // insurers are selected, and enabled as soon as at least one is.
+  const hasInsurers = grp.insurerIds.length > 0;
+  // An insurer can only belong to one group at a time — insurers already
+  // picked in a different group are shown greyed out and unselectable here.
+  const takenByOtherGroup = new Set();
+  GENERAL_CONFIG.extraCostsOverrides.forEach((g, gi)=>{
+    if(gi !== i) g.insurerIds.forEach(id=>takenByOtherGroup.add(id));
+  });
+  return `
+    <div class="ec-override-group" data-override-idx="${i}" style="border:1px solid var(--line); border-radius:4px; padding:14px 16px; display:flex; flex-direction:column; gap:14px;">
+      <div style="display:flex; gap:16px; align-items:flex-start;">
+        <div class="field" style="flex:1; margin-bottom:0;">
+          <label class="required">Insurers <span class="field-info" data-tooltip="This group is disabled until at least one insurer is selected here" title="This group is disabled until at least one insurer is selected here">ⓘ</span></label>
+          <div class="chip-select" data-idx="${i}">
+            <div class="chip-select-box" data-idx="${i}">
+              <div class="chip-select-chips" id="ec-chip-select-chips-${i}">
+                ${grp.insurerIds.map(id=>ecChipHtml(id,i)).join('')}
+              </div>
+              <span class="chip-select-arrow">⌄</span>
+            </div>
+            <div class="chip-select-dropdown">
+              ${INSURERS.map(ins=>{
+                const disabled = takenByOtherGroup.has(ins.id);
+                return `
+              <label class="chip-option"${disabled ? ' style="opacity:.45; cursor:not-allowed;"' : ''}>
+                <input type="checkbox" class="ec-chip-option-checkbox" data-idx="${i}" data-insurer="${ins.id}" ${grp.insurerIds.includes(ins.id)?'checked':''} ${disabled?'disabled':''}>
+                ${ins.name}${disabled ? ' <span style="font-size:10.5px; color:var(--ink-faint);">(assigned to another group)</span>' : ''}
+              </label>`;
+              }).join('')}
+            </div>
+          </div>
+          <div class="chip-select-count" id="ec-chip-select-count-${i}">${grp.insurerIds.length} von ${INSURERS.length} ausgewählt</div>
+        </div>
+        <button class="btn danger-ghost small ec-override-delete-btn" type="button" data-idx="${i}" style="margin-top:26px;">Löschen</button>
+      </div>
+      ${!hasInsurers ? `
+      <div class="checkbox-empty" style="padding:20px 14px; text-align:center;">No insurers selected — this group is disabled</div>
+      ` : `
+      ${grp.list.length ? `
+      <div class="range-table" data-override-idx="${i}">
+        ${grp.list.map((item,j)=>extraCostRowHtml(item,j,false)).join('')}
+      </div>` : ''}
+      <div class="range-actions">
+        ${extraCostAddSelectHtml(grp.list, false)}
+      </div>
+      `}
+    </div>`;
+}
+function tierName(id){ return STANDARD_TIERS[id] ? STANDARD_TIERS[id].name : (INSURERS.find(i=>i.id===id)||{}).name; }
+function isCustom(tierId){ return isStandardTier(tierId) ? true : INSURER_STATE[tierId].custom; }
+function effectiveProducts(tierId){ return isStandardTier(tierId) ? STANDARD_TIERS[tierId].products : (INSURER_STATE[tierId].products || standardProducts); }
+function standardTierSummaryHtml(tierId){
+  const products = STANDARD_TIERS[tierId].products;
+  return PRODUCTS.map(p=>{
+    const cur = (products[p.id] || {}).current;
+    if(!cur) return '';
+    const pauschalTxt = (cur.pauschal.rangePricing && cur.pauschal.rangePricing.enabled)
+      ? `${cur.pauschal.rangePricing.ranges.length} Schadenhöhe-Bereich${cur.pauschal.rangePricing.ranges.length===1?'':'e'}`
+      : (Number(cur.pauschal.price) ? `${cur.pauschal.price} EUR` : '—');
+    const individualTxt = (Number(cur.individual.hourRate) || Number(cur.individual.kmRate) || Number(cur.individual.drivingTimeRate))
+      ? `${Number(cur.individual.hourRate)||0} EUR/h, ${Number(cur.individual.kmRate)||0} EUR/km, ${Number(cur.individual.drivingTimeRate)||0} EUR/h Fahrzeit`
+      : '—';
+    return `
+      <div class="std-summary-row">
+        <div class="std-summary-product">${p.name}</div>
+        <div class="std-summary-fields">
+          <span><span class="std-summary-label">Pauschal</span>${pauschalTxt}</span>
+          <span><span class="std-summary-label">Individual</span>${individualTxt}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+function sectionIsEmptyForProduct(period, section){
+  if(section === 'pauschal'){
+    const p = period.pauschal;
+    if(p.rangePricing && p.rangePricing.enabled){
+      return !p.rangePricing.ranges.length || p.rangePricing.ranges.every(r => !Number(r.price));
+    }
+    return !Number(p.price);
+  }
+  if(section === 'individual'){
+    const i = period.individual;
+    return !Number(i.hourRate) && !Number(i.kmRate) && !Number(i.drivingTimeRate);
+  }
+  if(section === 'other'){
+    const o = period.other;
+    if(!o.extraCostsEnabled) return true;
+    return !(o.extraCosts && o.extraCosts.some(c => Number(c.value)));
+  }
+  return false;
+}
+function tierSectionStatus(tierId, section){
+  if(isStandardTier(tierId)) return null;
+  if(!isCustom(tierId)) return 'Standard';
+  const products = effectiveProducts(tierId);
+  // "Keine" means: this section is customized (Einzelvereinbarung) on at least
+  // one product, but every customized value is zero/unset — i.e. someone set
+  // up a custom config (or disabled it, for Extra costs) without actually
+  // entering a price. Products still following Standard for this section
+  // don't count towards this — inheriting Standard is never "Keine", even if
+  // the Standard value itself happens to be zero.
+  const customProducts = Object.values(products).filter(pr => pr.current[section].configType === 'Einzelvereinbarung');
+  if(!customProducts.length) return 'Standard';
+  const allCustomEmpty = customProducts.every(pr => sectionIsEmptyForProduct(pr.current, section));
+  return allCustomEmpty ? 'Keine' : 'Einzelvereinbarung';
+}
+function productTypeBreakdown(tierId, section){
+  const products = effectiveProducts(tierId);
+  const standardNames = [];
+  const customNames = [];
+  Object.keys(products).forEach(pid=>{
+    const p = findProduct(pid);
+    const name = p ? p.name : pid;
+    const cfg = products[pid].current[section].configType;
+    if(cfg === 'Einzelvereinbarung') customNames.push(name); else standardNames.push(name);
+  });
+  return { standardNames, customNames };
+}
+function tierHasPlannedChange(tierId){
+  const products = effectiveProducts(tierId);
+  return Object.values(products).some(pr => JSON.stringify(pr.current) !== JSON.stringify(pr.future));
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = msg || 'Saved';
+  t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function openConfirmModal({title, body, confirmLabel, confirmClass, onConfirm}){
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal-card">
+        <h3>⚠ ${title}</h3>
+        <p>${body}</p>
+        <div class="modal-actions">
+          <button class="btn ghost small" id="modal-cancel-btn" type="button">Cancel</button>
+          <button class="btn ${confirmClass||'danger'} small" id="modal-confirm-btn" type="button">${confirmLabel}</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e=>{ if(e.target.id==='modal-overlay') closeModal(); });
+  document.getElementById('modal-confirm-btn').addEventListener('click', ()=>{ closeModal(); onConfirm(); });
+}
+function closeModal(){
+  document.getElementById('modal-root').innerHTML = '';
+}
+
+/* ===================== RENDER: SHELL ===================== */
+function renderShell(){
+  document.querySelectorAll('.nav-item').forEach(el=>{
+    el.classList.toggle('active', el.dataset.section === state.section);
+  });
+  document.getElementById('count-priceConfig').textContent = 1 + INSURERS.length;
+  document.getElementById('count-regFees').textContent = REGULIERER_STANDARDS.length + REGULIERER_EXPERTS.length;
+
+  const meta = SECTION_META[state.section];
+  document.getElementById('eyebrow-text').textContent = meta.eyebrow;
+  document.getElementById('topbar-title').textContent = meta.title;
+  document.getElementById('topbar-desc').textContent = meta.desc;
+  document.documentElement.style.setProperty('--section-accent', meta.accent);
+  document.documentElement.style.setProperty('--section-tint', meta.tint);
+
+  const stdFuture = futureDates.standard;
+  document.getElementById('topbar-meta').innerHTML = (state.section==='priceConfig' && stdFuture)
+    ? `Planned changes effective<br><b style="color:var(--ink); font-size:13px;">${stdFuture.from}</b>`
+    : '';
+}
+
+/* ===================== RENDER: REGULIERER GEBÜHREN LIST ===================== */
+function regConfigTypeLabel(configType){
+  if(configType === 'Einzelvereinbarung') return 'Einzelvereinbarung';
+  const std = REGULIERER_STANDARDS.find(s=>s.id===configType);
+  return std ? std.name : configType;
+}
+
+// Hover summary for a Regulierer Standard / BO Standard row: reflects the
+// entity's universal current period (the same "internal configuration"
+// pattern used for Standard Tier rows in the Preise Versicherer list).
+function regStandardSummaryHtml(entity, kind){
+  const period = entity.universal.current;
+  const feeUnit = period.pauschal.feeType === 'Prozentsatz' ? '%' : 'EUR';
+  const pauschalTxt = (period.pauschal.rangePricing && period.pauschal.rangePricing.enabled)
+    ? `${period.pauschal.rangePricing.ranges.length} Schadenhöhe-Bereich${period.pauschal.rangePricing.ranges.length===1?'':'e'}`
+    : (Number(period.pauschal.fee) ? `${period.pauschal.fee} ${feeUnit} (${period.pauschal.feeType})` : '—');
+
+  const individualParts = [];
+  if(kind === 'bo' && period.individual.billingType === 'Prozentsatz'){
+    if(Number(period.individual.percentRate)) individualParts.push(`${period.individual.percentRate}%`);
+  } else {
+    if(Number(period.individual.hourRate)) individualParts.push(`${period.individual.hourRate} EUR/h`);
+    if(kind !== 'bo'){
+      if(Number(period.individual.kmRate)) individualParts.push(`${period.individual.kmRate} EUR/km`);
+      if(Number(period.individual.driveRate)) individualParts.push(`${period.individual.driveRate} EUR/h Fahrzeit`);
+    }
+  }
+  const individualTxt = individualParts.length ? individualParts.join(', ') : '—';
+
+  const otherTxt = period.other.creditingMethod || '—';
+
+  const breakdownBits = [];
+  if(entity.insurerBreakdown) breakdownBits.push(`${Object.keys(entity.byInsurer||{}).length} Versicherer`);
+  if(entity.productBreakdown) breakdownBits.push(`${Object.keys(entity.byProduct||{}).length} Produkte`);
+  const breakdownNote = breakdownBits.length
+    ? `<div class="std-summary-note">Aufteilung aktiv: ${breakdownBits.join(', ')}</div>`
+    : '';
+
+  return `
+    <div class="std-summary-row">
+      <div class="std-summary-fields">
+        <span><span class="std-summary-label">Pauschal</span>${pauschalTxt}</span>
+        <span><span class="std-summary-label">Individual</span>${individualTxt}</span>
+        <span><span class="std-summary-label">Andere Konfigurationen</span>${otherTxt}</span>
+      </div>
+      ${breakdownNote}
+    </div>`;
+}
+
+function renderRegFeesList(){
+  const rows = REGULIERER_STANDARDS.map(s=>({ id:s.id, name:s.name, feeType:null, isStandard:true }))
+    .concat(REGULIERER_EXPERTS.map(e=>({ id:e.id, name:e.name, feeType:regConfigTypeLabel(e.configType), isStandard:false })));
+
+  const query = state.regFeesSearchQuery.trim().toLowerCase();
+  const filteredRows = query ? rows.filter(r=>r.name.toLowerCase().includes(query)) : rows;
+
+  const feeTypeChip = feeType => feeType
+    ? `<span class="type-chip ${feeType==='Einzelvereinbarung'?'custom':'standard'}">${feeType}</span>`
+    : '';
+
+  let html = `
+    <div class="list-toolbar">
+      <div class="input-wrap list-search">
+        <input type="text" id="regfees-search-input" placeholder="Regulierer durchsuchen…" value="${state.regFeesSearchQuery}">
+      </div>
+      <button class="btn accent small" id="add-regulierer-standard-btn">+ Neuen Regulierer Standard hinzufügen</button>
+    </div>
+    <table class="tier-table tier-table-static">
+      <thead>
+        <tr>
+          <th>Regulierer / Standardpreise</th>
+          <th>Gebührentyp</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filteredRows.map(r=>{
+          const entity = r.isStandard ? REGULIERER_STANDARDS.find(s=>s.id===r.id) : null;
+          return `
+        <tr class="clickable" data-open-regentity="${r.id}" data-reg-kind="${r.isStandard?'standard':'expert'}">
+          <td>${entity ? `
+          <div class="name-cell std-summary-wrap">
+            ${r.name}
+            <span class="std-summary-icon">ⓘ</span>
+            <div class="std-summary-popover">
+              <div class="popover-title">Configuration summary</div>
+              ${regStandardSummaryHtml(entity, 'standard')}
+            </div>
+          </div>` : `<div class="name-cell">${r.name}</div>`}</td>
+          <td>${feeTypeChip(r.feeType)}</td>
+        </tr>`;
+        }).join('')}
+        ${!filteredRows.length ? `<tr><td colspan="2" class="checkbox-empty" style="padding:20px 14px;">No results for "${state.regFeesSearchQuery}".</td></tr>` : ''}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-open-regentity]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.regStdId = el.dataset.openRegentity;
+      state.regKind = el.dataset.regKind;
+      state.regPeriodTab = 'current';
+      state.regSelectedInsurer = null;
+      state.regSelectedProduct = null;
+      state.regHistoryIdx = 0;
+      render();
+    });
+  });
+
+  const searchInput = document.getElementById('regfees-search-input');
+  searchInput.addEventListener('input', e=>{
+    state.regFeesSearchQuery = e.target.value;
+    renderRegFeesList();
+  });
+  searchInput.focus();
+  searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+
+  document.getElementById('add-regulierer-standard-btn').addEventListener('click', ()=>{
+    showToast('Adding a Regulierer Standard is coming soon');
+  });
+}
+
+/* ===================== REGULIERER STANDARD: helpers ===================== */
+function regGetEntity(kind, id){
+  if(kind === 'expert') return REGULIERER_EXPERTS.find(e=>e.id===id);
+  if(kind === 'bo') return BO_CONFIG.standards.find(s=>s.id===id);
+  return REGULIERER_STANDARDS.find(s=>s.id===id);
+}
+function regActivePeriod(std){
+  if(state.regSelectedProduct && std.productBreakdown && std.byProduct[state.regSelectedProduct]){
+    return std.byProduct[state.regSelectedProduct][state.regPeriodTab];
+  }
+  if(state.regSelectedInsurer && std.insurerBreakdown && std.byInsurer[state.regSelectedInsurer]){
+    return std.byInsurer[state.regSelectedInsurer][state.regPeriodTab];
+  }
+  return std.universal[state.regPeriodTab];
+}
+function regRangeRowHtml(r, i, total, locked, feeType){
+  const dis = locked ? 'disabled' : '';
+  const isPct = feeType === 'Prozentsatz';
+  return `
+    <div class="range-row" data-reg-range-idx="${i}">
+      <div class="field">
+        <label>* Schadenhöhe ab (€)</label>
+        <div class="input-wrap"><input type="text" value="${r.from}" disabled><span class="unit">EUR</span></div>
+      </div>
+      <div class="field">
+        <label>* Schadenhöhe bis (€)</label>
+        <div class="input-wrap"><input type="text" value="${r.to}" class="reg-range-to-input" data-idx="${i}" ${dis}><span class="unit">EUR</span></div>
+      </div>
+      <div class="field">
+        <label>* Preis (${isPct?'%':'€'})</label>
+        <div class="input-wrap"><input type="text" value="${r.price}" class="reg-range-price-input" data-idx="${i}" ${dis}><span class="unit">${isPct?'%':'EUR'}</span></div>
+      </div>
+      <button class="btn danger-ghost small reg-range-delete-btn" type="button" data-idx="${i}" ${dis} ${total<=1?'style="visibility:hidden;"':''}>Löschen</button>
+    </div>`;
+}
+
+/* ===================== RENDER: REGULIERER STANDARD EDITOR SLOT ===================== */
+function renderRegEditorSlot(entity, opts){
+  opts = opts || {};
+  const locked = !!opts.locked;
+  const kind = opts.kind || 'standard';
+  const dis = locked ? 'disabled' : '';
+  const rerender = () => renderRegEditorSlot(entity, opts);
+
+  const slot = document.getElementById('reg-editor-slot');
+  if(!slot) return;
+  const period = opts.period || regActivePeriod(entity);
+  if(!period.pauschal.rangePricing) period.pauschal.rangePricing = { enabled:false, ranges:[] };
+  const rp = period.pauschal.rangePricing;
+
+  const scopeLabel = opts.headTitle || (state.regSelectedProduct
+    ? (REGULIERER_PRODUCTS.find(p=>p.id===state.regSelectedProduct)||{}).name
+    : 'Alle Produkte');
+  const insurerLabel = state.regSelectedInsurer
+    ? (INSURERS.find(i=>i.id===state.regSelectedInsurer)||{}).name
+    : 'Alle Versicherer';
+  const headSub = opts.headSub || `${entity.name} · ${insurerLabel}`;
+  const regPeriodBadge = state.regPeriodTab==='current'
+    ? `<span class="tab-btn tab-current active" style="cursor:default;"><span class="tdot"></span> Current</span>`
+    : `<span class="tab-btn tab-future active" style="cursor:default;"><span class="tdot"></span> Future planning</span>`;
+
+  slot.innerHTML = `
+    <div class="editor">
+      <div class="editor-head">
+        <div>
+          <div class="etitle">${scopeLabel}</div>
+          <div class="esub">${headSub}</div>
+        </div>
+        ${regPeriodBadge}
+      </div>
+
+      <div class="editor-body" style="padding-top:22px;">
+
+        <div class="section-block" id="reg-block-pauschal">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">1</span> Pauschal Pricing</div>
+            <div class="htag">flat rate</div>
+          </div>
+          <div class="section-block-body">
+            <div class="field">
+              <label class="required">Gebührentyp</label>
+              <select id="reg-f-feetype" ${dis}>
+                <option value="Festpreis" ${period.pauschal.feeType==='Festpreis'?'selected':''}>Festpreis</option>
+                <option value="Prozentsatz" ${period.pauschal.feeType==='Prozentsatz'?'selected':''}>Prozentsatz</option>
+              </select>
+            </div>
+            ${!rp.enabled ? `
+            <div class="field">
+              <label class="required">${kind==='bo'?'BOsgebühr':'Regulierungsgebühr'} (${period.pauschal.feeType==='Prozentsatz'?'%':'€'})</label>
+              <div class="input-wrap"><input type="text" id="reg-f-fee" value="${period.pauschal.fee}" ${dis}><span class="unit">${period.pauschal.feeType==='Prozentsatz'?'%':'EUR'}</span></div>
+              ${period.pauschal.feeType==='Prozentsatz' ? `<div class="hint">% of the claim size</div>` : ''}
+            </div>
+            ${kind!=='bo' ? `
+            <div class="field">
+              <label>&nbsp;</label>
+              <button type="button" class="range-toggle-link" id="reg-add-range-btn" ${dis}>+ Schadenhöhe hinzufügen</button>
+            </div>` : ''}` : `
+            <div class="field span-2">
+              <label>&nbsp;</label>
+              <button type="button" class="range-toggle-link" id="reg-remove-range-btn" style="color:var(--red-400);" ${dis}>Use single price instead</button>
+            </div>
+            <div class="field span-3">
+              <label>Preis nach Schadenhöhe</label>
+              ${period.pauschal.feeType==='Prozentsatz' ? `<div class="hint" style="margin-top:-4px; margin-bottom:6px;">Preis = % of the claim size for each range</div>` : ''}
+              <div class="range-table" id="reg-range-table">
+                ${rp.ranges.map((r,i)=>regRangeRowHtml(r,i,rp.ranges.length,locked,period.pauschal.feeType)).join('')}
+              </div>
+              <div class="range-actions">
+                <button class="btn ghost small" id="reg-add-interval-btn" type="button" ${dis}>+ Add interval</button>
+              </div>
+            </div>`}
+          </div>
+        </div>
+
+        <div class="section-block" id="reg-block-individual">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">2</span> Individual Pricing</div>
+            <div class="htag">usage-based</div>
+          </div>
+          <div class="section-block-body">
+            ${kind==='bo' ? `
+            <div class="field span-3">
+              <label class="required">Abrechnungsart</label>
+              <div class="radio-row">
+                <label class="radio-option"><input type="radio" name="reg-individual-billing-type" value="Stunde" ${(period.individual.billingType||'Stunde')==='Stunde'?'checked':''} ${dis}> Per Hour</label>
+                <label class="radio-option"><input type="radio" name="reg-individual-billing-type" value="Prozentsatz" ${period.individual.billingType==='Prozentsatz'?'checked':''} ${dis}> Per %</label>
+              </div>
+            </div>
+            ${period.individual.billingType==='Prozentsatz' ? `
+            <div class="field">
+              <label class="required">Prozentsatz (%)</label>
+              <div class="input-wrap"><input type="text" id="reg-f-individual-percent" value="${period.individual.percentRate||0}" ${dis}><span class="unit">%</span></div>
+              <div class="hint">% of the amount payed to Regulierer on a claim basis</div>
+            </div>` : `
+            <div class="field">
+              <label class="required">Stundensatz (€)</label>
+              <div class="input-wrap"><input type="text" id="reg-f-hour" value="${period.individual.hourRate}" ${dis}><span class="unit">EUR/h</span></div>
+            </div>`}
+            ` : `
+            <div class="field">
+              <label class="required">Stundensatz (€)</label>
+              <div class="input-wrap"><input type="text" id="reg-f-hour" value="${period.individual.hourRate}" ${dis}><span class="unit">EUR/h</span></div>
+            </div>
+            <div class="field">
+              <label class="required">KM pauschale (€)</label>
+              <div class="input-wrap"><input type="text" id="reg-f-km" value="${period.individual.kmRate}" ${dis}><span class="unit">EUR/km</span></div>
+            </div>
+            <div class="field">
+              <label class="required">Fahrzeitaufwand (€)</label>
+              <div class="input-wrap"><input type="text" id="reg-f-drive" value="${period.individual.driveRate}" ${dis}><span class="unit">EUR/h</span></div>
+            </div>`}
+          </div>
+        </div>
+
+        <div class="section-block" id="reg-block-other">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">3</span> Andere Konfigurationen</div>
+          </div>
+          <div class="section-block-body" style="grid-template-columns:1fr;">
+            <div class="field">
+              <label>${kind === 'bo' ? 'Default BO crediting method' : 'Default Regulierer crediting method'}</label>
+              <div class="radio-row">
+                <label class="radio-option"><input type="radio" name="reg-crediting" value="Pauschal" ${period.other.creditingMethod==='Pauschal'?'checked':''} ${dis}> Pauschal</label>
+                <label class="radio-option"><input type="radio" name="reg-crediting" value="Individual" ${period.other.creditingMethod==='Individual'?'checked':''} ${dis}> Individual</label>
+                <span class="hint">${kind === 'bo' ? 'ⓘ This information can be changed during claim handling on a claim basis level.' : 'ⓘ This information can be changed during claim handling by BO on a claim basis level.'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  if(locked) return;
+
+  document.getElementById('reg-f-feetype').addEventListener('change', e=>{ period.pauschal.feeType = e.target.value; rerender(); });
+
+  if(!rp.enabled){
+    document.getElementById('reg-f-fee').addEventListener('input', e=>{ period.pauschal.fee = e.target.value===''?'':Number(e.target.value)||0; });
+    const addRangeBtn = document.getElementById('reg-add-range-btn');
+    if(addRangeBtn){
+      addRangeBtn.addEventListener('click', ()=>{
+        rp.enabled = true;
+        if(!rp.ranges.length) rp.ranges.push({ from:0, to:1000, price:period.pauschal.fee||0 });
+        rerender();
+      });
+    }
+  } else {
+    document.getElementById('reg-remove-range-btn').addEventListener('click', ()=>{
+      rp.enabled = false;
+      rerender();
+    });
+    document.getElementById('reg-add-interval-btn').addEventListener('click', ()=>{
+      const last = rp.ranges[rp.ranges.length-1];
+      rp.ranges.push({ from: last ? last.to : 0, to: (last ? last.to : 0) + 1000, price:0 });
+      rerender();
+    });
+    document.querySelectorAll('.reg-range-to-input').forEach(el=>{
+      el.addEventListener('input', e=>{
+        const idx = Number(el.dataset.idx);
+        rp.ranges[idx].to = e.target.value === '' ? '' : Number(e.target.value);
+        if(rp.ranges[idx+1]) rp.ranges[idx+1].from = rp.ranges[idx].to || 0;
+      });
+    });
+    document.querySelectorAll('.reg-range-price-input').forEach(el=>{
+      el.addEventListener('input', e=>{
+        const idx = Number(el.dataset.idx);
+        rp.ranges[idx].price = e.target.value === '' ? '' : Number(e.target.value);
+      });
+    });
+    document.querySelectorAll('.reg-range-delete-btn').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const idx = Number(el.dataset.idx);
+        rp.ranges.splice(idx,1);
+        rp.ranges.forEach((r,i)=>{ r.from = i===0 ? 0 : (rp.ranges[i-1].to || 0); });
+        if(rp.ranges.length===0) rp.enabled = false;
+        rerender();
+      });
+    });
+  }
+
+  const hourInput = document.getElementById('reg-f-hour');
+  if(hourInput) hourInput.addEventListener('input', e=>{ period.individual.hourRate = e.target.value===''?'':Number(e.target.value)||0; });
+  const kmInput = document.getElementById('reg-f-km');
+  if(kmInput) kmInput.addEventListener('input', e=>{ period.individual.kmRate = e.target.value===''?'':Number(e.target.value)||0; });
+  const driveInput = document.getElementById('reg-f-drive');
+  if(driveInput) driveInput.addEventListener('input', e=>{ period.individual.driveRate = e.target.value===''?'':Number(e.target.value)||0; });
+  const percentInput = document.getElementById('reg-f-individual-percent');
+  if(percentInput) percentInput.addEventListener('input', e=>{ period.individual.percentRate = e.target.value===''?'':Number(e.target.value)||0; });
+  document.querySelectorAll('input[name="reg-individual-billing-type"]').forEach(el=>{
+    el.addEventListener('change', e=>{ period.individual.billingType = e.target.value; rerender(); });
+  });
+
+  document.querySelectorAll('input[name="reg-crediting"]').forEach(el=>{
+    el.addEventListener('change', e=>{ period.other.creditingMethod = e.target.value; });
+  });
+}
+
+/* ===================== RENDER: REGULIERER STANDARD DETAIL ===================== */
+function renderRegStdDetail(){
+  const kind = state.regKind || 'standard';
+  const isExpert = kind === 'expert';
+  const entity = regGetEntity(kind, state.regStdId);
+  if(!entity){ state.regStdId = null; state.regKind = null; render(); return; }
+
+  // Experts can either follow one of the Standards (locked, read-only,
+  // mirrors that Standard's universal values) or run their own
+  // Einzelvereinbarung (fully editable, same mechanics as a Standard page).
+  const referencedStandard = (isExpert && entity.configType !== 'Einzelvereinbarung')
+    ? REGULIERER_STANDARDS.find(s=>s.id===entity.configType)
+    : null;
+  const locked = !!referencedStandard;
+
+  // Breakdown active but nothing selected yet (e.g. just navigated in) —
+  // default to the first available option rather than an "all" state,
+  // since there is no "Alle Versicherer" / "Alle Produkte" option anymore.
+  if(!locked){
+    if(entity.insurerBreakdown && !state.regSelectedInsurer){
+      const key = Object.keys(entity.byInsurer)[0] || (INSURERS[0] && INSURERS[0].id);
+      if(key){
+        if(!entity.byInsurer[key]) entity.byInsurer[key] = cloneReg(entity.universal);
+        state.regSelectedInsurer = key;
+      }
+    }
+    if(entity.productBreakdown && !state.regSelectedProduct){
+      const key = Object.keys(entity.byProduct)[0] || (REGULIERER_PRODUCTS[0] && REGULIERER_PRODUCTS[0].id);
+      if(key){
+        if(!entity.byProduct[key]) entity.byProduct[key] = cloneReg(entity.universal);
+        state.regSelectedProduct = key;
+      }
+    }
+  }
+
+  const periodTab = state.regPeriodTab;
+  const validity = periodTab==='future' ? entity.futureValidity : entity.currentValidity;
+  const sectionLabel = kind === 'bo' ? 'BO Gebühren' : 'Regulierer Gebühren';
+
+  const topFieldHtml = isExpert ? `
+    <div class="field" style="max-width:420px; margin-bottom:20px;">
+      <label class="required">Preiskonfigurationstyp</label>
+      <select id="reg-configtype-select">
+        ${REGULIERER_STANDARDS.map(s=>`<option value="${s.id}" ${entity.configType===s.id?'selected':''}>${s.name}</option>`).join('')}
+        <option value="Einzelvereinbarung" ${entity.configType==='Einzelvereinbarung'?'selected':''}>Einzelvereinbarung</option>
+      </select>
+    </div>` : (kind === 'bo' ? '' : `
+    <div class="field" style="max-width:420px; margin-bottom:20px;">
+      <label class="required">Name Standardgebühr</label>
+      <input type="text" id="reg-name-input" value="${entity.name}">
+    </div>`);
+
+  let html = `
+    <div class="crumbs">
+      <span class="seg" data-reg-crumb-back>${sectionLabel}</span>
+      <span class="sep">/</span>
+      <span class="seg current">${entity.name}</span>
+    </div>
+    <div class="detail-header">
+      <div>
+        <h2><span class="back-arrow" id="reg-back-btn" title="Back to ${sectionLabel}">←</span> ${entity.name} bearbeitung</h2>
+      </div>
+      <div class="detail-actions">
+        ${periodTab!=='history' ? `<button class="btn accent small" id="reg-save-btn" type="button">Speichern</button>` : ''}
+      </div>
+    </div>
+
+    ${topFieldHtml}
+
+    <div class="tab-row-with-actions">
+      <div class="tab-row">
+        <button class="tab-btn tab-current ${periodTab==='current'?'active':''}" id="reg-tab-current-btn"><span class="tdot"></span> Current Pricing</button>
+        <button class="tab-btn tab-future ${periodTab==='future'?'active':''}" id="reg-tab-future-btn"><span class="tdot"></span> Future Pricing</button>
+        <button class="tab-btn tab-history ${periodTab==='history'?'active':''}" id="reg-tab-history-btn"><span class="tdot"></span> Pricing history</button>
+      </div>
+      ${(periodTab!=='history' && !locked && (!entity.insurerBreakdown || !entity.productBreakdown)) ? `
+      <div class="reg-breakdown-triggers">
+        ${!entity.insurerBreakdown ? `<button class="btn ghost small" id="reg-activate-insurer-btn" type="button">+ Nach Versicherer aufteilen</button>` : ''}
+        ${!entity.productBreakdown ? `<button class="btn ghost small" id="reg-activate-product-btn" type="button">+ Nach Produkte aufteilen</button>` : ''}
+      </div>` : ''}
+    </div>
+  `;
+
+  if(periodTab === 'history'){
+    const historyList = entity.history || [];
+    if(state.regHistoryIdx >= historyList.length) state.regHistoryIdx = 0;
+    const histEntry = historyList.length ? historyList[state.regHistoryIdx] : null;
+
+    const historyBanner = historyList.length ? `
+      <div class="planned-banner" style="color:var(--history); background:var(--history-tint); border-color:var(--history-line);">
+        🔒 Valid period
+        <select id="reg-history-period-select">
+          ${historyList.map((h,i)=>`<option value="${i}" ${i===state.regHistoryIdx?'selected':''}>${h.validFrom} → ${h.validTo}</option>`).join('')}
+        </select>
+        <span style="margin-left:8px; font-family:var(--sans); font-size:11px; color:var(--ink-faint);">read-only — superseded pricing</span>
+      </div>` : '';
+
+    html += `
+      ${historyBanner}
+      ${histEntry ? `<div id="reg-editor-slot"></div>` : `<div class="checkbox-empty" style="padding:40px 14px; text-align:center;">No historical pricing recorded for ${entity.name} yet.</div>`}
+    `;
+    document.getElementById('content').innerHTML = html;
+    wireRegNavHandlers(entity, { isExpert, kind });
+
+    const historySelect = document.getElementById('reg-history-period-select');
+    if(historySelect){
+      historySelect.addEventListener('change', e=>{
+        state.regHistoryIdx = Number(e.target.value);
+        render();
+      });
+    }
+
+    if(histEntry){
+      renderRegEditorSlot(entity, {
+        kind,
+        locked: true,
+        period: histEntry.period,
+        headTitle: 'Alle Produkte',
+        headSub: `${entity.name} · ${histEntry.validFrom} → ${histEntry.validTo}`,
+      });
+    }
+    return;
+  }
+
+  if(locked){
+    html += `
+      <div class="cost-ref-info" style="margin-bottom:18px;">
+        <span>ⓘ</span>
+        <span>${entity.name} follows ${referencedStandard.name}'s pricing — fields below are read-only. Switch to Einzelvereinbarung above to set independent rates.</span>
+      </div>
+      <div id="reg-editor-slot"></div>
+    `;
+    document.getElementById('content').innerHTML = html;
+    wireRegNavHandlers(entity, { isExpert, kind });
+    renderRegEditorSlot(entity, {
+      kind,
+      locked:true,
+      period: referencedStandard.universal[periodTab],
+      headTitle: 'Alle Produkte',
+      headSub: `${entity.name} · folgt ${referencedStandard.name}`,
+    });
+    return;
+  }
+
+  html += `
+    ${periodTab==='future' ? `
+    <div class="planned-banner">📅 Planned changes shown below — take effect on <input type="date" id="reg-valid-from" value="${validity.from}"> · not yet live</div>
+    <div class="future-warning">⚠ <span>As soon as the start date above is reached, these configurations will automatically <b>replace</b> the current configurations — no further action is required.</span></div>` : ''}
+
+    ${(!entity.insurerBreakdown && !entity.productBreakdown) ? `
+    <div id="reg-editor-slot"></div>` : `
+    <div class="scope-layout">
+      <div class="reg-sidebar-stack">
+        ${entity.insurerBreakdown ? `
+        <div class="scope-list">
+          <div class="scope-list-header">
+            Versicherer
+            <button class="range-toggle-link" id="reg-clear-insurer-btn" type="button" style="color:var(--red-400); padding:0;">Entfernen</button>
+          </div>
+          <div class="scope-select-wrap">
+            <select id="reg-insurer-select">
+              ${INSURERS.map(i=>`<option value="${i.id}" ${state.regSelectedInsurer===i.id?'selected':''}>${i.name}</option>`).join('')}
+            </select>
+          </div>
+        </div>` : ''}
+        ${entity.productBreakdown ? `
+        <div class="scope-list">
+          <div class="scope-list-header">
+            Produkte
+            <button class="range-toggle-link" id="reg-clear-product-btn" type="button" style="color:var(--red-400); padding:0;">Entfernen</button>
+          </div>
+          ${REGULIERER_PRODUCTS.map(p=>`
+          <div class="scope-item ${state.regSelectedProduct===p.id?'active':''}" data-reg-product-tab="${p.id}">
+            <div class="stitle">${p.name}</div>
+          </div>`).join('')}
+        </div>` : ''}
+      </div>
+      <div id="reg-editor-slot"></div>
+    </div>`}
+  `;
+
+  document.getElementById('content').innerHTML = html;
+  wireRegNavHandlers(entity, { isExpert, kind });
+
+  const validFromInput = document.getElementById('reg-valid-from');
+  if(validFromInput) validFromInput.addEventListener('change', e=>{ validity.from = e.target.value; });
+
+  const activateInsurerBtn = document.getElementById('reg-activate-insurer-btn');
+  if(activateInsurerBtn){
+    activateInsurerBtn.addEventListener('click', ()=>{
+      entity.insurerBreakdown = true;
+      const firstIns = INSURERS[0];
+      if(firstIns){
+        if(!entity.byInsurer[firstIns.id]) entity.byInsurer[firstIns.id] = cloneReg(entity.universal);
+        state.regSelectedInsurer = firstIns.id;
+      }
+      renderRegStdDetail();
+    });
+  }
+  const insurerSelect = document.getElementById('reg-insurer-select');
+  if(insurerSelect){
+    insurerSelect.addEventListener('change', e=>{
+      const insId = e.target.value;
+      if(!entity.byInsurer[insId]) entity.byInsurer[insId] = cloneReg(entity.universal);
+      state.regSelectedInsurer = insId;
+      renderRegStdDetail();
+    });
+  }
+  const clearInsurerBtn = document.getElementById('reg-clear-insurer-btn');
+  if(clearInsurerBtn){
+    clearInsurerBtn.addEventListener('click', ()=>{
+      entity.insurerBreakdown = false;
+      entity.byInsurer = {};
+      state.regSelectedInsurer = null;
+      showToast('Unterscheidung nach Versicherer gelöscht');
+      renderRegStdDetail();
+    });
+  }
+
+  const activateProductBtn = document.getElementById('reg-activate-product-btn');
+  if(activateProductBtn){
+    activateProductBtn.addEventListener('click', ()=>{
+      entity.productBreakdown = true;
+      const firstProd = REGULIERER_PRODUCTS[0];
+      if(firstProd){
+        if(!entity.byProduct[firstProd.id]) entity.byProduct[firstProd.id] = cloneReg(entity.universal);
+        state.regSelectedProduct = firstProd.id;
+      }
+      renderRegStdDetail();
+    });
+  }
+  document.querySelectorAll('[data-reg-product-tab]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const prodId = el.dataset.regProductTab;
+      if(!entity.byProduct[prodId]) entity.byProduct[prodId] = cloneReg(entity.universal);
+      state.regSelectedProduct = prodId;
+      renderRegStdDetail();
+    });
+  });
+  const clearProductBtn = document.getElementById('reg-clear-product-btn');
+  if(clearProductBtn){
+    clearProductBtn.addEventListener('click', ()=>{
+      entity.productBreakdown = false;
+      entity.byProduct = {};
+      state.regSelectedProduct = null;
+      showToast('Unterscheidung nach Produkte gelöscht');
+      renderRegStdDetail();
+    });
+  }
+
+  renderRegEditorSlot(entity, { kind });
+}
+
+function wireRegNavHandlers(entity, opts){
+  opts = opts || {};
+  const isExpert = !!opts.isExpert;
+  const kind = opts.kind || (isExpert ? 'expert' : 'standard');
+
+  document.querySelector('[data-reg-crumb-back]').addEventListener('click', ()=>{
+    state.regStdId = null;
+    state.regKind = null;
+    render();
+  });
+  document.getElementById('reg-back-btn').addEventListener('click', ()=>{
+    state.regStdId = null;
+    state.regKind = null;
+    render();
+  });
+  document.getElementById('reg-tab-current-btn').addEventListener('click', ()=>{ state.regPeriodTab = 'current'; render(); });
+  document.getElementById('reg-tab-future-btn').addEventListener('click', ()=>{ state.regPeriodTab = 'future'; render(); });
+  document.getElementById('reg-tab-history-btn').addEventListener('click', ()=>{ state.regPeriodTab = 'history'; render(); });
+
+  const configTypeSelect = document.getElementById('reg-configtype-select');
+  if(configTypeSelect){
+    configTypeSelect.addEventListener('change', e=>{
+      entity.configType = e.target.value;
+      state.regSelectedInsurer = null;
+      state.regSelectedProduct = null;
+      showToast('Preiskonfigurationstyp aktualisiert');
+      render();
+    });
+  }
+
+  const nameInput = document.getElementById('reg-name-input');
+  const saveBtn = document.getElementById('reg-save-btn');
+  if(saveBtn){
+    saveBtn.addEventListener('click', ()=>{
+      if(nameInput){
+        const newName = nameInput.value.trim();
+        if(newName) entity.name = newName;
+      }
+      showToast(isExpert ? 'Regulierer gespeichert' : (kind === 'bo' ? 'BO Standard gespeichert' : 'Regulierer Standard gespeichert'));
+      render();
+    });
+  }
+}
+
+/* ===================== RENDER: TIER LIST ===================== */
+function renderTierList(){
+  document.documentElement.style.setProperty('--section-accent','var(--current)');
+  document.documentElement.style.setProperty('--section-tint','var(--current-tint)');
+
+  const rows = Object.keys(STANDARD_TIERS).map(id=>({ id, name:STANDARD_TIERS[id].name, isStandard:true }))
+    .concat(INSURERS.map(i=>({ id:i.id, name:i.name, isStandard:false })));
+
+  const query = state.tierSearchQuery.trim().toLowerCase();
+  const filteredRows = query ? rows.filter(r=>r.name.toLowerCase().includes(query)) : rows;
+
+  const popoverGroup = (label, dotClass, names) => names.length ? `
+        <div class="popover-group">
+          <div class="popover-label"><span class="popover-dot ${dotClass}"></span>${label}</div>
+          <div class="popover-names">${names.join(', ')}</div>
+        </div>` : '';
+
+  const typeChip = (status, tierId, section) => {
+    if(!status) return '';
+    if(status === 'Keine'){
+      const { standardNames, customNames } = productTypeBreakdown(tierId, section);
+      return `
+        <span class="type-chip-wrap">
+          <span class="type-chip none">Keine</span>
+          <div class="type-chip-popover">
+            ${popoverGroup('Keine — customized but zero/disabled', 'none', customNames)}
+            ${popoverGroup('Standard', 'standard', standardNames)}
+          </div>
+        </span>`;
+    }
+    const { standardNames, customNames } = productTypeBreakdown(tierId, section);
+    return `
+      <span class="type-chip-wrap">
+        <span class="type-chip ${status==='Einzelvereinbarung'?'custom':'standard'}">${status}</span>
+        <div class="type-chip-popover">
+          ${popoverGroup('Einzelvereinbarung', 'custom', customNames)}
+          ${popoverGroup('Standard', 'standard', standardNames)}
+        </div>
+      </span>`;
+  };
+
+  let html = `
+    <div class="list-toolbar">
+      <div class="input-wrap list-search">
+        <input type="text" id="tier-search-input" placeholder="Search Versicherer/Standard…" value="${state.tierSearchQuery}">
+      </div>
+    </div>
+    <table class="tier-table">
+      <thead>
+        <tr>
+          <th>Versicherer/Standard</th>
+          <th>Pauschal</th>
+          <th>Individual</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filteredRows.map(r=>`
+        <tr data-open-tier="${r.id}">
+          <td>${r.isStandard ? `
+          <div class="name-cell std-summary-wrap">
+            ${r.name}
+            <span class="std-summary-icon">ⓘ</span>
+            <div class="std-summary-popover">
+              <div class="popover-title">Product configuration summary</div>
+              ${standardTierSummaryHtml(r.id)}
+            </div>
+          </div>` : `<div class="name-cell">${r.name}</div>`}</td>
+          <td>${typeChip(tierSectionStatus(r.id, 'pauschal'), r.id, 'pauschal')}</td>
+          <td>${typeChip(tierSectionStatus(r.id, 'individual'), r.id, 'individual')}</td>
+        </tr>`).join('')}
+        ${!filteredRows.length ? `<tr><td colspan="3" class="checkbox-empty" style="padding:20px 14px;">No results for "${state.tierSearchQuery}".</td></tr>` : ''}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('content').innerHTML = html;
+
+  const searchInput = document.getElementById('tier-search-input');
+  searchInput.addEventListener('input', e=>{
+    state.tierSearchQuery = e.target.value;
+    renderTierList();
+  });
+  searchInput.focus();
+  searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+
+  document.querySelectorAll('[data-open-tier]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.tierId = el.dataset.openTier;
+      state.productId = null;
+      state.periodTab = 'current';
+      render();
+    });
+  });
+}
+
+/* ===================== RENDER: TIER DETAIL ===================== */
+function renderTierDetail(){
+  const tierId = state.tierId;
+  const isStandard = isStandardTier(tierId);
+  const custom = isCustom(tierId);
+  document.documentElement.style.setProperty('--section-accent','var(--current)');
+  document.documentElement.style.setProperty('--section-tint','var(--current-tint)');
+
+  const standardSub = tierId==='standard'
+    ? 'Applies to every insurer unless customized'
+    : 'Standalone standard-tier configuration';
+
+  let html = `
+    <div class="crumbs">
+      <span class="seg" data-crumb-back>Preise Versicherer</span>
+      <span class="sep">/</span>
+      <span class="seg current">${tierName(tierId)}</span>
+      ${(!isStandard && !custom) ? '' : `<span class="sep">/</span><span class="seg current">${state.periodTab==='current'?'Current':(state.periodTab==='future'?'Future planning':'History')}</span>`}
+    </div>
+    <div class="detail-header">
+      <div>
+        <h2>${tierName(tierId)} ${tierId==='standard' ? '<span class="tag-default">Default</span>' : ''}</h2>
+        <div class="sub">${isStandard ? standardSub : (custom ? 'Custom configuration' : 'Currently inherits Standard Tier pricing')}</div>
+      </div>
+      <div class="detail-actions">
+        ${(!isStandard && custom) ? `<button class="btn danger-ghost small" id="revert-tier-btn">Revert to Standard Tier</button>` : ''}
+        <span id="header-save-slot"></span>
+      </div>
+    </div>
+  `;
+
+  if(!isStandard && !custom){
+    html += `
+      <div class="inherit-callout">
+        <div class="icon">⤷</div>
+        <h3>${tierName(tierId)} uses Standard Tier pricing</h3>
+        <p>No custom rates have been set for this insurer. It automatically follows every change made to the Standard Tier, for both current and future-planned pricing.</p>
+        <button class="btn accent small" id="customize-tier-btn">Customize pricing for ${tierName(tierId)}</button>
+      </div>
+    `;
+    document.getElementById('content').innerHTML = html;
+    document.querySelector('[data-crumb-back]').addEventListener('click', ()=>{ state.tierId=null; render(); });
+    document.getElementById('customize-tier-btn').addEventListener('click', ()=>{
+      INSURER_STATE[tierId].custom = true;
+      INSURER_STATE[tierId].products = customFromStandard({}, {});
+      showToast('Custom pricing enabled — starts as a copy of Standard Tier');
+      render();
+    });
+    return;
+  }
+
+  html += `
+    <div class="tab-row">
+      <button class="tab-btn tab-current ${state.periodTab==='current'?'active':''}" id="tab-current-btn"><span class="tdot"></span> Current</button>
+      <button class="tab-btn tab-future ${state.periodTab==='future'?'active':''}" id="tab-future-btn"><span class="tdot"></span> Future planning</button>
+      <button class="tab-btn tab-history ${state.periodTab==='history'?'active':''}" id="tab-history-btn"><span class="tdot"></span> History</button>
+    </div>
+    ${state.periodTab==='current' ? `<div class="hint" style="margin:-10px 0 16px; font-size:10px; color:var(--gray-400);">Pricing configs applied to claims since ${currentPricingSinceDate(tierId)} until now</div>` : ''}`;
+
+  if(state.periodTab === 'history'){
+    const tierPeriods = TIER_HISTORY_PERIODS[tierId] || [];
+    if(state.historyPeriodIdx >= tierPeriods.length) state.historyPeriodIdx = 0;
+    const periodData = tierPeriods.length ? HISTORY_DATA[tierId][state.historyPeriodIdx] : null;
+    if(!periodData || !periodData[state.historyProductId]){
+      state.historyProductId = periodData ? PRODUCTS[0].id : null;
+    }
+
+    const validBanner = tierPeriods.length ? `
+        <div class="planned-banner" style="color:var(--history); background:var(--history-tint); border-color:var(--history-line);">
+          🔒 Valid period
+          <select id="history-period-select">
+            ${tierPeriods.map((pr,i)=>`<option value="${i}" ${i===state.historyPeriodIdx?'selected':''}>${pr.validFrom} → ${pr.validTo}</option>`).join('')}
+          </select>
+          <span style="margin-left:8px; font-family:var(--sans); font-size:11px; color:var(--ink-faint);">applies to every product below</span>
+        </div>` : '';
+
+    html += `
+      ${validBanner}
+      <div class="scope-layout">
+        <div class="scope-list">
+          <div class="scope-list-header">Products · History</div>
+          ${!periodData ? `<div class="checkbox-empty" style="padding:20px 14px;">No historical pricing recorded for ${tierName(tierId)} yet.</div>` : ''}
+          ${periodData ? PRODUCTS.map(p=>`
+          <div class="scope-item ${state.historyProductId===p.id?'active':''}" data-open-history-product="${p.id}">
+            <div class="stitle">${p.name}</div>
+          </div>`).join('') : ''}
+        </div>
+        <div id="history-editor-slot"></div>
+      </div>
+    `;
+    document.getElementById('content').innerHTML = html;
+    bindTierNavHandlers(tierId);
+    document.querySelectorAll('[data-open-history-product]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        state.historyProductId = el.dataset.openHistoryProduct;
+        render();
+      });
+    });
+    const historyPeriodSelect = document.getElementById('history-period-select');
+    if(historyPeriodSelect){
+      historyPeriodSelect.addEventListener('change', e=>{
+        state.historyPeriodIdx = Number(e.target.value);
+        render();
+      });
+    }
+    renderHistoryEditor(tierId);
+    return;
+  }
+
+  html += `
+    ${state.periodTab==='future' ? `<div class="planned-banner">📅 Planned changes shown below — take effect on <input type="date" id="future-date-input" value="${futureDates[tierId].from}"> · not yet live</div>
+    <div class="future-warning">⚠ <span>As soon as the start date above is reached, these configurations will automatically <b>replace</b> the current configurations — no further action is required.</span></div>` : ''}
+    <div class="scope-layout">
+      <div class="scope-list">
+        <div class="scope-list-header">Products · ${state.periodTab==='current'?'Current':'Future planning'}</div>`;
+  PRODUCTS.forEach(p=>{
+    html += `
+        <div class="scope-item ${state.productId===p.id?'active':''}" data-open-product="${p.id}">
+          <div class="stitle">${p.name}</div>
+        </div>`;
+  });
+  html += `
+      </div>
+      <div class="detail-row">
+        <div id="editor-slot"></div>
+        <div class="cost-ref-panel ${state.costPanelOpen?'':'collapsed'}" id="cost-ref-panel"></div>
+      </div>
+    </div>
+    <div id="tier-actions-bar"></div>
+  `;
+  document.getElementById('content').innerHTML = html;
+
+  bindTierNavHandlers(tierId);
+  const futureDateInput = document.getElementById('future-date-input');
+  if(futureDateInput){
+    futureDateInput.addEventListener('change', e=>{
+      futureDates[tierId].from = e.target.value;
+      showToast('Effective date updated');
+      render();
+    });
+  }
+  document.querySelectorAll('[data-open-product]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.productId = el.dataset.openProduct;
+      render();
+    });
+  });
+
+  renderEditor();
+}
+
+function bindTierNavHandlers(tierId){
+  document.querySelector('[data-crumb-back]').addEventListener('click', ()=>{ state.tierId=null; state.productId=null; render(); });
+  document.getElementById('tab-current-btn').addEventListener('click', ()=>{ state.periodTab='current'; render(); });
+  document.getElementById('tab-future-btn').addEventListener('click', ()=>{ state.periodTab='future'; render(); });
+  document.getElementById('tab-history-btn').addEventListener('click', ()=>{ state.periodTab='history'; render(); });
+  const revertBtn = document.getElementById('revert-tier-btn');
+  if(revertBtn){
+    revertBtn.addEventListener('click', ()=>{
+      if(!confirm(`Revert ${tierName(tierId)} to Standard Tier pricing? Its custom rates will be discarded.`)) return;
+      INSURER_STATE[tierId].custom = false;
+      INSURER_STATE[tierId].products = null;
+      state.productId = null;
+      showToast('Reverted to Standard Tier');
+      render();
+    });
+  }
+}
+
+/* ===================== RENDER: TIER-SCOPED HISTORY EDITOR (read only) ===================== */
+function renderHistoryEditor(tierId){
+  const slot = document.getElementById('history-editor-slot');
+  const productId = state.historyProductId;
+  const tierPeriods = TIER_HISTORY_PERIODS[tierId] || [];
+  if(!productId || !tierPeriods.length){ slot.innerHTML = `<div class="empty-state">Select a product on the left to view its historical pricing.</div>`; return; }
+
+  const p = findProduct(productId);
+  const period = HISTORY_DATA[tierId][state.historyPeriodIdx][productId];
+
+  slot.innerHTML = `
+    <div class="editor">
+      <div class="editor-head">
+        <div>
+          <div class="etitle">${p.name}</div>
+          <div class="esub">${p.code} · ${tierName(tierId)}${tierId==='standard' ? ' (default)' : ''}</div>
+        </div>
+        <span class="tab-btn tab-history active" style="cursor:default;"><span class="tdot"></span> Read only</span>
+      </div>
+
+      <div class="editor-body" style="padding-top:22px;">
+        <div class="section-block" id="block-pauschal">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">1</span> Pauschal Pricing</div>
+            <div class="htag">flat rate</div>
+          </div>
+          <div class="section-block-body">
+            <div class="field">
+              <label>Price</label>
+              <div class="input-wrap"><input type="text" value="${period.pauschal.price}" disabled><span class="unit">EUR</span></div>
+            </div>
+            <div class="field">
+              <label>Threshold value</label>
+              <div class="input-wrap"><input type="text" value="${period.pauschal.threshold}" disabled><span class="unit">EUR</span></div>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <div class="input-wrap"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" id="block-individual">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">2</span> Individual Pricing</div>
+            <div class="htag">usage-based</div>
+          </div>
+          <div class="section-block-body">
+            <div class="field">
+              <label>Hour rate</label>
+              <div class="input-wrap"><input type="text" value="${period.individual.hourRate}" disabled><span class="unit">EUR/h</span></div>
+            </div>
+            <div class="field">
+              <label>Km rate</label>
+              <div class="input-wrap"><input type="text" value="${period.individual.kmRate}" disabled><span class="unit">EUR/km</span></div>
+            </div>
+            <div class="field">
+              <label>Driving time rate</label>
+              <div class="input-wrap"><input type="text" value="${period.individual.drivingTimeRate}" disabled><span class="unit">EUR/h</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">3</span> Extra costs</div>
+          </div>
+          <div class="section-block-body">
+            <div class="field span-3">
+              ${(period.other.extraCostsEnabled && (period.other.extraCosts||[]).length) ? `
+              <div class="range-table">
+                ${period.other.extraCosts.map((item,i)=>extraCostRowHtml(item,i,true)).join('')}
+              </div>` : `<div class="checkbox-empty" style="padding:20px 14px; text-align:center;">No extra costs configured</div>`}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="editor-footer">
+        <div class="saved-hint">Closed period · read only</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ===================== RENDER: PRODUCT EDITOR ===================== */
+function renderEditor(){
+  const slot = document.getElementById('editor-slot');
+  const tierId = state.tierId, productId = state.productId;
+  if(!productId){
+    slot.innerHTML = `<div class="empty-state">Select a product on the left to view or edit its pricing.</div>`;
+    const bar = document.getElementById('tier-actions-bar');
+    if(bar) bar.innerHTML = '';
+    const saveSlot = document.getElementById('header-save-slot');
+    if(saveSlot) saveSlot.innerHTML = '';
+    renderCostRefPanel(null);
+    return;
+  }
+
+  const p = findProduct(productId);
+  const products = effectiveProducts(tierId);
+  const productEntry = products[productId];
+  const period = productEntry[state.periodTab];
+  const custom = isCustom(tierId);
+  if(!period.pauschal.rangePricing) period.pauschal.rangePricing = { enabled:false, ranges:[] };
+
+  const insurerScoped = !isStandardTier(tierId);
+  const stdPeriod = insurerScoped ? standardProducts[productId][state.periodTab] : null;
+  const pauschalLocked = insurerScoped && period.pauschal.configType !== 'Einzelvereinbarung';
+  const individualLocked = insurerScoped && period.individual.configType !== 'Einzelvereinbarung';
+
+  const pSrc = pauschalLocked ? stdPeriod.pauschal : period.pauschal;
+  const iSrc = individualLocked ? stdPeriod.individual : period.individual;
+  const rp = pSrc.rangePricing || { enabled:false, ranges:[] };
+
+  const configTypeField = (id, current) => `
+            <div class="field span-3">
+              <label class="required">Preiskonfigurationstyp</label>
+              <select id="${id}" style="max-width:300px;">
+                <option value="Standard" ${current!=='Einzelvereinbarung'?'selected':''}>Standard</option>
+                <option value="Einzelvereinbarung" ${current==='Einzelvereinbarung'?'selected':''}>Einzelvereinbarung</option>
+              </select>
+              <div class="hint">Use the predefined Standard configuration, or select <b>Einzelvereinbarung</b> to customize pricing specifically for this insurer.</div>
+            </div>`;
+
+  const periodBadge = state.periodTab==='current'
+    ? `<span class="tab-btn tab-current active" style="cursor:default;"><span class="tdot"></span> Current</span>`
+    : `<span class="tab-btn tab-future active" style="cursor:default;"><span class="tdot"></span> Future planning</span>`;
+
+  slot.innerHTML = `
+    <div class="editor">
+      <div class="editor-head">
+        <div>
+          <div class="etitle">${p.name}</div>
+          <div class="esub">${p.code} · ${tierName(tierId)}${tierId==='standard' ? ' (default)' : ''}</div>
+        </div>
+        ${periodBadge}
+      </div>
+
+      <div class="editor-body" style="padding-top:22px;">
+
+        <div class="section-block" id="block-pauschal">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">1</span> Pauschal Pricing</div>
+            <div class="htag">flat rate</div>
+          </div>
+          <div class="section-block-body">
+            ${insurerScoped ? configTypeField('f-pauschal-configtype', period.pauschal.configType) : ''}
+            ${rp.enabled ? `
+            <div class="field span-3">
+              <label>Price by Erstreserve range</label>
+              <div class="range-table" id="range-table">
+                ${rp.ranges.map((r,i)=>rangeRowHtml(r,i,rp.ranges.length,pauschalLocked)).join('')}
+              </div>
+              <div class="range-actions">
+                <button class="btn ghost small" id="add-interval-btn" type="button" ${pauschalLocked?'disabled':''}>+ Add interval</button>
+              </div>
+            </div>` : ''}
+            ${!rp.enabled ? `
+            <div class="field">
+              <label class="required">Price</label>
+              <div class="input-wrap">
+                <input type="text" id="f-price" value="${pSrc.price}" ${pauschalLocked?'disabled':''}>
+                <span class="unit">EUR</span>
+              </div>
+            </div>` : `<div class="field"><label>&nbsp;</label><div class="input-wrap"></div></div>`}
+            <div class="field">
+              <label>&nbsp;</label>
+              ${!rp.enabled
+                ? `<button type="button" class="range-toggle-link" id="add-range-btn" ${pauschalLocked?'disabled':''}>+ Break price into ranges</button>`
+                : `<button type="button" class="range-toggle-link" id="remove-ranges-btn" style="color:var(--red-400);" ${pauschalLocked?'disabled':''}>Use single price instead</button>`}
+            </div>
+            <div class="field span-3">
+              <label class="required">Threshold value</label>
+              <div class="input-wrap" style="max-width:260px;">
+                <input type="text" id="f-threshold" value="${pSrc.threshold}" ${pauschalLocked?'disabled':''}>
+                <span class="unit">EUR</span>
+              </div>
+              <div class="hint">Wenn der höhere Betrag aus Reserve und Forderungshöhe diese Schwelle erreicht, greifen die untenstehenden Individualpreise.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-block" id="block-individual">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">2</span> Individual Pricing</div>
+            <div class="htag">usage-based</div>
+          </div>
+          <div class="section-block-body">
+            ${insurerScoped ? configTypeField('f-individual-configtype', period.individual.configType) : ''}
+            <div class="field">
+              <label class="required">Hour rate</label>
+              <div class="input-wrap"><input type="text" id="f-hour" value="${iSrc.hourRate}" ${individualLocked?'disabled':''}><span class="unit">EUR/h</span></div>
+            </div>
+            <div class="field">
+              <label class="required">Km rate</label>
+              <div class="input-wrap"><input type="text" id="f-km" value="${iSrc.kmRate}" ${individualLocked?'disabled':''}><span class="unit">EUR/km</span></div>
+            </div>
+            <div class="field">
+              <label class="required">Driving time rate</label>
+              <div class="input-wrap"><input type="text" id="f-drive" value="${iSrc.drivingTimeRate}" ${individualLocked?'disabled':''}><span class="unit">EUR/h</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  const actionsBar = document.getElementById('tier-actions-bar');
+  if(actionsBar){
+    actionsBar.innerHTML = `
+      <div class="actions-left">
+        <div class="saved-hint">Last updated ${period.updated}${state.periodTab==='future' ? ' · planned for ' + futureDates[tierId].from : ' · live now'}</div>
+      </div>
+    `;
+  }
+  const saveSlot = document.getElementById('header-save-slot');
+  if(saveSlot) saveSlot.innerHTML = `<button class="btn accent small" id="save-scope-btn">Save changes</button>`;
+
+  renderCostRefPanel(productId);
+
+  // Keep Price/Threshold/Individual rates committed to `period` as the user
+  // types, instead of only reading them from the DOM on Save. Without this,
+  // any full re-render triggered by an unrelated control (e.g. switching a
+  // Preiskonfigurationstyp select, adding a range interval) would rebuild
+  // these fields from the last-saved `period` values and silently discard
+  // whatever the user had typed but not yet saved.
+  if(!pauschalLocked){
+    const priceInputLive = document.getElementById('f-price');
+    if(priceInputLive) priceInputLive.addEventListener('input', e=>{ period.pauschal.price = e.target.value===''?'':Number(e.target.value)||0; });
+    const thresholdInputLive = document.getElementById('f-threshold');
+    if(thresholdInputLive) thresholdInputLive.addEventListener('input', e=>{ period.pauschal.threshold = e.target.value===''?'':Number(e.target.value)||0; });
+  }
+  if(!individualLocked){
+    const hourInputLive = document.getElementById('f-hour');
+    if(hourInputLive) hourInputLive.addEventListener('input', e=>{ period.individual.hourRate = e.target.value===''?'':Number(e.target.value)||0; });
+    const kmInputLive = document.getElementById('f-km');
+    if(kmInputLive) kmInputLive.addEventListener('input', e=>{ period.individual.kmRate = e.target.value===''?'':Number(e.target.value)||0; });
+    const driveInputLive = document.getElementById('f-drive');
+    if(driveInputLive) driveInputLive.addEventListener('input', e=>{ period.individual.drivingTimeRate = e.target.value===''?'':Number(e.target.value)||0; });
+  }
+
+  if(insurerScoped){
+    document.getElementById('f-pauschal-configtype').addEventListener('change', e=>{
+      period.pauschal.configType = e.target.value;
+      renderEditor();
+    });
+    document.getElementById('f-individual-configtype').addEventListener('change', e=>{
+      period.individual.configType = e.target.value;
+      renderEditor();
+    });
+  }
+
+  const rangeToggleAddBtn = document.getElementById('add-range-btn');
+  if(rangeToggleAddBtn){
+    rangeToggleAddBtn.addEventListener('click', ()=>{
+      rp.enabled = true;
+      // Start with 2 rows instead of 1: a bounded first bracket (carrying over
+      // the previous single price) plus the open-ended last bracket, so the
+      // user doesn't have to click "+ Add interval" once just to get going.
+      rp.ranges = [
+        { from:0, to:1000, price: period.pauschal.price || 0 },
+        { from:1000, to:'', price: 0 }
+      ];
+      renderEditor();
+    });
+  }
+  const rangeToggleRemoveBtn = document.getElementById('remove-ranges-btn');
+  if(rangeToggleRemoveBtn){
+    rangeToggleRemoveBtn.addEventListener('click', ()=>{
+      rp.enabled = false;
+      renderEditor();
+    });
+  }
+  const addIntervalBtn = document.getElementById('add-interval-btn');
+  if(addIntervalBtn){
+    addIntervalBtn.addEventListener('click', ()=>{
+      // The last row is always the open-ended "higher than" bracket. Adding
+      // an interval splits it: a new bounded row takes over where the open
+      // bracket used to start, and the open bracket now starts after it.
+      const openRow = rp.ranges[rp.ranges.length-1];
+      const openFrom = Number(openRow.from) || 0;
+      const newTo = openFrom + 1000;
+      rp.ranges.splice(rp.ranges.length-1, 0, { from: openFrom, to: newTo, price:0 });
+      openRow.from = newTo;
+      renderEditor();
+    });
+  }
+  document.querySelectorAll('.range-to-input').forEach(el=>{
+    el.addEventListener('input', e=>{
+      const idx = Number(el.dataset.idx);
+      rp.ranges[idx].to = e.target.value === '' ? '' : Number(e.target.value);
+      // Keep the next range's read-only "from" field in sync without a full
+      // re-render — replacing the DOM here would steal focus mid-keystroke.
+      if(rp.ranges[idx+1]){
+        rp.ranges[idx+1].from = rp.ranges[idx].to || 0;
+        const nextFromInput = document.querySelector('.range-from-display[data-idx="'+(idx+1)+'"]');
+        if(nextFromInput) nextFromInput.value = rp.ranges[idx+1].from;
+      }
+    });
+  });
+  document.querySelectorAll('.range-price-input').forEach(el=>{
+    el.addEventListener('input', e=>{
+      const idx = Number(el.dataset.idx);
+      rp.ranges[idx].price = e.target.value === '' ? '' : Number(e.target.value);
+    });
+  });
+  document.querySelectorAll('.range-delete-btn').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = Number(el.dataset.idx);
+      rp.ranges.splice(idx,1);
+      rp.ranges.forEach((r,i)=>{ r.from = i===0 ? 0 : (rp.ranges[i-1].to || 0); });
+      if(rp.ranges.length===0) rp.enabled = false;
+      renderEditor();
+    });
+  });
+
+  function applyAndSaveScope(){
+    if(!pauschalLocked){
+      const priceInput = document.getElementById('f-price');
+      if(priceInput) period.pauschal.price = Number(priceInput.value) || 0;
+      period.pauschal.threshold = Number(document.getElementById('f-threshold').value) || 0;
+    }
+    if(!individualLocked){
+      period.individual.hourRate = Number(document.getElementById('f-hour').value) || 0;
+      period.individual.kmRate = Number(document.getElementById('f-km').value) || 0;
+      period.individual.drivingTimeRate = Number(document.getElementById('f-drive').value) || 0;
+    }
+    if(insurerScoped){
+      period.pauschal.configType = document.getElementById('f-pauschal-configtype').value;
+      period.individual.configType = document.getElementById('f-individual-configtype').value;
+    }
+    period.updated = new Date().toISOString().slice(0,10);
+    showToast(state.periodTab === 'future' ? 'Planned change saved' : 'Configuration saved');
+    render();
+  }
+
+  document.getElementById('save-scope-btn').addEventListener('click', ()=>{
+    if(state.periodTab === 'current'){
+      openConfirmModal({
+        title: 'Save current pricing change?',
+        body: `This price change will take effect <b>immediately</b> for every new claim arriving into the system from now on. The previous pricing configuration will remain available under the History tab for consultation.`,
+        confirmLabel: 'Save & apply now',
+        confirmClass: 'accent',
+        onConfirm: applyAndSaveScope,
+      });
+    } else {
+      applyAndSaveScope();
+    }
+  });
+
+}
+
+/* ===================== RENDER: COST REFERENCE PANEL (read-only) ===================== */
+function renderCostRefPanel(productId){
+  const panel = document.getElementById('cost-ref-panel');
+  if(!panel) return;
+
+  if(!state.costPanelOpen){
+    panel.innerHTML = `
+      <div class="cost-ref-collapsed-strip" id="cost-ref-expand-btn" title="Show Regulierer / BO cost reference">
+        <span class="crs-icon">◂</span>
+        <span class="crs-label">Regulierer / BO cost</span>
+      </div>`;
+    document.getElementById('cost-ref-expand-btn').addEventListener('click', ()=>{
+      state.costPanelOpen = true;
+      render();
+    });
+    return;
+  }
+
+  if(!productId){
+    panel.innerHTML = `
+      <div class="cost-ref-card">
+        <div class="cost-ref-card-head">
+          <h4>Regulierer / BO cost</h4>
+          <button class="btn ghost small" id="cost-ref-collapse-btn" type="button">Hide ▸</button>
+        </div>
+        <div style="padding:16px; font-size:12px; color:var(--ink-faint);">Select a product to see what's paid to Regulierer / BO for it.</div>
+      </div>`;
+    document.getElementById('cost-ref-collapse-btn').addEventListener('click', ()=>{
+      state.costPanelOpen = false;
+      render();
+    });
+    return;
+  }
+
+  const providers = COST_REFERENCE[productId] || [];
+  if(state.costPanelTab >= providers.length) state.costPanelTab = 0;
+  const c = providers[state.costPanelTab];
+
+  const providerSelectHtml = `
+    <select id="cost-ref-provider-select">
+      ${providers.map((pr,i)=>`<option value="${i}" ${i===state.costPanelTab?'selected':''}>${pr.label}</option>`).join('')}
+    </select>`;
+
+  const feeSectionHtml = (title, barClass, d, showKmDrive) => `
+    <div class="cost-ref-section">
+      <div class="cost-ref-section-label"><span class="bar ${barClass}"></span> ${title}</div>
+      <div class="cost-ref-fields">
+        <div class="field">
+          <label>Gebührentyp</label>
+          <select disabled>
+            <option selected>${d.feeType}</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Regulierungsgebühr (€)</label>
+          <div class="input-wrap"><input type="text" value="${d.fee.toFixed(2)}" disabled></div>
+        </div>
+      </div>
+    </div>
+    <div class="cost-ref-section">
+      <div class="cost-ref-section-label"><span class="bar individual"></span> Individual</div>
+      <div class="cost-ref-fields">
+        <div class="field">
+          <label>Stundensatz (€)</label>
+          <div class="input-wrap"><input type="text" value="${d.hourRate.toFixed(2)}" disabled></div>
+        </div>
+        ${showKmDrive ? `
+        <div class="field">
+          <label>KM pauschale (€)</label>
+          <div class="input-wrap"><input type="text" value="${d.kmRate.toFixed(2)}" disabled></div>
+        </div>
+        <div class="field">
+          <label>Fahrzeitaufwand (€)</label>
+          <div class="input-wrap"><input type="text" value="${d.driveRate.toFixed(2)}" disabled></div>
+        </div>` : ''}
+      </div>
+    </div>`;
+
+  panel.innerHTML = `
+    ${!state.costBannerDismissed ? `
+    <div class="cost-ref-info">
+      <span>ⓘ</span>
+      <span>Regulierer and BO pricing information here is presented just to help in terms of comparison to price definition.</span>
+      <button class="close-x" id="cost-ref-dismiss-btn" type="button">×</button>
+    </div>` : ''}
+
+    <div class="cost-ref-card">
+      <div class="cost-ref-card-head">
+        <h4>Regulierer fee for this product</h4>
+        <button class="btn ghost small" id="cost-ref-collapse-btn" type="button">Hide ▸</button>
+      </div>
+      <div class="cost-ref-provider-row">
+        <label>Kontrakt</label>
+        ${providerSelectHtml}
+      </div>
+      ${feeSectionHtml('Pauschal', 'pauschal', c.regulierer, true)}
+    </div>
+
+    <div class="cost-ref-card">
+      <div class="cost-ref-card-head">
+        <h4>BO fee for this product</h4>
+      </div>
+      <div class="cost-ref-section">
+        <div class="cost-ref-section-label"><span class="bar pauschal"></span> Pauschal</div>
+        <div class="cost-ref-fields">
+          <div class="field">
+            <label>Gebührentyp</label>
+            <select disabled><option selected>${c.bo.feeType}</option></select>
+          </div>
+          <div class="field">
+            <label>Gebühr (€)</label>
+            <div class="input-wrap"><input type="text" value="${c.bo.fee.toFixed(2)}" disabled></div>
+          </div>
+        </div>
+      </div>
+      <div class="cost-ref-section">
+        <div class="cost-ref-section-label"><span class="bar individual"></span> Individual</div>
+        <div class="cost-ref-fields">
+          <div class="field">
+            <label>Stundensatz (€)</label>
+            <div class="input-wrap"><input type="text" value="${c.bo.hourRate.toFixed(2)}" disabled></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const dismissBtn = document.getElementById('cost-ref-dismiss-btn');
+  if(dismissBtn) dismissBtn.addEventListener('click', ()=>{ state.costBannerDismissed = true; renderCostRefPanel(productId); });
+
+  document.getElementById('cost-ref-collapse-btn').addEventListener('click', ()=>{
+    state.costPanelOpen = false;
+    render();
+  });
+
+  document.getElementById('cost-ref-provider-select').addEventListener('change', e=>{
+    state.costPanelTab = Number(e.target.value);
+    renderCostRefPanel(productId);
+  });
+}
+
+/* ===================== RENDER: BO GEBÜHREN ===================== */
+function renderBoFeesList(){
+  document.documentElement.style.setProperty('--section-accent','var(--current)');
+  document.documentElement.style.setProperty('--section-tint','var(--current-tint)');
+
+  const html = `
+    <table class="tier-table tier-table-static">
+      <thead>
+        <tr>
+          <th>BO Standardpreise</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${BO_CONFIG.standards.map(s=>`
+        <tr class="clickable" data-bo-open="${s.id}">
+          <td>
+            <div class="name-cell std-summary-wrap">
+              ${s.name}
+              <span class="std-summary-icon">ⓘ</span>
+              <div class="std-summary-popover">
+                <div class="popover-title">Configuration summary</div>
+                ${regStandardSummaryHtml(s, 'bo')}
+              </div>
+            </div>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('content').innerHTML = html;
+
+  document.querySelectorAll('[data-bo-open]').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      state.regKind = 'bo';
+      state.regStdId = el.dataset.boOpen;
+      state.regPeriodTab = 'current';
+      state.regSelectedInsurer = null;
+      state.regSelectedProduct = null;
+      state.regHistoryIdx = 0;
+      render();
+    });
+  });
+}
+
+/* ===================== RENDER: GENERAL CONFIGS ===================== */
+function renderGeneralConfigs(){
+  document.documentElement.style.setProperty('--section-accent','var(--current)');
+  document.documentElement.style.setProperty('--section-tint','var(--current-tint)');
+
+  const html = `
+    <div class="detail-header">
+      <div>
+        <h2>General Configs</h2>
+      </div>
+      <div class="detail-actions">
+        <button class="btn accent small" id="general-config-save-btn" type="button">Speichern</button>
+      </div>
+    </div>
+
+    <div class="tab-row">
+      <button class="tab-btn tab-current ${state.generalConfigTab==='abrechnung'?'active':''}" id="general-tab-abrechnung-btn"><span class="tdot"></span> Abrechnung</button>
+      <button class="tab-btn tab-current ${state.generalConfigTab==='rechnung'?'active':''}" id="general-tab-rechnung-btn"><span class="tdot"></span> Rechnung</button>
+    </div>
+
+    <div class="editor">
+      <div class="editor-body" style="padding-top:22px;">
+        ${state.generalConfigTab==='abrechnung' ? `
+        <div class="section-block">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">1</span> Regulierer Abrechnung</div>
+          </div>
+          <div class="section-block-body" style="grid-template-columns:1fr;">
+            <div class="field">
+              <div class="bo-toggle-row" style="margin-bottom:0;">
+                <span class="toggle-label">Activate Regulierer Gebühren</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="general-regulier-enabled-toggle" ${GENERAL_CONFIG.regulierGebuehrenEnabled?'checked':''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            ${GENERAL_CONFIG.regulierGebuehrenEnabled ? `
+            <div class="field">
+              <label class="required">Voraussetzungen für Abrechnung an Regulierer</label>
+              <div class="radio-row">
+                ${['Bericht QS akzeptiert','Zahlung von Versicherer eingegangen','Rechnung an Versicherer erstellt'].map(opt=>`
+                <label class="radio-option"><input type="radio" name="general-prereq" value="${opt}" ${GENERAL_CONFIG.prereq===opt?'checked':''}> ${opt}</label>`).join('')}
+              </div>
+            </div>` : ''}
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">2</span> BO Abrechnung</div>
+          </div>
+          <div class="section-block-body" style="grid-template-columns:1fr;">
+            <div class="field">
+              <div class="bo-toggle-row" style="margin-bottom:0;">
+                <span class="toggle-label">Activate BO Gebühren</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="general-bo-enabled-toggle" ${BO_CONFIG.enabled?'checked':''}>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="hint">Controls whether BO Gebühren pricing configs are active and billable.</div>
+            </div>
+            ${BO_CONFIG.enabled ? `
+            <div class="field">
+              <label class="required">Voraussetzungen für Abrechnung an BO</label>
+              <div class="radio-row">
+                ${['Bericht QS akzeptiert','Zahlung von Versicherer eingegangen','Rechnung an Versicherer erstellt'].map(opt=>`
+                <label class="radio-option"><input type="radio" name="general-bo-prereq" value="${opt}" ${GENERAL_CONFIG.boPrereq===opt?'checked':''}> ${opt}</label>`).join('')}
+              </div>
+            </div>` : ''}
+          </div>
+        </div>
+        ` : `
+        <div class="section-block overflow-visible">
+          <div class="section-block-head">
+            <div class="stitle2"><span class="num">1</span> Invoices</div>
+          </div>
+          <div class="section-block-body">
+            ${!GENERAL_CONFIG.invoiceDueBreakdownActive ? `
+            <div class="field">
+              <label class="required">Due date (days after invoice is sent)</label>
+              <div class="input-wrap" style="max-width:220px;">
+                <input type="text" id="general-invoice-due-days" value="${GENERAL_CONFIG.invoiceDueDays}">
+                <span class="unit">days</span>
+              </div>
+              <div class="hint">Default number of days after an invoice is created/sent before it becomes due.</div>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button type="button" class="range-toggle-link" id="activate-invoice-breakdown-btn">+ Break down by insurer</button>
+            </div>
+            ` : `
+            <div class="field span-3">
+              <label>Insurer-specific due dates</label>
+              <div class="hint" style="margin-top:-2px; margin-bottom:8px;">Each group of insurers below has its own due date. Insurers not covered by any group use the default due date.</div>
+              <div id="invoice-due-overrides-list" style="display:flex; flex-direction:column; gap:18px;">
+                ${GENERAL_CONFIG.invoiceDueOverrides.map((grp,i)=>invoiceOverrideRowHtml(grp,i)).join('')}
+              </div>
+              <div class="range-actions" style="display:flex; align-items:center; gap:18px;">
+                <button class="btn ghost small" id="add-invoice-override-btn" type="button">+ Add insurer-specific due date</button>
+                <button type="button" class="range-toggle-link" id="remove-invoice-breakdown-btn" style="color:var(--red-400);">Use single due date instead</button>
+              </div>
+            </div>
+            `}
+          </div>
+        </div>
+
+        <div class="section-block overflow-visible">
+          <div class="section-block-head">
+            ${GENERAL_CONFIG.extraCostsBreakdownActive ? `
+            <div class="stitle2"><span class="num">2</span> Extra costs</div>
+            ` : `
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="stitle2"><span class="num">2</span> Extra costs</div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="gen-extra-costs-enabled" ${GENERAL_CONFIG.extraCostsEnabled?'checked':''}>
+                <span class="slider"></span>
+              </label>
+            </div>
+            `}
+          </div>
+          <div class="section-block-body">
+            ${!GENERAL_CONFIG.extraCostsBreakdownActive ? `
+            <div class="field span-3">
+              ${!GENERAL_CONFIG.extraCostsEnabled ? `
+              <div class="checkbox-empty" style="padding:20px 14px; text-align:center;">No extra costs configured</div>
+              ` : `
+              ${GENERAL_CONFIG.extraCostsList.length ? `
+              <div class="range-table" id="extra-costs-table">
+                ${GENERAL_CONFIG.extraCostsList.map((item,i)=>extraCostRowHtml(item,i,false)).join('')}
+              </div>` : ''}
+              <div class="range-actions">
+                ${extraCostAddSelectHtml(GENERAL_CONFIG.extraCostsList, false)}
+              </div>
+              `}
+              <div class="hint" style="margin-top:10px;">Applies to every insurer and product by default.</div>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <button type="button" class="range-toggle-link" id="activate-extra-costs-breakdown-btn">+ Break down by insurer</button>
+            </div>
+            ` : `
+            <div class="field span-3">
+              <label>Insurer-specific extra costs</label>
+              <div class="hint" style="margin-top:-2px; margin-bottom:8px;">Each group of insurers below has its own Extra costs configuration. Insurers not covered by any group have no extra costs applied.</div>
+              <div id="extra-costs-overrides-list" style="display:flex; flex-direction:column; gap:18px;">
+                ${GENERAL_CONFIG.extraCostsOverrides.map((grp,i)=>extraCostsOverrideGroupHtml(grp,i)).join('')}
+              </div>
+              <div class="range-actions" style="display:flex; align-items:center; gap:18px;">
+                <button class="btn ghost small" id="add-extra-costs-override-btn" type="button">+ Add insurer-specific extra costs</button>
+                <button type="button" class="range-toggle-link" id="remove-extra-costs-breakdown-btn" style="color:var(--red-400);">Use single config instead</button>
+              </div>
+            </div>
+            `}
+          </div>
+        </div>
+        `}
+      </div>
+    </div>
+  `;
+  document.getElementById('content').innerHTML = html;
+
+  document.getElementById('general-tab-abrechnung-btn').addEventListener('click', ()=>{
+    state.generalConfigTab = 'abrechnung';
+    renderGeneralConfigs();
+  });
+  document.getElementById('general-tab-rechnung-btn').addEventListener('click', ()=>{
+    state.generalConfigTab = 'rechnung';
+    renderGeneralConfigs();
+  });
+
+  document.querySelectorAll('input[name="general-prereq"]').forEach(el=>{
+    el.addEventListener('change', e=>{ GENERAL_CONFIG.prereq = e.target.value; });
+  });
+
+  document.querySelectorAll('input[name="general-bo-prereq"]').forEach(el=>{
+    el.addEventListener('change', e=>{ GENERAL_CONFIG.boPrereq = e.target.value; });
+  });
+
+  const regulierEnabledToggle = document.getElementById('general-regulier-enabled-toggle');
+  if(regulierEnabledToggle){
+    regulierEnabledToggle.addEventListener('change', e=>{
+      GENERAL_CONFIG.regulierGebuehrenEnabled = e.target.checked;
+      renderGeneralConfigs();
+    });
+  }
+
+  const boEnabledToggle = document.getElementById('general-bo-enabled-toggle');
+  if(boEnabledToggle){
+    boEnabledToggle.addEventListener('change', e=>{
+      BO_CONFIG.enabled = e.target.checked;
+      showToast(BO_CONFIG.enabled ? 'BO Gebühren activated' : 'BO Gebühren deactivated');
+      renderGeneralConfigs();
+    });
+  }
+
+  const dueDaysInput = document.getElementById('general-invoice-due-days');
+  if(dueDaysInput){
+    dueDaysInput.addEventListener('input', e=>{
+      GENERAL_CONFIG.invoiceDueDays = e.target.value === '' ? '' : Number(e.target.value) || 0;
+    });
+  }
+
+  const activateBreakdownBtn = document.getElementById('activate-invoice-breakdown-btn');
+  if(activateBreakdownBtn){
+    activateBreakdownBtn.addEventListener('click', ()=>{
+      GENERAL_CONFIG.invoiceDueBreakdownActive = true;
+      if(GENERAL_CONFIG.invoiceDueOverrides.length === 0){
+        GENERAL_CONFIG.invoiceDueOverrides.push({ id:'due_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), insurerIds:[], days: GENERAL_CONFIG.invoiceDueDays || 30 });
+      }
+      renderGeneralConfigs();
+    });
+  }
+
+  const removeBreakdownBtn = document.getElementById('remove-invoice-breakdown-btn');
+  if(removeBreakdownBtn){
+    removeBreakdownBtn.addEventListener('click', ()=>{
+      GENERAL_CONFIG.invoiceDueBreakdownActive = false;
+      renderGeneralConfigs();
+    });
+  }
+
+  const addOverrideBtn = document.getElementById('add-invoice-override-btn');
+  if(addOverrideBtn){
+    addOverrideBtn.addEventListener('click', ()=>{
+      GENERAL_CONFIG.invoiceDueOverrides.push({ id:'due_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), insurerIds:[], days: GENERAL_CONFIG.invoiceDueDays || 30 });
+      renderGeneralConfigs();
+    });
+  }
+
+  document.querySelectorAll('.chip-select-box').forEach(el=>{
+    el.addEventListener('click', e=>{
+      if(e.target.closest('.chip-remove')) return;
+      const wrap = el.closest('.chip-select');
+      const wasOpen = wrap.classList.contains('open');
+      document.querySelectorAll('.chip-select.open').forEach(o=>o.classList.remove('open'));
+      if(!wasOpen) wrap.classList.add('open');
+    });
+  });
+
+  if(!window.__chipSelectDocListenerAdded){
+    window.__chipSelectDocListenerAdded = true;
+    document.addEventListener('click', function(e){
+      if(!e.target.closest('.chip-select')){
+        document.querySelectorAll('.chip-select.open').forEach(o=>o.classList.remove('open'));
+      }
+    });
+  }
+
+  document.querySelectorAll('.chip-option-checkbox').forEach(el=>{
+    el.addEventListener('change', e=>{
+      const idx = Number(el.dataset.idx);
+      const insurerId = el.dataset.insurer;
+      const grp = GENERAL_CONFIG.invoiceDueOverrides[idx];
+      if(e.target.checked){
+        if(!grp.insurerIds.includes(insurerId)) grp.insurerIds.push(insurerId);
+      } else {
+        grp.insurerIds = grp.insurerIds.filter(id=>id!==insurerId);
+      }
+      updateChipSelectUI(idx);
+    });
+  });
+
+  wireChipRemoveButtons();
+
+  document.querySelectorAll('.invoice-override-days').forEach(el=>{
+    el.addEventListener('input', e=>{
+      const idx = Number(el.dataset.idx);
+      GENERAL_CONFIG.invoiceDueOverrides[idx].days = e.target.value === '' ? '' : Number(e.target.value) || 0;
+    });
+  });
+  document.querySelectorAll('.invoice-override-delete-btn').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = Number(el.dataset.idx);
+      GENERAL_CONFIG.invoiceDueOverrides.splice(idx,1);
+      renderGeneralConfigs();
+    });
+  });
+
+  document.getElementById('general-config-save-btn').addEventListener('click', ()=>{
+    showToast('Configuration saved');
+  });
+
+  // ---- Extra costs (Rechnung tab) wiring — global by default, with an
+  // optional insurer breakdown mirroring the Invoices due-date pattern above. ----
+  const genExtraCostsEnabledToggle = document.getElementById('gen-extra-costs-enabled');
+  if(genExtraCostsEnabledToggle){
+    genExtraCostsEnabledToggle.addEventListener('change', e=>{
+      GENERAL_CONFIG.extraCostsEnabled = e.target.checked;
+      renderGeneralConfigs();
+    });
+  }
+  const activateExtraCostsBreakdownBtn = document.getElementById('activate-extra-costs-breakdown-btn');
+  if(activateExtraCostsBreakdownBtn){
+    activateExtraCostsBreakdownBtn.addEventListener('click', ()=>{
+      GENERAL_CONFIG.extraCostsBreakdownActive = true;
+      if(GENERAL_CONFIG.extraCostsOverrides.length === 0){
+        GENERAL_CONFIG.extraCostsOverrides.push({ id:'ecgrp_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), insurerIds:[], list:[] });
+      }
+      renderGeneralConfigs();
+    });
+  }
+  const removeExtraCostsBreakdownBtn = document.getElementById('remove-extra-costs-breakdown-btn');
+  if(removeExtraCostsBreakdownBtn){
+    removeExtraCostsBreakdownBtn.addEventListener('click', ()=>{
+      GENERAL_CONFIG.extraCostsBreakdownActive = false;
+      renderGeneralConfigs();
+    });
+  }
+  const addExtraCostsOverrideBtn = document.getElementById('add-extra-costs-override-btn');
+  if(addExtraCostsOverrideBtn){
+    addExtraCostsOverrideBtn.addEventListener('click', ()=>{
+      GENERAL_CONFIG.extraCostsOverrides.push({ id:'ecgrp_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), insurerIds:[], enabled:false, list:[] });
+      renderGeneralConfigs();
+    });
+  }
+  document.querySelectorAll('.ec-override-delete-btn').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = Number(el.dataset.idx);
+      GENERAL_CONFIG.extraCostsOverrides.splice(idx,1);
+      renderGeneralConfigs();
+    });
+  });
+  // Every extra-cost row/select below can live either in the single default
+  // list or inside one of the insurer-group overrides — resolve which one a
+  // given element belongs to by walking up to the nearest override group
+  // container; falls back to the default/global list when there isn't one.
+  function extraCostsListFor(el){
+    const groupEl = el.closest('[data-override-idx]');
+    if(groupEl) return GENERAL_CONFIG.extraCostsOverrides[Number(groupEl.dataset.overrideIdx)].list;
+    return GENERAL_CONFIG.extraCostsList;
+  }
+  document.querySelectorAll('.add-extra-cost-select').forEach(el=>{
+    el.addEventListener('change', e=>{
+      const costType = e.target.value;
+      if(!costType) return;
+      const list = extraCostsListFor(el);
+      list.push({ id:'ec_'+Date.now()+'_'+Math.random().toString(36).slice(2,7), costType, art:'Pauschal', value:0, amountFree:0 });
+      renderGeneralConfigs();
+    });
+  });
+  document.querySelectorAll('.extra-cost-art-input').forEach(el=>{
+    el.addEventListener('change', e=>{
+      const idx = Number(el.dataset.idx);
+      const list = extraCostsListFor(el);
+      if(list[idx]) list[idx].art = e.target.value;
+      renderGeneralConfigs();
+    });
+  });
+  document.querySelectorAll('.extra-cost-value-input').forEach(el=>{
+    el.addEventListener('input', e=>{
+      const idx = Number(el.dataset.idx);
+      const list = extraCostsListFor(el);
+      if(list[idx]) list[idx].value = e.target.value === '' ? '' : Number(e.target.value);
+    });
+  });
+  document.querySelectorAll('.extra-cost-amount-free-input').forEach(el=>{
+    el.addEventListener('input', e=>{
+      const idx = Number(el.dataset.idx);
+      const list = extraCostsListFor(el);
+      if(list[idx]) list[idx].amountFree = e.target.value === '' ? '' : Number(e.target.value);
+    });
+  });
+  document.querySelectorAll('.extra-cost-delete-btn').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const idx = Number(el.dataset.idx);
+      const list = extraCostsListFor(el);
+      list.splice(idx,1);
+      renderGeneralConfigs();
+    });
+  });
+
+  document.querySelectorAll('.ec-chip-option-checkbox').forEach(el=>{
+    el.addEventListener('change', e=>{
+      const idx = Number(el.dataset.idx);
+      const insurerId = el.dataset.insurer;
+      const grp = GENERAL_CONFIG.extraCostsOverrides[idx];
+      if(e.target.checked){
+        // The checkbox is already disabled in the markup when another group
+        // has this insurer, but guard here too in case of any DOM staleness.
+        const takenElsewhere = GENERAL_CONFIG.extraCostsOverrides.some((g,gi)=>gi!==idx && g.insurerIds.includes(insurerId));
+        if(takenElsewhere){
+          e.target.checked = false;
+          showToast('This insurer is already assigned to another group');
+          return;
+        }
+        if(!grp.insurerIds.includes(insurerId)) grp.insurerIds.push(insurerId);
+      } else {
+        grp.insurerIds = grp.insurerIds.filter(id=>id!==insurerId);
+      }
+      // A full re-render is needed on every change here (not just when the
+      // group's own empty/non-empty state flips): picking an insurer in this
+      // group also has to grey it out in every OTHER group's dropdown, so
+      // all groups must be rebuilt, not just this one.
+      renderGeneralConfigs();
+    });
+  });
+  wireExtraCostsChipRemoveButtons();
+}
+
+function updateChipSelectUI(idx){
+  const grp = GENERAL_CONFIG.invoiceDueOverrides[idx];
+  const chipsEl = document.getElementById('chip-select-chips-'+idx);
+  const countEl = document.getElementById('chip-select-count-'+idx);
+  if(chipsEl) chipsEl.innerHTML = grp.insurerIds.map(id=>chipHtml(id,idx)).join('');
+  if(countEl) countEl.textContent = `${grp.insurerIds.length} von ${INSURERS.length} ausgewählt`;
+  wireChipRemoveButtons();
+}
+
+function wireChipRemoveButtons(){
+  document.querySelectorAll('.chip-remove').forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      const idx = Number(el.dataset.idx);
+      const insurerId = el.dataset.insurer;
+      const grp = GENERAL_CONFIG.invoiceDueOverrides[idx];
+      grp.insurerIds = grp.insurerIds.filter(id=>id!==insurerId);
+      const checkbox = document.querySelector(`.chip-option-checkbox[data-idx="${idx}"][data-insurer="${insurerId}"]`);
+      if(checkbox) checkbox.checked = false;
+      updateChipSelectUI(idx);
+    });
+  });
+}
+
+// Extra costs' own chip-remove wiring — kept separate from
+// wireChipRemoveButtons above (invoice due-date overrides) so the two
+// features' chip data never cross-update each other. Always triggers a full
+// re-render (rather than a lightweight DOM patch) because removing an
+// insurer from one group can free it up in every other group's dropdown, and
+// removing the group's last insurer collapses its table into the empty state.
+function wireExtraCostsChipRemoveButtons(){
+  document.querySelectorAll('.ec-chip-remove').forEach(el=>{
+    el.addEventListener('click', e=>{
+      e.stopPropagation();
+      const idx = Number(el.dataset.idx);
+      const insurerId = el.dataset.insurer;
+      const grp = GENERAL_CONFIG.extraCostsOverrides[idx];
+      grp.insurerIds = grp.insurerIds.filter(id=>id!==insurerId);
+      renderGeneralConfigs();
+    });
+  });
+}
+
+/* ===================== ROOT RENDER ===================== */
+function render(){
+  renderShell();
+  if(state.section === 'generalConfigs'){
+    renderGeneralConfigs();
+  } else if(state.section === 'boFees'){
+    if(state.regStdId){
+      renderRegStdDetail();
+    } else {
+      renderBoFeesList();
+    }
+  } else if(state.section === 'regFees'){
+    if(state.regStdId){
+      renderRegStdDetail();
+    } else {
+      renderRegFeesList();
+    }
+  } else if(state.tierId){
+    renderTierDetail();
+  } else {
+    renderTierList();
+  }
+}
+
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    state.section = el.dataset.section;
+    state.tierId = null;
+    state.productId = null;
+    render();
+  });
+});
+
+document.getElementById('clock-date').textContent = 'Today · ' + new Date().toISOString().slice(0,10);
+
+render();
+</script>
+</body>
+</html>
